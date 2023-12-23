@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
 
     # --- Made by me ---
+    'apps.core',
 
 ]
 
@@ -143,3 +144,5 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '0.1.2',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+AUTH_USER_MODEL = 'core.User'
