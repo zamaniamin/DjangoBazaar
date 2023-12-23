@@ -47,7 +47,6 @@ class UserManager(BaseUserManager):
 
         # `normalize_email` ensure that the email address is correctly formatted and valid before saved to the database
         user = self.model(email=self.normalize_email(email), **extra_fields)
-        user.is_active = False
         user.set_password(password)
         user.save(using=self._db)
 
