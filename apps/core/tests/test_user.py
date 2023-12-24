@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -32,3 +33,8 @@ class UserCreateViewTest(APITestCase):
         self.assertFalse(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
+
+        # --- expected email ---
+        expected_mail = mail.outbox
+        self.assertEqual(len(expected_mail), 1)
+        self.assertEqual(expected_mail[0].to, [payload["email"]])
