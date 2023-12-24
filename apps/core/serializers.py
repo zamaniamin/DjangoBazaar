@@ -13,11 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, validators=[validate_password])
-    confirm_password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
 
     def validate(self, data):
         password = data.get('password')
-        password_confirm = data.pop('confirm_password')
+        password_confirm = data.pop('password_confirm')
 
         if password != password_confirm:
             raise serializers.ValidationError("Passwords do not match.")
