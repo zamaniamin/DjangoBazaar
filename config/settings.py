@@ -58,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # --- Site Framework ---
     'django.contrib.sites.middleware.CurrentSiteMiddleware'
 ]
 
@@ -130,10 +132,32 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
-}
+# -------------------------
+# --- Custom User Model ---
+# -------------------------
+
+AUTH_USER_MODEL = 'core.User'
+
+# ----------------------
+# --- Site Framework ---
+# ----------------------
+
+SITE_ID = 1
+
+# ----------------------
+# --- Email Settings ---
+# ----------------------
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+# -------------------------
+# --- REST-API Settings ---
+# -------------------------
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
@@ -151,19 +175,14 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-AUTH_USER_MODEL = 'core.User'
-SITE_ID = 1
+# --------------------
+# --- JWT Settings ---
+# --------------------
 
-# ----------------------
-# --- Email Settings ---
-# ----------------------
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
+}
 
 # --------------------
 # --- OTP Settings ---
