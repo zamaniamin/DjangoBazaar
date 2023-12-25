@@ -170,3 +170,4 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 # --------------------
 
 OTP_SECRET_KEY = os.getenv("OTP_SECRET_KEY")
+OTP_EXPIRE_SECONDS = os.getenv("OTP_EXPIRE_SECONDS")
