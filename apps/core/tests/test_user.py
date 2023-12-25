@@ -9,9 +9,10 @@ class UserCreateViewTest(APITestCase):
         self.base_url = "/auth/users/"
         self.user = get_user_model()
 
-    def test_create_user(self):
+    def test_create_user_or_register(self):
         """
         Test that we can create a new user.
+        (register a new user with email and password)
         """
 
         # --- request ---
