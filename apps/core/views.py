@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import serializers
+from apps.core.managers.user_manager import UserManager
 
 User = get_user_model()
 
@@ -45,10 +46,7 @@ class UserViewSet(ModelViewSet):
         user_data = serializer.validated_data
 
         try:
-            user = User.objects.create(**user_data)
-            user.set_password(user_data['password'])
-            user.is_active = False
-            user.save()
+            user = UserManager.create_inactive_user(**user_data)
 
             response_body = {
                 'user_id': user.id,
