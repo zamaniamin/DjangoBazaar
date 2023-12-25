@@ -3,6 +3,8 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 
+from apps.core.services.token_service import TokenService
+
 
 class EmailService:
     current_site: Site = Site.objects.get_current()
@@ -14,11 +16,11 @@ class EmailService:
         """
         try:
 
-            # Create an email message with both plain text and HTML content
+            otp = TokenService.create_otp_token()
             email = EmailMultiAlternatives(
                 subject="Email Verification",
                 body=f"Thank you for registering with \"{cls.current_site.name}\"!\n\n" \
-                     f"To complete your registration, please enter the following code: {123}\n\n" \
+                     f"To complete your registration, please enter the following code: {otp}\n\n" \
                      f"If you didn't register, please ignore this email.",
                 from_email=settings.EMAIL_HOST_USER,
                 to=[to_address]
