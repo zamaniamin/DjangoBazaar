@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@!+3jr$c1xtf9&&%b@06&#13j5uoqr=#qz8%)c%o$s3#&s3v4+'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -149,14 +153,20 @@ SPECTACULAR_SETTINGS = {
 
 AUTH_USER_MODEL = 'core.User'
 SITE_ID = 1
-# -------------------------------
-# --- used during development ---
-# -------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
 
-# --- get from .env ---
-EMAIL_HOST_USER = "no-reply@example.com"
-EMAIL_HOST_PASSWORD = "password"
+# ----------------------
+# --- Email Settings ---
+# ----------------------
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+# --------------------
+# --- OTP Settings ---
+# --------------------
+
+OTP_SECRET_KEY = os.getenv("OTP_SECRET_KEY")
