@@ -23,8 +23,8 @@ class FakeUser:
 
         # --- register a user ---
         register_payload = {
-            "email": cls.random_email(),
-            "password": cls.password
+            'email': cls.random_email(),
+            'password': cls.password
         }
         return UserManager.create_inactive_user(**register_payload)
 

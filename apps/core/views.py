@@ -15,7 +15,7 @@ User = get_user_model()
 
 @extend_schema_view(
     create=extend_schema(
-        tags=["Auth"],
+        tags=['Auth'],
         summary='Add or register a new user',
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
@@ -33,9 +33,9 @@ Please note that users cannot log in to their accounts until their email address
 """,
     ),
     activation=extend_schema(
-        tags=["Auth"],
+        tags=['Auth'],
         summary='Verify user registration',
-        description="""Verify a new user registration by confirming the provided OTP.""",
+        description='Verify a new user registration by confirming the provided OTP.',
     ),
 )
 class UserViewSet(ModelViewSet):
@@ -45,7 +45,7 @@ class UserViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return serializers.UserCreateSerializer
-        elif self.action == "activation":
+        elif self.action == 'activation':
             return serializers.ActivationSerializer
         return self.serializer_class
 
@@ -61,16 +61,16 @@ class UserViewSet(ModelViewSet):
             user = UserManager.create_inactive_user(**user_data)
 
             response_body = {
-                "user_id": user.id,
-                "email": user.email,
+                'user_id': user.id,
+                'email': user.email,
             }
 
             return Response(response_body, status=status.HTTP_201_CREATED)
 
         except IntegrityError:
-            return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(["patch"], detail=False)
+    @action(['patch'], detail=False)
     def activation(self, request, *args, **kwargs):
 
         # --- validate ---
@@ -86,9 +86,9 @@ class UserViewSet(ModelViewSet):
         refresh_token = RefreshToken.for_user(user)
         access_token = AccessToken.for_user(user)
         response_body = {
-            "access": str(access_token),
-            "refresh": str(refresh_token),
-            "message": "Your email address has been confirmed. Account activated successfully."
+            'access': str(access_token),
+            'refresh': str(refresh_token),
+            'message': 'Your email address has been confirmed. Account activated successfully.'
         }
 
         return Response(response_body, status=status.HTTP_200_OK)

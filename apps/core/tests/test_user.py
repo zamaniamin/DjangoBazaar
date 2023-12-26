@@ -9,7 +9,7 @@ from apps.core.services.token_service import TokenService
 
 class UserCreateViewTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/"
+        self.base_url = '/auth/users/'
         self.user = get_user_model()
 
         # active_user = FakeUser.create_active_user()
@@ -31,12 +31,12 @@ class UserCreateViewTest(APITestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertFalse("password" in response.data)
-        self.assertFalse("password_confirm" in response.data)
-        self.assertTrue("email" in response.data)
-        self.assertTrue("user_id" in response.data)
-        user = self.user.objects.get(email=payload["email"])
-        self.assertTrue(user.check_password(payload["password"]))
+        self.assertFalse('password' in response.data)
+        self.assertFalse('password_confirm' in response.data)
+        self.assertTrue('email' in response.data)
+        self.assertTrue('user_id' in response.data)
+        user = self.user.objects.get(email=payload['email'])
+        self.assertTrue(user.check_password(payload['password']))
         self.assertFalse(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
@@ -44,7 +44,7 @@ class UserCreateViewTest(APITestCase):
         # --- expected email ---
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 1)
-        self.assertEqual(expected_mail[0].to, [payload["email"]])
+        self.assertEqual(expected_mail[0].to, [payload['email']])
 
     def test_user_activation(self):
         """
@@ -58,14 +58,14 @@ class UserCreateViewTest(APITestCase):
             "email": inactive_user.email,
             "otp": TokenService.create_otp_token()
         }
-        response = self.client.patch(self.base_url + "activation/", payload)
+        response = self.client.patch(self.base_url + 'activation/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertIsInstance(expected["access"], str)
-        self.assertIsInstance(expected["refresh"], str)
-        self.assertTrue(expected["access"].strip())
-        self.assertTrue(expected["refresh"].strip())
-        self.assertEqual(expected["message"],
-                         "Your email address has been confirmed. Account activated successfully.")
+        self.assertIsInstance(expected['access'], str)
+        self.assertIsInstance(expected['refresh'], str)
+        self.assertTrue(expected['access'].strip())
+        self.assertTrue(expected['refresh'].strip())
+        self.assertEqual(expected['message'],
+                         'Your email address has been confirmed. Account activated successfully.')
