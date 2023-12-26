@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from apps.core import serializers
 from apps.core.managers.user_manager import UserManager
@@ -63,15 +64,22 @@ class UserViewSet(ModelViewSet):
 
     @action(["patch"], detail=False)
     def activation(self, request, *args, **kwargs):
+
+        # --- validate ---
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # --- update user ---
         user = serializer.validated_data
         user.is_active = True
         user.save()
 
+        # --- Create JWT tokens ---
+        refresh_token = RefreshToken.for_user(user)
+        access_token = AccessToken.for_user(user)
         response_body = {
-            "access": "",
-            "refresh": "",
+            "access": str(access_token),
+            "refresh": str(refresh_token),
             "message": "Your email address has been confirmed. Account activated successfully."
         }
 
