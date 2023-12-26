@@ -6,7 +6,6 @@ from apps.core.services.token_service import TokenService
 
 
 class EmailService:
-    current_site: Site = Site.objects.get_current()
 
     @classmethod
     def send_activation_email(cls, to_address):
@@ -18,7 +17,7 @@ class EmailService:
             otp = TokenService.create_otp_token()
             email = EmailMultiAlternatives(
                 subject="Email Verification",
-                body=f"Thank you for registering with \"{cls.current_site.name}\"!\n\n" \
+                body=f"Thank you for registering with \"{Site.objects.get_current().current_site.name}\"!\n\n" \
                      f"To complete your registration, please enter the following code: {otp}\n\n" \
                      f"If you didn't register, please ignore this email.",
                 from_email=settings.EMAIL_HOST_USER,
