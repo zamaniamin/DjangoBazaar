@@ -17,7 +17,7 @@ class EmailService:
             otp = TokenService.create_otp_token()
             email = EmailMultiAlternatives(
                 subject="Email Verification",
-                body=f"Thank you for registering with \"{Site.objects.get_current().current_site.name}\"!\n\n" \
+                body=f"Thank you for registering with \"{Site.objects.get_current().name}\"!\n\n" \
                      f"To complete your registration, please enter the following code: {otp}\n\n" \
                      f"If you didn't register, please ignore this email.",
                 from_email=settings.EMAIL_HOST_USER,
