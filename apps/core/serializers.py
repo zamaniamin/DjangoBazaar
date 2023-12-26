@@ -8,7 +8,7 @@ from apps.core.services.token_service import TokenService
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['password', 'is_superuser']
 
 
 class UserCreateSerializer(serializers.Serializer):
