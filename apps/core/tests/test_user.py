@@ -3,11 +3,17 @@ from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.core.faker.user_faker import FakeUser
+from apps.core.services.token_service import TokenService
+
 
 class UserCreateViewTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/"
         self.user = get_user_model()
+
+        # active_user = FakeUser.create_active_user()
+        # self.inactive_user = FakeUser.create_inactive_user()
 
     def test_create_user_or_register(self):
         """
@@ -39,3 +45,20 @@ class UserCreateViewTest(APITestCase):
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 1)
         self.assertEqual(expected_mail[0].to, [payload["email"]])
+
+    def test_user_activation(self):
+        """
+        Test activating the user after verifying the OTP code (verify email).
+        """
+
+        inactive_user = FakeUser.create_inactive_user()
+
+        # --- request ---
+        payload = {
+            "email": inactive_user.email,
+            "otp": TokenService.create_otp_token()
+        }
+        response = self.client.patch(self.base_url + "activation/", payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
