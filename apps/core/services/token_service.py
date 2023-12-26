@@ -11,3 +11,8 @@ class TokenService:
     def create_otp_token(cls):
         totp = TOTP(settings.OTP_SECRET_KEY, interval=int(settings.OTP_EXPIRE_SECONDS))
         return totp.now()
+
+    @classmethod
+    def validate_otp_token(cls, token: str):
+        totp = TOTP(settings.OTP_SECRET_KEY, interval=int(settings.OTP_EXPIRE_SECONDS))
+        return totp.verify(token)
