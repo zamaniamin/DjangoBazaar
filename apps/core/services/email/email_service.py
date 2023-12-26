@@ -13,7 +13,7 @@ class EmailService:
         Sends a verification email for the registration process.
         """
         try:
-
+            # note: dont use `Site.objects.get_current()` during the class initialization process.
             otp = TokenService.create_otp_token()
             email = EmailMultiAlternatives(
                 subject="Email Verification",
