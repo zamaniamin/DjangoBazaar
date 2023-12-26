@@ -62,3 +62,10 @@ class UserCreateViewTest(APITestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertIsInstance(expected["access"], str)
+        self.assertIsInstance(expected["refresh"], str)
+        self.assertTrue(expected["access"].strip())
+        self.assertTrue(expected["refresh"].strip())
+        self.assertEqual(expected["message"],
+                         "Your email address has been confirmed. Account activated successfully.")
