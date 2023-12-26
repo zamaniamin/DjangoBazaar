@@ -15,7 +15,6 @@ User = get_user_model()
 
 @extend_schema_view(
     create=extend_schema(
-        tags=['Auth'],
         summary='Add or register a new user',
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
@@ -33,7 +32,6 @@ Please note that users cannot log in to their accounts until their email address
 """,
     ),
     activation=extend_schema(
-        tags=['Auth'],
         summary='Verify user registration',
         description='Verify a new user registration by confirming the provided OTP.',
     ),
