@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
@@ -40,6 +41,19 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
+    # permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            # Allow registration for non-authenticated users and admins
+            return [AllowAny()]
+        elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
+            # Restrict listing, retrieving, updating, and deleting to admin users only
+            return [IsAdminUser()]
+        else:
+            # For other actions, use the default permissions
+            return super().get_permissions()
+
     def get_serializer_class(self):
         if self.action == 'create':
             return serializers.UserCreateSerializer
@@ -48,6 +62,10 @@ class UserViewSet(ModelViewSet):
         return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+
+        if request.user.is_authenticated and not request.user.is_staff:
+            return Response({"detail": "You do not have permission to perform this action."},
+                            status=status.HTTP_403_FORBIDDEN)
 
         # --- validate ---
         serializer = self.get_serializer(data=request.data)
