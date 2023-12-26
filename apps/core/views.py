@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -38,6 +39,8 @@ class UserViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return serializers.UserCreateSerializer
+        elif self.action == "activation":
+            return serializers.ActivationSerializer
         return self.serializer_class
 
     def create(self, request, *args, **kwargs):
@@ -49,11 +52,27 @@ class UserViewSet(ModelViewSet):
             user = UserManager.create_inactive_user(**user_data)
 
             response_body = {
-                'user_id': user.id,
-                'email': user.email,
+                "user_id": user.id,
+                "email": user.email,
             }
 
             return Response(response_body, status=status.HTTP_201_CREATED)
 
         except IntegrityError:
-            return Response({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(["patch"], detail=False)
+    def activation(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        user.is_active = True
+        user.save()
+
+        response_body = {
+            "access": "",
+            "refresh": "",
+            "message": "Your email address has been confirmed. Account activated successfully."
+        }
+
+        return Response(response_body, status=status.HTTP_200_OK)
