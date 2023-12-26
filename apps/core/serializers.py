@@ -6,9 +6,13 @@ from apps.core.services.token_service import TokenService
 
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined_formatted = serializers.DateTimeField(source='date_joined', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    last_login_formatted = serializers.DateTimeField(source='last_login', format="%Y-%m-%d %H:%M:%S", read_only=True)
+
     class Meta:
         model = User
-        exclude = ['password', 'is_superuser']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted',
+                  'last_login_formatted']
 
 
 class UserCreateSerializer(serializers.Serializer):
