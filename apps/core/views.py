@@ -45,10 +45,13 @@ class UserViewSet(ModelViewSet):
         return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+
+        # --- validate ---
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_data = serializer.validated_data
 
+        # --- create user ---
         try:
             user = UserManager.create_inactive_user(**user_data)
 
@@ -68,9 +71,9 @@ class UserViewSet(ModelViewSet):
         # --- validate ---
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
 
         # --- update user ---
-        user = serializer.validated_data
         user.is_active = True
         user.save()
 
