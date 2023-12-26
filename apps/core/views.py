@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import update_last_login
 from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
@@ -97,6 +98,7 @@ class UserViewSet(ModelViewSet):
         # --- update user ---
         user.is_active = True
         user.save()
+        update_last_login(None, user)
 
         # --- Create JWT tokens ---
         refresh_token = RefreshToken.for_user(user)
