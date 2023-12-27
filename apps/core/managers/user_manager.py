@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import BaseUserManager
 
 
@@ -9,7 +8,7 @@ class UserManager(BaseUserManager):
 
         We're subclassing the built-in `BaseUserManager` class and overriding its `create_superuser` method.
         """
-        
+
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -36,15 +35,3 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
-
-    @classmethod
-    def create_inactive_user(cls, **user_data):
-        """
-        Creates and saves an inactive user.
-        """
-
-        new_user = get_user_model().objects.create(**user_data)
-        new_user.set_password(user_data['password'])
-        new_user.is_active = False
-        new_user.save()
-        return new_user

@@ -10,7 +10,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from apps.core import serializers
-from apps.core.managers.user_manager import UserManager
 
 User = get_user_model()
 
@@ -75,7 +74,7 @@ class UserViewSet(ModelViewSet):
 
         # --- create user ---
         try:
-            user = UserManager.create_inactive_user(**user_data)
+            user = User.objects.create_user(is_active=False, **user_data)
 
             response_body = {
                 'user_id': user.id,
