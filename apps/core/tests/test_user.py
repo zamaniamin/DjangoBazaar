@@ -69,3 +69,37 @@ class UserCreateViewTest(APITestCase):
         self.assertTrue(expected['refresh'].strip())
         self.assertEqual(expected['message'],
                          'Your email address has been confirmed. Account activated successfully.')
+
+        user = self.user.objects.get(email=payload['email'])
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
+    # ------------------------
+    # --- Invalid Payloads ---
+    # ------------------------
+
+
+class JWTTests(APITestCase):
+    def setUp(self):
+        self.base_url = '/auth/jwt/'
+        self.user = FakeUser.create_active_user()
+
+    def test_create_jwt(self):
+        """
+        Test creating access and refresh tokens.
+        """
+        # self.client.force_login(self.user)
+
+        # --- request ---
+        payload = {
+            "email": self.user.email,
+            "password": FakeUser.password
+        }
+        response = self.client.post(self.base_url + "create/", payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertTrue(expected['access'].strip())
+        self.assertTrue(expected['refresh'].strip())
