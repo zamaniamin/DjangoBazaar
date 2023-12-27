@@ -50,3 +50,14 @@ class ActivationSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError(detail='Invalid OTP. Please enter the correct OTP.',
                                               code=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class MeSerializer(serializers.ModelSerializer):
+    date_joined_formatted = serializers.DateTimeField(source='date_joined', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    last_login_formatted = serializers.DateTimeField(source='last_login', format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted',
+                  'last_login_formatted']
+        read_only_fields = ['email', 'is_active']

@@ -61,6 +61,8 @@ class UserViewSet(ModelViewSet):
             return serializers.UserCreateSerializer
         elif self.action == 'activation':
             return serializers.ActivationSerializer
+        elif self.action == 'me':
+            return serializers.MeSerializer
         return self.serializer_class
 
     def get_instance(self):
