@@ -10,10 +10,11 @@ from apps.core.services.token_service import TokenService
 class UserViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
-        self.user = get_user_model()
+        self.user_model = get_user_model()
 
-        # active_user = FakeUser.create_active_user()
-        # self.inactive_user = FakeUser.create_inactive_user()
+        self.admin = FakeUser.populate_admin()
+        self.user = FakeUser.populate_user()
+        self.inactive_user = FakeUser.populate_inactive_user()
 
     def test_create_user_or_register(self):
         """
@@ -35,7 +36,7 @@ class UserViewTest(APITestCase):
         self.assertFalse('password_confirm' in response.data)
         self.assertTrue('email' in response.data)
         self.assertTrue('user_id' in response.data)
-        user = self.user.objects.get(email=payload['email'])
+        user = self.user_model.objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
         self.assertFalse(user.is_active)
         self.assertFalse(user.is_staff)
@@ -43,19 +44,17 @@ class UserViewTest(APITestCase):
 
         # --- expected email ---
         expected_mail = mail.outbox
-        self.assertEqual(len(expected_mail), 1)
-        self.assertEqual(expected_mail[0].to, [payload['email']])
+        self.assertEqual(len(expected_mail), 4)
+        self.assertEqual(expected_mail[3].to, [payload['email']])
 
     def test_user_activation(self):
         """
         Test activating the user after verifying the OTP code (verify email).
         """
 
-        inactive_user = FakeUser.create_inactive_user()
-
         # --- request ---
         payload = {
-            "email": inactive_user.email,
+            "email": self.inactive_user.email,
             "otp": TokenService.create_otp_token()
         }
         response = self.client.patch(self.base_url + 'activation/', payload)
@@ -70,10 +69,36 @@ class UserViewTest(APITestCase):
         self.assertEqual(expected['message'],
                          'Your email address has been confirmed. Account activated successfully.')
 
-        user = self.user.objects.get(email=payload['email'])
+        user = self.user_model.objects.get(email=payload['email'])
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
+
+    def test_list_users_as_admin(self):
+        """
+        Test listing all users, base on user role, current user is admin.
+        - Restrict listing, retrieving, updating, and deleting to admin users only.
+        """
+
+        # self.client.force_login(self.user)
+
+        # --- request ---
+
+    def test_list_users_as_member(self):
+        """
+        Test listing all users, base on user role, current user is a member.
+        - authenticated users.
+        """
+
+    def test_list_users_as_guest(self):
+        """
+        Test listing all users, base on user role, current user is a guest.
+        - non-authenticated users.
+        """
+
+    # TODO test put user
+    # TODO test patch user
+    # TODO test delete user
 
     # ------------------------
     # --- Invalid Payloads ---
@@ -83,13 +108,12 @@ class UserViewTest(APITestCase):
 class JWTTests(APITestCase):
     def setUp(self):
         self.base_url = '/auth/jwt/'
-        self.user = FakeUser.create_active_user()
+        self.user = FakeUser.populate_user()
 
     def test_create_jwt(self):
         """
         Test creating access and refresh tokens.(login)
         """
-        # self.client.force_login(self.user)
 
         # --- request ---
         payload = {
