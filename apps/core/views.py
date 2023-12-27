@@ -7,9 +7,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from apps.core import serializers
+from apps.core.services.token_service import TokenService
 
 User = get_user_model()
 
@@ -100,8 +100,7 @@ class UserViewSet(ModelViewSet):
         update_last_login(None, user)
 
         # --- Create JWT tokens ---
-        refresh_token = RefreshToken.for_user(user)
-        access_token = AccessToken.for_user(user)
+        access_token, refresh_token = TokenService.jwt__get_tokens(user)
         response_body = {
             'access': str(access_token),
             'refresh': str(refresh_token),
