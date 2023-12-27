@@ -9,9 +9,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import serializers
-from apps.core.services.token_service import TokenService
 
 User = get_user_model()
+from apps.core.services.email.email_service import EmailService
+from apps.core.services.token_service import TokenService
 
 
 @extend_schema_view(
@@ -63,6 +64,8 @@ class UserViewSet(ModelViewSet):
             return serializers.ActivationSerializer
         elif self.action == 'me':
             return serializers.MeSerializer
+        elif self.action == 'resend_activation':
+            return serializers.ResendActivationSerializer
         return self.serializer_class
 
     def get_instance(self):
@@ -115,6 +118,18 @@ class UserViewSet(ModelViewSet):
         }
 
         return Response(response_body, status=status.HTTP_200_OK)
+
+    @action(["post"], detail=False)
+    def resend_activation(self, request, *args, **kwargs):
+
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+
+        # --- send email ---
+        EmailService.send_activation_email(user.email)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(["get", "put", "patch"], detail=False)
     def me(self, request, *args, **kwargs):

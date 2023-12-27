@@ -61,3 +61,15 @@ class MeSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted',
                   'last_login_formatted']
         read_only_fields = ['email', 'is_active']
+
+
+class ResendActivationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        try:
+            user = User.objects.get(email=attrs['email'])
+            return user
+        except User.DoesNotExist:
+            raise serializers.ValidationError(detail='User with this email does not exist.',
+                                              code=status.HTTP_404_NOT_FOUND)
