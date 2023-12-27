@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -40,8 +40,7 @@ Please note that users cannot log in to their accounts until their email address
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-
-    # permission_classes = [IsAdminUser]
+    lookup_field = 'pk'
 
     def get_permissions(self):
         if self.action == 'create':
@@ -50,6 +49,9 @@ class UserViewSet(ModelViewSet):
         elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
             # Restrict listing, retrieving, updating, and deleting to admin users only
             return [IsAdminUser()]
+        elif self.action == 'me':
+            # Allow the "me" action only for authenticated users
+            return [IsAuthenticated()]
         else:
             # For other actions, use the default permissions
             return super().get_permissions()
@@ -60,6 +62,9 @@ class UserViewSet(ModelViewSet):
         elif self.action == 'activation':
             return serializers.ActivationSerializer
         return self.serializer_class
+
+    def get_instance(self):
+        return self.request.user
 
     def create(self, request, *args, **kwargs):
 
@@ -108,3 +113,15 @@ class UserViewSet(ModelViewSet):
         }
 
         return Response(response_body, status=status.HTTP_200_OK)
+
+    @action(["get", "put", "patch", "delete"], detail=False)
+    def me(self, request, *args, **kwargs):
+        self.get_object = self.get_instance
+        if request.method == "GET":
+            return self.retrieve(request, *args, **kwargs)
+        elif request.method == "PUT":
+            return self.update(request, *args, **kwargs)
+        elif request.method == "PATCH":
+            return self.partial_update(request, *args, **kwargs)
+        elif request.method == "DELETE":
+            return self.destroy(request, *args, **kwargs)
