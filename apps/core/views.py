@@ -116,7 +116,7 @@ class UserViewSet(ModelViewSet):
 
         return Response(response_body, status=status.HTTP_200_OK)
 
-    @action(["get", "put", "patch", "delete"], detail=False)
+    @action(["get", "put", "patch"], detail=False)
     def me(self, request, *args, **kwargs):
         self.get_object = self.get_instance
         if request.method == "GET":
