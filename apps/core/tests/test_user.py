@@ -13,13 +13,14 @@ from apps.core.services.token_service import TokenService
 class UserViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
+        self.me_url = self.base_url + 'me/'
         self.user_model = get_user_model()
 
         self.admin = FakeUser.populate_admin()
         self.admin_access_token = TokenService.jwt__get_access_token(self.admin)
 
-        self.user = FakeUser.populate_user()
-        self.user_access_token = TokenService.jwt__get_access_token(self.user)
+        self.member = FakeUser.populate_user()
+        self.member_access_token = TokenService.jwt__get_access_token(self.member)
 
         self.inactive_user = FakeUser.populate_inactive_user()
 
@@ -121,7 +122,7 @@ class UserViewTest(APITestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
 
         # --- request ---
         response = self.client.get(self.base_url)
@@ -153,7 +154,7 @@ class UserViewTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
 
         # --- request ---
-        response = self.client.get(f'{self.base_url}{self.user.id}/')
+        response = self.client.get(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -173,10 +174,10 @@ class UserViewTest(APITestCase):
         Test reading a user as member.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
 
         # --- request ---
-        response = self.client.get(f'{self.base_url}{self.user.id}/')
+        response = self.client.get(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -187,7 +188,7 @@ class UserViewTest(APITestCase):
         """
 
         # --- request ---
-        response = self.client.get(f'{self.base_url}{self.user.id}/')
+        response = self.client.get(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -205,12 +206,12 @@ class UserViewTest(APITestCase):
 
         # --- request ---
         payload = {
-            "email": self.user.email,
+            "email": self.member.email,
             "first_name": "F name",
             "last_name": "L name",
             "is_active": True
         }
-        response = self.client.put(f'{self.base_url}{self.user.id}/', payload)
+        response = self.client.put(f'{self.base_url}{self.member.id}/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -231,10 +232,10 @@ class UserViewTest(APITestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
 
         # --- request ---
-        response = self.client.put(f'{self.base_url}{self.user.id}/', {})
+        response = self.client.put(f'{self.base_url}{self.member.id}/', {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -246,7 +247,7 @@ class UserViewTest(APITestCase):
         """
 
         # --- request ---
-        response = self.client.put(f'{self.base_url}{self.user.id}/', {})
+        response = self.client.put(f'{self.base_url}{self.member.id}/', {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -266,17 +267,17 @@ class UserViewTest(APITestCase):
         payload = {
             "first_name": "test F name"
         }
-        response = self.client.patch(f'{self.base_url}{self.user.id}/', payload)
+        response = self.client.patch(f'{self.base_url}{self.member.id}/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)
-        self.assertEqual(expected['id'], self.user.id)
-        self.assertEqual(expected['email'], self.user.email)
+        self.assertEqual(expected['id'], self.member.id)
+        self.assertEqual(expected['email'], self.member.email)
         self.assertEqual(expected['first_name'], payload['first_name'])
-        self.assertEqual(expected['last_name'], self.user.last_name)
-        self.assertEqual(expected['is_active'], self.user.is_active)
+        self.assertEqual(expected['last_name'], self.member.last_name)
+        self.assertEqual(expected['is_active'], self.member.is_active)
         self.assertDatetimeFormat(expected['date_joined_formatted'])
         self.assertTrue(
             expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
@@ -287,10 +288,10 @@ class UserViewTest(APITestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
 
         # --- request ---
-        response = self.client.patch(f'{self.base_url}{self.user.id}/', {})
+        response = self.client.patch(f'{self.base_url}{self.member.id}/', {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -302,7 +303,7 @@ class UserViewTest(APITestCase):
         """
 
         # --- request ---
-        response = self.client.patch(f'{self.base_url}{self.user.id}/', {})
+        response = self.client.patch(f'{self.base_url}{self.member.id}/', {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -319,12 +320,12 @@ class UserViewTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
 
         # --- request ---
-        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+        response = self.client.delete(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
-            self.user_model.objects.get(id=self.user.id)
+            self.user_model.objects.get(id=self.member.id)
 
     def test_delete_user_as_member(self):
         """
@@ -332,10 +333,10 @@ class UserViewTest(APITestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
 
         # --- request ---
-        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+        response = self.client.delete(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -347,7 +348,7 @@ class UserViewTest(APITestCase):
         """
 
         # --- request ---
-        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+        response = self.client.delete(f'{self.base_url}{self.member.id}/')
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
