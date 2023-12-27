@@ -1,6 +1,7 @@
 from faker import Faker
 
 from apps.core.managers.user_manager import UserManager
+from apps.core.models import User
 
 
 class FakeUser:
@@ -28,24 +29,13 @@ class FakeUser:
         }
         return UserManager.create_inactive_user(**register_payload)
 
-    # @classmethod
-    # def create_active_user(cls):
-    #     """
-    #     Registered a new user and verified their OTP code.
-    #     """
-    #
-    #     # --- register a user ---
-    #     register_payload = {
-    #         "email": cls.random_email(),
-    #         "password": cls.password
-    #     }
-    #     AccountService.register(**register_payload)
-    #
-    #     # --- read otp code ---
-    #     user = UserService.read_user(email=register_payload['email'])
-    #     verified = AccountService.verify_registration(**{'email': user.email,
-    #                                                      'otp': TokenService.create_otp_token()})
-    #     return user, verified['access_token']
+    @classmethod
+    def create_active_user(cls):
+        """
+        Registered a new user and verified their OTP code.
+        """
+        user = User.objects.create_user(email=cls.random_email(), password=cls.password)
+        return user
 
     # @classmethod
     # def populate_members(cls):
