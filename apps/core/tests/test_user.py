@@ -7,7 +7,7 @@ from apps.core.faker.user_faker import FakeUser
 from apps.core.services.token_service import TokenService
 
 
-class UserCreateViewTest(APITestCase):
+class UserViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
         self.user = get_user_model()
@@ -87,7 +87,7 @@ class JWTTests(APITestCase):
 
     def test_create_jwt(self):
         """
-        Test creating access and refresh tokens.
+        Test creating access and refresh tokens.(login)
         """
         # self.client.force_login(self.user)
 
@@ -103,3 +103,6 @@ class JWTTests(APITestCase):
         expected = response.json()
         self.assertTrue(expected['access'].strip())
         self.assertTrue(expected['refresh'].strip())
+
+    # TODO test JWT refresh
+    # TODO test JWT verify
