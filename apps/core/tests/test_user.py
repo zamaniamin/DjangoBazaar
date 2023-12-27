@@ -13,6 +13,8 @@ class UserViewTest(APITestCase):
         self.user_model = get_user_model()
 
         self.admin = FakeUser.populate_admin()
+        self.admin_access_token = TokenService.jwt__get_access_token(self.admin)
+
         self.user = FakeUser.populate_user()
         self.inactive_user = FakeUser.populate_inactive_user()
 
@@ -80,9 +82,13 @@ class UserViewTest(APITestCase):
         - Restrict listing, retrieving, updating, and deleting to admin users only.
         """
 
-        # self.client.force_login(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
 
         # --- request ---
+        response = self.client.get(self.base_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_users_as_member(self):
         """
