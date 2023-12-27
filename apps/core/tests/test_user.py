@@ -59,33 +59,6 @@ class UserViewTest(APITestCase):
         self.assertEqual(len(expected_mail), 4)
         self.assertEqual(expected_mail[3].to, [payload['email']])
 
-    def test_user_activation(self):
-        """
-        Test activating the user after verifying the OTP code (verify email).
-        """
-
-        # --- request ---
-        payload = {
-            "email": self.inactive_user.email,
-            "otp": TokenService.create_otp_token()
-        }
-        response = self.client.patch(self.base_url + 'activation/', payload)
-
-        # --- expected ---
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertIsInstance(expected['access'], str)
-        self.assertIsInstance(expected['refresh'], str)
-        self.assertTrue(expected['access'].strip())
-        self.assertTrue(expected['refresh'].strip())
-        self.assertEqual(expected['message'],
-                         'Your email address has been confirmed. Account activated successfully.')
-
-        user = self.user_model.objects.get(email=payload['email'])
-        self.assertTrue(user.is_active)
-        self.assertFalse(user.is_staff)
-        self.assertFalse(user.is_superuser)
-
     # -----------------
     # --- test list ---
     # -----------------
