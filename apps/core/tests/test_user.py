@@ -22,6 +22,10 @@ class UserViewTest(APITestCase):
 
         self.inactive_user = FakeUser.populate_inactive_user()
 
+    # -------------------
+    # --- test create ---
+    # -------------------
+
     def test_create_user_or_register(self):
         """
         Test that we can create a new user.
@@ -80,6 +84,10 @@ class UserViewTest(APITestCase):
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
+    # -----------------
+    # --- test list ---
+    # -----------------
+
     def test_list_users_as_admin(self):
         """
         Test listing all users, base on user role, current user is admin.
@@ -132,7 +140,64 @@ class UserViewTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # TODO test put user
+    # -----------------
+    # --- test read ---
+    # -----------------
+
+    # ----------------
+    # --- test put ---
+    # ----------------
+
+    def test_put_user_as_admin(self):
+        """
+        Test putting a user as an admin.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        payload = {
+            "email": self.user.email,
+            "first_name": "F name",
+            "last_name": "L name",
+            "is_active": True
+        }
+        response = self.client.put(f'{self.base_url}{self.user.id}/', payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(expected['email'], payload['email'])
+        self.assertEqual(expected['first_name'], payload['first_name'])
+        self.assertEqual(expected['last_name'], payload['last_name'])
+        self.assertEqual(expected['is_active'], payload['is_active'])
+
+    def test_put_user_as_member(self):
+        """
+        Test putting a user as a member.
+        - authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+
+        # --- request ---
+        response = self.client.put(f'{self.base_url}{self.user.id}/', {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_put_user_as_guest(self):
+        """
+        Test putting a user as  a guest.
+        - non-authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.put(f'{self.base_url}{self.user.id}/', {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     # TODO test patch user
     # TODO test delete user
 
