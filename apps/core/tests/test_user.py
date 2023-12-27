@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -144,6 +145,53 @@ class UserViewTest(APITestCase):
     # --- test read ---
     # -----------------
 
+    def test_read_user_as_admin(self):
+        """
+        Test reading a user as admin.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        response = self.client.get(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(len(expected), 7)
+        self.assertIsInstance(expected['id'], int)
+        self.assertIsInstance(expected['email'], str)
+        self.assertIsInstance(expected['first_name'], str)
+        self.assertIsInstance(expected['last_name'], str)
+        self.assertIsInstance(expected['is_active'], bool)
+        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertTrue(
+            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
+
+    def test_read_user_as_member(self):
+        """
+        Test reading a user as member.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+
+        # --- request ---
+        response = self.client.get(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_read_user_as_guest(self):
+        """
+        Test reading a user as guest.
+        """
+
+        # --- request ---
+        response = self.client.get(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     # ----------------
     # --- test put ---
     # ----------------
@@ -167,10 +215,15 @@ class UserViewTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
+        self.assertEqual(len(expected), 7)
+        self.assertIsInstance(expected['id'], int)
         self.assertEqual(expected['email'], payload['email'])
         self.assertEqual(expected['first_name'], payload['first_name'])
         self.assertEqual(expected['last_name'], payload['last_name'])
         self.assertEqual(expected['is_active'], payload['is_active'])
+        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertTrue(
+            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
 
     def test_put_user_as_member(self):
         """
@@ -198,8 +251,106 @@ class UserViewTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # TODO test patch user
-    # TODO test delete user
+    # ------------------
+    # --- test patch ---
+    # ------------------
+
+    def test_patch_user_as_admin(self):
+        """
+        Test patch a user as an admin.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        payload = {
+            "first_name": "test F name"
+        }
+        response = self.client.patch(f'{self.base_url}{self.user.id}/', payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(len(expected), 7)
+        self.assertEqual(expected['id'], self.user.id)
+        self.assertEqual(expected['email'], self.user.email)
+        self.assertEqual(expected['first_name'], payload['first_name'])
+        self.assertEqual(expected['last_name'], self.user.last_name)
+        self.assertEqual(expected['is_active'], self.user.is_active)
+        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertTrue(
+            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
+
+    def test_patch_user_as_member(self):
+        """
+        Test patch a user as a member.
+        - authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+
+        # --- request ---
+        response = self.client.patch(f'{self.base_url}{self.user.id}/', {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_patch_user_as_guest(self):
+        """
+        Test patch a user as a guest.
+        - non-authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.patch(f'{self.base_url}{self.user.id}/', {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # -------------------
+    # --- test delete ---
+    # -------------------
+
+    def test_delete_user_as_admin(self):
+        """
+        Test delete a user as an admin.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.assertRaises(ObjectDoesNotExist):
+            self.user_model.objects.get(id=self.user.id)
+
+    def test_delete_user_as_member(self):
+        """
+        Test patch a user as a member.
+        - authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+
+        # --- request ---
+        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_user_as_guest(self):
+        """
+        Test delete a user as a guest.
+        - non-authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.delete(f'{self.base_url}{self.user.id}/')
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ------------------------
     # --- Invalid Payloads ---
