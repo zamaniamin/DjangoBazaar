@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.core import mail
 from rest_framework import status
@@ -89,6 +91,18 @@ class UserViewTest(APITestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(len(expected), 3)
+        for user in expected:
+            self.assertEqual(len(user), 7)
+            self.assertIsInstance(user['id'], int)
+            self.assertIsInstance(user['email'], str)
+            self.assertIsInstance(user['first_name'], str)
+            self.assertIsInstance(user['last_name'], str)
+            self.assertIsInstance(user['is_active'], bool)
+            self.assertDatetimeFormat(user['date_joined_formatted'])
+            self.assertTrue(
+                user['last_login_formatted'] is None or self.assertDatetimeFormat(user['last_login_formatted']))
 
     def test_list_users_as_member(self):
         """
@@ -109,6 +123,10 @@ class UserViewTest(APITestCase):
     # ------------------------
     # --- Invalid Payloads ---
     # ------------------------
+
+    def assertDatetimeFormat(self, date):
+        formatted_date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+        self.assertEqual(date, formatted_date)
 
 
 class JWTTests(APITestCase):
