@@ -353,13 +353,184 @@ class UserViewTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # ------------------------
-    # --- Invalid Payloads ---
-    # ------------------------
-
     def assertDatetimeFormat(self, date):
         formatted_date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
         self.assertEqual(date, formatted_date)
+
+    # --------------------
+    # --- test read me ---
+    # --------------------
+
+    def test_read_me_as_admin(self):
+        """
+        Test reading current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        response = self.client.get(self.me_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_read_me_as_member(self):
+        """
+        Test reading current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+
+        # --- request ---
+        response = self.client.get(self.me_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_read_me_as_guest(self):
+        """
+        Test reading current user detail.
+        - only authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.get(self.me_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # -------------------
+    # --- test put me ---
+    # -------------------
+
+    def test_put_me_as_admin(self):
+        """
+        Test putting current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        payload = {
+            "first_name": "admin f name",
+            "last_name": "admin l name",
+        }
+        response = self.client.put(self.me_url, payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_put_me_as_member(self):
+        """
+        Test putting current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+
+        # --- request ---
+        payload = {
+            "first_name": "member f name"
+        }
+        response = self.client.put(self.me_url, payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_put_me_as_guest(self):
+        """
+        Test putting current user detail.
+        - only authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.put(self.me_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # ---------------------
+    # --- test patch me ---
+    # ---------------------
+
+    def test_patch_me_as_admin(self):
+        """
+        Test patch current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
+        # --- request ---
+        payload = {
+            "first_name": "admin f name",
+            "last_name": "admin l name",
+        }
+        response = self.client.patch(self.me_url, payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_patch_me_as_member(self):
+        """
+        Test patch current user detail.
+        - only authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+
+        # --- request ---
+        payload = {
+            "first_name": "member f name"
+        }
+        response = self.client.patch(self.me_url, payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+        )
+
+    def test_patch_me_as_guest(self):
+        """
+        Test patch current user detail.
+        - only authenticated users.
+        """
+
+        # --- request ---
+        response = self.client.patch(self.me_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # ------------------------
+    # --- Invalid Payloads ---
+    # ------------------------
+    # TODO add test for invalid inputs
 
 
 class JWTTests(APITestCase):
