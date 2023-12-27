@@ -191,3 +191,12 @@ SIMPLE_JWT = {
 
 OTP_SECRET_KEY = os.getenv('OTP_SECRET_KEY')
 OTP_EXPIRE_SECONDS = os.getenv('OTP_EXPIRE_SECONDS')
+
+# ----------------------
+# --- Django Testing ---
+# ----------------------
+
+# faster hashing algorithm, reduce tests time.
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.MD5PasswordHasher",
+]
