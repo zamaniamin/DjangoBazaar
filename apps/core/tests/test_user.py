@@ -18,6 +18,8 @@ class UserViewTest(APITestCase):
         self.admin_access_token = TokenService.jwt__get_access_token(self.admin)
 
         self.user = FakeUser.populate_user()
+        self.user_access_token = TokenService.jwt__get_access_token(self.user)
+
         self.inactive_user = FakeUser.populate_inactive_user()
 
     def test_create_user_or_register(self):
@@ -110,11 +112,25 @@ class UserViewTest(APITestCase):
         - authenticated users.
         """
 
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.user_access_token}')
+
+        # --- request ---
+        response = self.client.get(self.base_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_list_users_as_guest(self):
         """
         Test listing all users, base on user role, current user is a guest.
         - non-authenticated users.
         """
+
+        # --- request ---
+        response = self.client.get(self.base_url)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # TODO test put user
     # TODO test patch user
