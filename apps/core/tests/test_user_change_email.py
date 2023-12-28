@@ -76,3 +76,9 @@ class UserChangeEmailViewTest(APITestCase):
         # --- expected email is removed from UserVerification ---
         with self.assertRaises(ObjectDoesNotExist):
             UserVerification.objects.get(user_id=self.member.id)
+
+# TODO test if user already activated.
+# TODO test if the email entered does not match the requested email.
+# TODO test with invalid email.
+# TODO test with invalid OTP.
+# TODO test with invalid expired OTP.
