@@ -59,7 +59,7 @@ class UserActivationViewTest(APITestCase):
         payload = {
             "email": self.inactive_user.email
         }
-        response = self.client.post(self.base_url + 'resend_activation/', payload)
+        response = self.client.post(self.base_url + 'resend-activation/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

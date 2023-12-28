@@ -185,7 +185,7 @@ class UserViewSet(ModelViewSet):
 
         return Response(response_body, status=status.HTTP_200_OK)
 
-    @action(['post'], detail=False)
+    @action(['post'], url_path='resend-activation', detail=False)
     def resend_activation(self, request, *args, **kwargs):
         """
         Endpoint for resending the activation email to the user's email.
