@@ -324,9 +324,18 @@ class UserViewSet(ModelViewSet):
             return Response({'detail': 'The email entered does not match the requested email.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-    # ----------------------
-    # --- reset password ---
-    # ----------------------
+    # -----------------------
+    # --- change password ---
+    # -----------------------
+
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
+    @action(['post'], url_path='me/change-password', detail=False)
+    def change_password(self, request, *args, **kwargs):
+        ...
 
     @extend_schema(
         tags=['User Profile'],
