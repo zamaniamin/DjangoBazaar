@@ -42,20 +42,20 @@ class UserViewSet(ModelViewSet):
     serializer_class = serializers.UserSerializer
     lookup_field = 'pk'
 
-    def get_permissions(self):
-        if self.action == 'create':
-            # Allow registration for non-authenticated users and admins
-            return [AllowAny()]
-        elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
-            # Restrict listing, retrieving, updating, and deleting to admin users only
-            return [IsAdminUser()]
-        elif self.action == 'me' or self.action == 'change_email' or self.action == 'change_email_conformation':
-            # Allow the "me" action only for authenticated users
-            return [IsAuthenticated()]
+    ACTION_PERMISSIONS = {
+        'create': [AllowAny()],
+        'list': [IsAdminUser()],
+        'retrieve': [IsAdminUser()],
+        'update': [IsAdminUser()],
+        'partial_update': [IsAdminUser()],
+        'destroy': [IsAdminUser()],
+        'me': [IsAuthenticated()],
+        'change_email': [IsAuthenticated()],
+        'change_email_conformation': [IsAuthenticated()],
+    }
 
-        else:
-            # For other actions, use the default permissions
-            return super().get_permissions()
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_serializer_class(self):
         if self.action == 'create':
