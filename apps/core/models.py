@@ -21,3 +21,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         self.username = self.email
         super().save(*args, **kwargs)
+
+
+class UserVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    new_email = models.EmailField(max_length=255)
