@@ -76,7 +76,18 @@ class UserViewSet(ModelViewSet):
         return self.request.user
 
     def create(self, request, *args, **kwargs):
+        """
+        Endpoint for creating a new user with the provided data.
 
+        Returns:
+        - Returns a response containing the user ID and email upon successful user creation.
+
+        Raises:
+        - If the user is already authenticated and not an admin, a 403 Forbidden response is returned.
+        - If the provided data is invalid, a 400 Bad Request response is returned.
+        - If a user with the provided email already exists, a 400 Bad Request response is returned.
+        - If there are issues with creating the user, an appropriate error response is returned.
+        """
         if request.user.is_authenticated and not request.user.is_staff:
             return Response({"detail": "You do not have permission to perform this action."},
                             status=status.HTTP_403_FORBIDDEN)
@@ -91,7 +102,7 @@ class UserViewSet(ModelViewSet):
             user = get_user_model().objects.create_user(is_active=False, **user_data)
 
             response_body = {
-                'user_id': user.id,
+                'id': user.id,
                 'email': user.email,
             }
 
@@ -102,6 +113,16 @@ class UserViewSet(ModelViewSet):
 
     @action(['patch'], detail=False)
     def activation(self, request, *args, **kwargs):
+        """
+        Endpoint for activate the user's account after email verification and provide JWT tokens for authentication.
+
+        Returns:
+        - Returns a response containing JWT tokens and a success message upon successful account activation.
+
+        Raises:
+        - If the provided data is invalid, a 400 Bad Request response is returned.
+        - If there are issues with updating the user or creating JWT tokens, an appropriate error response is returned.
+        """
 
         # --- validate ---
         serializer = self.get_serializer(data=request.data)
@@ -125,6 +146,16 @@ class UserViewSet(ModelViewSet):
 
     @action(['post'], detail=False)
     def resend_activation(self, request, *args, **kwargs):
+        """
+        Endpoint for resending the activation email to the user's email.
+
+        Returns:
+        - Returns a response indicating the success of the activation email resend.
+
+        Raises:
+        - If the user's email is already activated, a 400 Bad Request response is returned.
+        - If there are issues with sending the activation email, an appropriate error response is returned.
+        """
 
         # --- validate ---
         serializer = self.get_serializer(data=request.data)
@@ -132,11 +163,31 @@ class UserViewSet(ModelViewSet):
         user = serializer.validated_data
 
         # --- send email ---
-        EmailService.send_activation_email(user.email)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if not user.is_active:
+            EmailService.send_activation_email(user.email)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': 'This user is already activated.'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(['get', 'put', 'patch'], detail=False)
     def me(self, request, *args, **kwargs):
+        """
+        Endpoint for managing the authenticated user's profile.
+
+        GET:
+        Retrieve details of the authenticated user.
+
+        PUT:
+        Update the details of the authenticated user.
+
+        PATCH:
+        Partially update the details of the authenticated user.
+
+        Returns:
+        - For GET: Returns a response with the details of the authenticated user.
+        - For PUT: Returns a response indicating the success of the update.
+        - For PATCH: Returns a response indicating the success of the partial update.
+        """
+
         self.get_object = self.get_instance
         if request.method == 'GET':
             return self.retrieve(request, *args, **kwargs)
@@ -144,13 +195,23 @@ class UserViewSet(ModelViewSet):
             return self.update(request, *args, **kwargs)
         elif request.method == 'PATCH':
             return self.partial_update(request, *args, **kwargs)
-        elif request.method == 'DELETE':
-            return self.destroy(request, *args, **kwargs)
+        # elif request.method == 'DELETE':
+        #     return self.destroy(request, *args, **kwargs)
 
     @action(['post'], url_path='me/email', detail=False, )
     def change_email(self, request, *args, **kwargs):
         """
-        Send an OTP code to the new-email address and same the new-email in the UserVerification.
+        Endpoint for initiating the process of changing the authenticated user's email.
+
+        POST:
+        Send an OTP code to the new email address and save the new email in the UserVerification model.
+
+        Returns:
+        - Returns a response indicating the success of the email change initiation.
+
+        Raises:
+        - If the user is not authenticated, a 403 Forbidden response is returned.
+        - If there are issues with sending the change email confirmation, an appropriate error response is returned.
         """
 
         # --- validate ---
@@ -166,7 +227,18 @@ class UserViewSet(ModelViewSet):
     @action(['post'], url_path='me/email/conformation', detail=False)
     def change_email_conformation(self, request, *args, **kwargs):
         """
-        Update the user's email to new email.
+        Endpoint for confirming the change of the authenticated user's email.
+
+        POST:
+        Update the user's email to the new email after confirming the provided OTP.
+
+        Returns:
+        - Returns a response indicating the success of the email change confirmation.
+
+        Raises:
+        - If the user is not authenticated, a 403 Forbidden response is returned.
+        - If the provided OTP is invalid, a 400 Bad Request response is returned.
+        - If the entered email does not match the requested email, a 400 Bad Request response is returned.
         """
 
         # --- validate ---
