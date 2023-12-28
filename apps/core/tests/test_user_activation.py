@@ -57,7 +57,7 @@ class UserActivationViewTest(APITestCase):
 
         # --- request ---
         payload = {
-            "email": self.member.email
+            "email": self.inactive_user.email
         }
         response = self.client.post(self.base_url + 'resend_activation/', payload)
 
@@ -67,4 +67,4 @@ class UserActivationViewTest(APITestCase):
         # --- expected email ---
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 3)
-        self.assertEqual(expected_mail[2].to, [self.member.email])
+        self.assertEqual(expected_mail[2].to, [self.inactive_user.email])

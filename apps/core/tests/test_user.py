@@ -46,7 +46,7 @@ class UserViewTest(APITestCase):
         self.assertFalse('password' in response.data)
         self.assertFalse('password_confirm' in response.data)
         self.assertTrue('email' in response.data)
-        self.assertTrue('user_id' in response.data)
+        self.assertTrue('id' in response.data)
         user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
         self.assertFalse(user.is_active)
