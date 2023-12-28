@@ -82,3 +82,4 @@ class UserChangeEmailViewTest(APITestCase):
 # TODO test with invalid email.
 # TODO test with invalid OTP.
 # TODO test with invalid expired OTP.
+# TODO test user access permission
