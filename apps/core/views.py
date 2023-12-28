@@ -66,6 +66,8 @@ class UserViewSet(ModelViewSet):
             return serializers.MeSerializer
         elif self.action == 'resend_activation':
             return serializers.ResendActivationSerializer
+        elif self.action == 'change_email':
+            return serializers.ChangeEmailSerializer
         return self.serializer_class
 
     def get_instance(self):
@@ -119,7 +121,7 @@ class UserViewSet(ModelViewSet):
 
         return Response(response_body, status=status.HTTP_200_OK)
 
-    @action(["post"], detail=False)
+    @action(['post'], detail=False)
     def resend_activation(self, request, *args, **kwargs):
 
         # --- validate ---
@@ -131,14 +133,25 @@ class UserViewSet(ModelViewSet):
         EmailService.send_activation_email(user.email)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(["get", "put", "patch"], detail=False)
+    @action(['get', 'put', 'patch'], detail=False)
     def me(self, request, *args, **kwargs):
         self.get_object = self.get_instance
-        if request.method == "GET":
+        if request.method == 'GET':
             return self.retrieve(request, *args, **kwargs)
-        elif request.method == "PUT":
+        elif request.method == 'PUT':
             return self.update(request, *args, **kwargs)
-        elif request.method == "PATCH":
+        elif request.method == 'PATCH':
             return self.partial_update(request, *args, **kwargs)
-        elif request.method == "DELETE":
+        elif request.method == 'DELETE':
             return self.destroy(request, *args, **kwargs)
+
+    @action(['post'], detail=False)
+    def change_email(self, request, *args, **kwargs):
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        # --- send email ---
+        EmailService.send_change_email(data['email'])
+        return Response(status=status.HTTP_204_NO_CONTENT)

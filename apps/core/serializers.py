@@ -73,3 +73,13 @@ class ResendActivationSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError(detail='User with this email does not exist.',
                                               code=status.HTTP_404_NOT_FOUND)
+
+
+class ChangeEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        # Check if the new email address is not already associated with another user
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email has already been taken.")
+        return value
