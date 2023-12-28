@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -45,10 +44,10 @@ class UserActivationViewTest(APITestCase):
                          'Your email address has been confirmed. Account activated successfully.')
 
         # --- expected user ---
-        user = get_user_model().objects.get(email=payload['email'])
-        self.assertTrue(user.is_active)
-        self.assertFalse(user.is_staff)
-        self.assertFalse(user.is_superuser)
+        self.inactive_user.refresh_from_db()
+        self.assertTrue(self.inactive_user.is_active)
+        self.assertFalse(self.inactive_user.is_staff)
+        self.assertFalse(self.inactive_user.is_superuser)
 
     def test_resend_activation_token(self):
         """

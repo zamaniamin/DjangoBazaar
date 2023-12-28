@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
@@ -70,8 +69,8 @@ class UserChangeEmailViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # --- expected new email is set ---
-        user = get_user_model().objects.get(id=self.member.id)
-        self.assertEqual(user.email, new_email)
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.email, new_email)
 
         # --- expected email is removed from UserVerification ---
         with self.assertRaises(ObjectDoesNotExist):
