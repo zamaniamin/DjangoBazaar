@@ -7,7 +7,7 @@ from apps.core.faker.user_faker import FakeUser
 from apps.core.services.token_service import TokenService
 
 
-class UserViewTest(APITestCase):
+class UserActivationViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
         self.user_model = get_user_model()
