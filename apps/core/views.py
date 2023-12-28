@@ -100,6 +100,7 @@ class UserViewSet(ModelViewSet):
         'change_email': serializers.ChangeEmailSerializer,
         'change_email_conformation': serializers.ChangeEmailConformationSerializer,
         'reset_password': serializers.ResetPasswordSerializer,
+        'reset_password_conformation': serializers.ResetPasswordConformationSerializer,
     }
 
     def get_permissions(self):
@@ -365,4 +366,14 @@ class UserViewSet(ModelViewSet):
     )
     @action(['post'], url_path='me/reset-password/conformation', detail=False)
     def reset_password_conformation(self, request, *args, **kwargs):
-        ...
+
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user, new_password = serializer.validated_data
+
+        # --- set new password ---
+        user.set_password(new_password)
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

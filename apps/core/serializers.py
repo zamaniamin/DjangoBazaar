@@ -118,3 +118,21 @@ class ResetPasswordSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError(detail='User with this email does not exist.',
                                               code=status.HTTP_404_NOT_FOUND)
+
+
+class ResetPasswordConformationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+
+    def validate(self, data):
+        try:
+            user = User.objects.get(email=data['email'])
+            if not TokenService.otp_verification(user.email, data['otp']):
+                raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
+                                                  code=status.HTTP_406_NOT_ACCEPTABLE)
+
+            return user, data['new_password']
+        except User.DoesNotExist:
+            raise serializers.ValidationError(detail='User with this email does not exist.',
+                                              code=status.HTTP_404_NOT_FOUND)
