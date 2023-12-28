@@ -62,7 +62,7 @@ class UserChangeEmailViewTest(APITestCase):
         # --- request ---
         payload = {
             "new_email": new_email,
-            "otp": TokenService.create_otp_token()
+            "otp": TokenService.create_otp_token(new_email)
         }
         response = self.client.post(self.base_url + 'conformation/', payload)
 

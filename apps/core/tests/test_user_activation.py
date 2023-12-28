@@ -28,7 +28,7 @@ class UserActivationViewTest(APITestCase):
         # --- request ---
         payload = {
             "email": self.inactive_user.email,
-            "otp": TokenService.create_otp_token()
+            "otp": TokenService.create_otp_token(self.inactive_user.email)
         }
         response = self.client.patch(self.base_url + 'activation/', payload)
 
