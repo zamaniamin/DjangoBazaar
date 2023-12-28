@@ -8,7 +8,7 @@ from apps.core.services.token_service import TokenService
 
 class UserResetPasswordViewTest(APITestCase):
     def setUp(self):
-        self.base_url = '/auth/users/me/reset-password/'
+        self.base_url = '/auth/users/me/'
 
         self.member = FakeUser.populate_user()
         self.member_access_token = TokenService.jwt__get_access_token(self.member)
@@ -24,7 +24,7 @@ class UserResetPasswordViewTest(APITestCase):
         payload = {
             "email": self.member.email,
         }
-        response = self.client.post(self.base_url, payload)
+        response = self.client.post(self.base_url + 'reset-password/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -36,7 +36,7 @@ class UserResetPasswordViewTest(APITestCase):
 
     def test_user_reset_password_conformation(self):
         """
-        Test user can change their email after conforming the OTP code that sent to their new email address.
+        Test user can reset their password after conforming the OTP code that sent to their email address.
         """
 
         # --- request ---
@@ -45,7 +45,28 @@ class UserResetPasswordViewTest(APITestCase):
             "otp": TokenService.create_otp_token(self.member.email),
             "new_password": FakeUser.password + "test"
         }
-        response = self.client.post(self.base_url + 'conformation/', payload)
+        response = self.client.post(self.base_url + 'reset-password/conformation/', payload)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # --- expected new password is set ---
+        self.member.refresh_from_db()
+        self.assertTrue(self.member.check_password(payload["new_password"]))
+
+    def test_user_change_password(self):
+        """
+        Test user can change their password.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+        cc = self.member.check_password(FakeUser.password)
+        # --- request ---
+        payload = {
+            "current_password": FakeUser.password,
+            "new_password": FakeUser.password + "test2"
+        }
+        response = self.client.post(self.base_url + 'change-password/', payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -55,3 +76,4 @@ class UserResetPasswordViewTest(APITestCase):
         self.assertTrue(self.member.check_password(payload["new_password"]))
 
 # TODO test logged in users cant reset password, they should use change password
+# TODO test access permission on change password
