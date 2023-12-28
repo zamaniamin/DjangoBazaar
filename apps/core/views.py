@@ -35,27 +35,27 @@ Please note that users cannot log in to their accounts until their email address
 """,
     ),
     list=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='',
         description='',
     ),
     retrieve=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='',
         description='',
     ),
     update=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='',
         description='',
     ),
     partial_update=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='',
         description='',
     ),
     destroy=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='',
         description='',
     ),
