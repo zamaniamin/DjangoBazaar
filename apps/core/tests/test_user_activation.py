@@ -10,7 +10,6 @@ from apps.core.services.token_service import TokenService
 class UserActivationViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
-        self.user_model = get_user_model()
 
         self.member = FakeUser.populate_user()
         self.member_access_token = TokenService.jwt__get_access_token(self.member)
@@ -35,6 +34,8 @@ class UserActivationViewTest(APITestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # --- expected JWT token ---
         expected = response.json()
         self.assertIsInstance(expected['access'], str)
         self.assertIsInstance(expected['refresh'], str)
@@ -43,7 +44,8 @@ class UserActivationViewTest(APITestCase):
         self.assertEqual(expected['message'],
                          'Your email address has been confirmed. Account activated successfully.')
 
-        user = self.user_model.objects.get(email=payload['email'])
+        # --- expected user ---
+        user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)

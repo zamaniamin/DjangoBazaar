@@ -14,7 +14,6 @@ class UserViewTest(APITestCase):
     def setUp(self):
         self.base_url = '/auth/users/'
         self.me_url = self.base_url + 'me/'
-        self.user_model = get_user_model()
 
         self.admin = FakeUser.populate_admin()
         self.admin_access_token = TokenService.jwt__get_access_token(self.admin)
@@ -48,7 +47,7 @@ class UserViewTest(APITestCase):
         self.assertFalse('password_confirm' in response.data)
         self.assertTrue('email' in response.data)
         self.assertTrue('user_id' in response.data)
-        user = self.user_model.objects.get(email=payload['email'])
+        user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
         self.assertFalse(user.is_active)
         self.assertFalse(user.is_staff)
@@ -298,7 +297,7 @@ class UserViewTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
-            self.user_model.objects.get(id=self.member.id)
+            get_user_model().objects.get(id=self.member.id)
 
     def test_delete_user_as_member(self):
         """
