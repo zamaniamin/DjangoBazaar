@@ -46,7 +46,7 @@ class ActivationSerializer(serializers.Serializer):
             raise serializers.ValidationError(detail='User is already active.',
                                               code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        if TokenService.validate_otp_token(attrs['otp']):
+        if TokenService.otp_verification(attrs['email'], attrs['otp']):
             return user
         else:
             raise serializers.ValidationError(detail='Invalid OTP. Please enter the correct OTP.',
@@ -100,16 +100,21 @@ class ChangeEmailConformationSerializer(serializers.Serializer):
             raise ValidationError("This email has already been taken.")
         return value
 
-    @staticmethod
-    def validate_otp(value):
-        if not TokenService.validate_otp_token(value):
+    def validate(self, data):
+        email = self.validate_new_email_uniqueness(data['new_email'])
+        if not TokenService.otp_verification(email, data['otp']):
             raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
                                               code=status.HTTP_406_NOT_ACCEPTABLE)
-        return value
-
-    def validate(self, data):
-        self.validate_new_email_uniqueness(data['new_email'])
-        self.validate_otp(data['otp'])
         return data['new_email']
 
-# TODO refactor serializers validation like `ChangeEmailConformationSerializer`
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        try:
+            user = User.objects.get(email=attrs['email'])
+            return user
+        except User.DoesNotExist:
+            raise serializers.ValidationError(detail='User with this email does not exist.',
+                                              code=status.HTTP_404_NOT_FOUND)

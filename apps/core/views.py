@@ -19,6 +19,7 @@ from apps.core.services.token_service import TokenService
     create=extend_schema(
         tags=['User Management'],
         summary='Add or register a new user',
+        # TODO fix verify url in the doc
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
 Generate an account activation code for a user whose account is not yet enabled.
@@ -98,6 +99,7 @@ class UserViewSet(ModelViewSet):
         'resend_activation': serializers.ResendActivationSerializer,
         'change_email': serializers.ChangeEmailSerializer,
         'change_email_conformation': serializers.ChangeEmailConformationSerializer,
+        'reset_password': serializers.ResetPasswordSerializer,
     }
 
     def get_permissions(self):
@@ -344,7 +346,17 @@ class UserViewSet(ModelViewSet):
     )
     @action(['post'], url_path='me/reset-password', detail=False)
     def reset_password(self, request, *args, **kwargs):
-        ...
+
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+
+        # --- send email ---
+        if user.is_active:
+            EmailService.send_reset_password_email(user.email)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': 'first activate you account'}, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         tags=['User Profile'],
