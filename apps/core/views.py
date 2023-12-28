@@ -14,8 +14,10 @@ from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
 
+# TODO write swagger docs
 @extend_schema_view(
     create=extend_schema(
+        tags=['User'],
         summary='Add or register a new user',
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
@@ -32,10 +34,45 @@ activates their account.
 Please note that users cannot log in to their accounts until their email addresses are verified.
 """,
     ),
-    activation=extend_schema(
-        summary='Verify user registration',
-        description='Verify a new user registration by confirming the provided OTP.',
+    list=extend_schema(
+        tags=['User'],
+        summary='',
+        description='',
     ),
+    retrieve=extend_schema(
+        tags=['User'],
+        summary='',
+        description='',
+    ),
+    update=extend_schema(
+        tags=['User'],
+        summary='',
+        description='',
+    ),
+    partial_update=extend_schema(
+        tags=['User'],
+        summary='',
+        description='',
+    ),
+    destroy=extend_schema(
+        tags=['User'],
+        summary='',
+        description='',
+    ),
+    activation=extend_schema(
+        tags=['User Activation'],
+        summary='Confirm User Registration',
+        description='Verify a new user registration by confirming the provided One-Time Password (OTP). '
+                    'This action confirms the user\'s email address and activates their account.',
+    ),
+    resend_activation=extend_schema(
+        tags=['User Activation'],
+        summary='Resend OTP for Registration Confirmation',
+        description='Resend the One-Time Password (OTP) to the user\'s email for confirming their registration. '
+                    'This action allows the user to receive a new OTP in case the previous one was not received or '
+                    'expired.',
+    ),
+
 )
 class UserViewSet(ModelViewSet):
     queryset = get_user_model().objects.all()
@@ -175,7 +212,11 @@ class UserViewSet(ModelViewSet):
     # ----------
     # --- me ---
     # ----------
-
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
     @action(['get', 'put', 'patch'], detail=False)
     def me(self, request, *args, **kwargs):
         """
@@ -210,6 +251,11 @@ class UserViewSet(ModelViewSet):
     # --- change email ---
     # --------------------
 
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
     @action(['post'], url_path='me/email', detail=False, )
     def change_email(self, request, *args, **kwargs):
         """
@@ -236,6 +282,11 @@ class UserViewSet(ModelViewSet):
         EmailService.send_change_email(new_email)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
     @action(['post'], url_path='me/email/conformation', detail=False)
     def change_email_conformation(self, request, *args, **kwargs):
         """
@@ -272,3 +323,7 @@ class UserViewSet(ModelViewSet):
         else:
             return Response({'detail': 'The email entered does not match the requested email.'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+    # ----------------------
+    # --- reset password ---
+    # ----------------------
