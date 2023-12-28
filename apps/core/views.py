@@ -54,23 +54,22 @@ class UserViewSet(ModelViewSet):
         'change_email_conformation': [IsAuthenticated()],
     }
 
+    ACTION_SERIALIZERS = {
+        'create': serializers.UserCreateSerializer,
+        'activation': serializers.ActivationSerializer,
+        'me': serializers.MeSerializer,
+        'resend_activation': serializers.ResendActivationSerializer,
+        'change_email': serializers.ChangeEmailSerializer,
+        'change_email_conformation': serializers.ChangeEmailConformationSerializer,
+    }
+
     def get_permissions(self):
+        #  If the action is not in the dictionary, it falls back to the default permission class/.
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_serializer_class(self):
-        if self.action == 'create':
-            return serializers.UserCreateSerializer
-        elif self.action == 'activation':
-            return serializers.ActivationSerializer
-        elif self.action == 'me':
-            return serializers.MeSerializer
-        elif self.action == 'resend_activation':
-            return serializers.ResendActivationSerializer
-        elif self.action == 'change_email':
-            return serializers.ChangeEmailSerializer
-        elif self.action == 'change_email_conformation':
-            return serializers.ChangeEmailConformationSerializer
-        return self.serializer_class
+        # If the action is not in the dictionary, it falls back to the default serializer class.
+        return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
 
     def get_instance(self):
         return self.request.user
