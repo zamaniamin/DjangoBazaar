@@ -17,7 +17,7 @@ from apps.core.services.token_service import TokenService
 # TODO write swagger docs
 @extend_schema_view(
     create=extend_schema(
-        tags=['User'],
+        tags=['User Management'],
         summary='Add or register a new user',
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
@@ -256,7 +256,7 @@ class UserViewSet(ModelViewSet):
         summary='',
         description='',
     )
-    @action(['post'], url_path='me/email', detail=False, )
+    @action(['post'], url_path='me/change-email', detail=False, )
     def change_email(self, request, *args, **kwargs):
         """
         Endpoint for initiating the process of changing the authenticated user's email.
@@ -287,7 +287,7 @@ class UserViewSet(ModelViewSet):
         summary='',
         description='',
     )
-    @action(['post'], url_path='me/email/conformation', detail=False)
+    @action(['post'], url_path='me/change-email/conformation', detail=False)
     def change_email_conformation(self, request, *args, **kwargs):
         """
         Endpoint for confirming the change of the authenticated user's email.
@@ -327,3 +327,21 @@ class UserViewSet(ModelViewSet):
     # ----------------------
     # --- reset password ---
     # ----------------------
+
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
+    @action(['post'], url_path='me/reset-password', detail=False)
+    def reset_password(self, request, *args, **kwargs):
+        ...
+
+    @extend_schema(
+        tags=['User Profile'],
+        summary='',
+        description='',
+    )
+    @action(['post'], url_path='me/reset-password/conformation', detail=False)
+    def reset_password_conformation(self, request, *args, **kwargs):
+        ...

@@ -11,7 +11,7 @@ from apps.core.services.token_service import TokenService
 
 class UserChangeEmailViewTest(APITestCase):
     def setUp(self):
-        self.base_url = '/auth/users/me/email/'
+        self.base_url = '/auth/users/me/change-email/'
 
         self.member = FakeUser.populate_user()
         self.member_access_token = TokenService.jwt__get_access_token(self.member)
