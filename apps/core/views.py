@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import serializers
+from apps.core.models import UserVerification
 
 User = get_user_model()
 from apps.core.services.email.email_service import EmailService
@@ -50,9 +51,10 @@ class UserViewSet(ModelViewSet):
         elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
             # Restrict listing, retrieving, updating, and deleting to admin users only
             return [IsAdminUser()]
-        elif self.action == 'me':
+        elif self.action == 'me' or self.action == 'change_email' or self.action == 'change_email_conformation':
             # Allow the "me" action only for authenticated users
             return [IsAuthenticated()]
+
         else:
             # For other actions, use the default permissions
             return super().get_permissions()
@@ -68,6 +70,8 @@ class UserViewSet(ModelViewSet):
             return serializers.ResendActivationSerializer
         elif self.action == 'change_email':
             return serializers.ChangeEmailSerializer
+        elif self.action == 'change_email_conformation':
+            return serializers.ChangeEmailConformationSerializer
         return self.serializer_class
 
     def get_instance(self):
@@ -145,13 +149,46 @@ class UserViewSet(ModelViewSet):
         elif request.method == 'DELETE':
             return self.destroy(request, *args, **kwargs)
 
-    @action(['post'], detail=False)
+    @action(['post'], url_path='me/email', detail=False, )
     def change_email(self, request, *args, **kwargs):
+        """
+        Send an OTP code to the new-email address and same the new-email in the UserVerification.
+        """
+
         # --- validate ---
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        new_email = serializer.validated_data
 
-        # --- send email ---
-        EmailService.send_change_email(data['email'])
+        # --- save email nad send mail to new-email ---
+        UserVerification.objects.update_or_create(user=request.user, new_email=new_email)
+        EmailService.send_change_email(new_email)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(['post'], url_path='me/email/conformation', detail=False)
+    def change_email_conformation(self, request, *args, **kwargs):
+        """
+        Update the user's email to new email.
+        """
+
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_email = serializer.validated_data
+
+        # --- get current user verification ---
+        user_verification = UserVerification.objects.get(user=request.user)
+        if user_verification.new_email == new_email:
+
+            # --- Update the user's email ---
+            user = request.user
+            user.email = new_email
+            user.save()
+
+            user_verification.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'detail': 'The email entered does not match the requested email.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    # TODO add confirm for change email

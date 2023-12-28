@@ -1,4 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
+from jsonschema.exceptions import ValidationError
 from rest_framework import serializers, status
 
 from apps.core.models import User
@@ -76,10 +77,39 @@ class ResendActivationSerializer(serializers.Serializer):
 
 
 class ChangeEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    new_email = serializers.EmailField()
 
-    def validate_email(self, value):
+    def validate_new_email_uniqueness(self, value):
         # Check if the new email address is not already associated with another user
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email has already been taken.")
         return value
+
+    def validate(self, data):
+        self.validate_new_email_uniqueness(data['new_email'])
+        return data['new_email']
+
+
+class ChangeEmailConformationSerializer(serializers.Serializer):
+    new_email = serializers.EmailField()
+    otp = serializers.CharField(write_only=True)
+
+    @staticmethod
+    def validate_new_email_uniqueness(value):
+        if User.objects.filter(email=value).exists():
+            raise ValidationError("This email has already been taken.")
+        return value
+
+    @staticmethod
+    def validate_otp(value):
+        if not TokenService.validate_otp_token(value):
+            raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
+                                              code=status.HTTP_406_NOT_ACCEPTABLE)
+        return value
+
+    def validate(self, data):
+        self.validate_new_email_uniqueness(data['new_email'])
+        self.validate_otp(data['otp'])
+        return data['new_email']
+
+# TODO refactor serializers validation like `ChangeEmailConformationSerializer`
