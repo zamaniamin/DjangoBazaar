@@ -10,8 +10,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.core import serializers
 from apps.core.models import UserVerification
-
-User = get_user_model()
 from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
@@ -40,7 +38,7 @@ Please note that users cannot log in to their accounts until their email address
     ),
 )
 class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
+    queryset = get_user_model().objects.all()
     serializer_class = serializers.UserSerializer
     lookup_field = 'pk'
 
@@ -90,7 +88,7 @@ class UserViewSet(ModelViewSet):
 
         # --- create user ---
         try:
-            user = User.objects.create_user(is_active=False, **user_data)
+            user = get_user_model().objects.create_user(is_active=False, **user_data)
 
             response_body = {
                 'user_id': user.id,
@@ -190,5 +188,3 @@ class UserViewSet(ModelViewSet):
         else:
             return Response({'detail': 'The email entered does not match the requested email.'},
                             status=status.HTTP_400_BAD_REQUEST)
-
-    # TODO add confirm for change email
