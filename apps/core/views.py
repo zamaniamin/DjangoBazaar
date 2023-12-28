@@ -90,6 +90,7 @@ class UserViewSet(ModelViewSet):
         'me': [IsAuthenticated()],
         'change_email': [IsAuthenticated()],
         'change_email_conformation': [IsAuthenticated()],
+        'change_password': [IsAuthenticated()],
     }
 
     ACTION_SERIALIZERS = {
@@ -101,6 +102,7 @@ class UserViewSet(ModelViewSet):
         'change_email_conformation': serializers.ChangeEmailConformationSerializer,
         'reset_password': serializers.ResetPasswordSerializer,
         'reset_password_conformation': serializers.ResetPasswordConformationSerializer,
+        'change_password': serializers.ChangePasswordSerializer,
     }
 
     def get_permissions(self):
@@ -338,7 +340,17 @@ class UserViewSet(ModelViewSet):
     )
     @action(['post'], url_path='me/change-password', detail=False)
     def change_password(self, request, *args, **kwargs):
-        ...
+
+        # --- validate ---
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # --- set new password ---
+        self.request.user.set_password(serializer.validated_data['new_password'])
+        self.request.user.save()
+
+        # logout_user(self.request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
         tags=['User Profile'],

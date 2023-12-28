@@ -136,3 +136,15 @@ class ResetPasswordConformationSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError(detail='User with this email does not exist.',
                                               code=status.HTTP_404_NOT_FOUND)
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+
+    def validate_current_password(self, value):
+        is_password_valid = self.context['request'].user.check_password(value)
+        if is_password_valid:
+            return value
+        else:
+            raise serializers.ValidationError(detail='invalid_password.', code=status.HTTP_404_NOT_FOUND)
