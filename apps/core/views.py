@@ -20,7 +20,6 @@ from apps.core.services.token_service import TokenService
     create=extend_schema(
         tags=['User Management'],
         summary='Add or register a new user',
-        # TODO fix verify url in the doc
         description="""## Register a new user by email and password, then send an OTP code to the user's email address.
     
 Generate an account activation code for a user whose account is not yet enabled.
@@ -30,7 +29,7 @@ If a new POST request is made to this endpoint, a new code will be generated if 
  generated code will be valid for another 5 minutes, while the previous code will no longer be valid.
 
 Following the registration request, this endpoint will send an OTP code to the user's email address. It is essential to 
-verify this OTP code using the `/accounts/register/verify` endpoint. Verification confirms the user's email address and 
+verify this OTP code using the `/auth/users/activation/` endpoint. Verification confirms the user's email address and 
 activates their account.
  
 Please note that users cannot log in to their accounts until their email addresses are verified.
