@@ -45,3 +45,14 @@ class ProductOption(models.Model):
 
     def __str__(self):
         return self.option_name
+
+
+class ProductOptionItem(models.Model):
+    option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
+    item_name = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('option', 'item_name')
+
+    def __str__(self):
+        return self.item_name
