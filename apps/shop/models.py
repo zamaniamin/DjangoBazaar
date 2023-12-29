@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -29,7 +30,7 @@ class Product(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
@@ -56,3 +57,21 @@ class ProductOptionItem(models.Model):
 
     def __str__(self):
         return self.item_name
+
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    option1 = models.ForeignKey(
+        ProductOptionItem, related_name='option1', on_delete=models.CASCADE, null=True, blank=True)
+
+    option2 = models.ForeignKey(
+        ProductOptionItem, related_name='option2', on_delete=models.CASCADE, null=True, blank=True)
+
+    option3 = models.ForeignKey(
+        ProductOptionItem, related_name='option3', on_delete=models.CASCADE, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
