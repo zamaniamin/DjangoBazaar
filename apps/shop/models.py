@@ -6,14 +6,14 @@ class Product(models.Model):
     Represents a product in an online store.
 
     Attributes:
-        name: The name of the product (required, max length 255).
+        product_name: The name of the product (required, max length 255).
         description: A description of the product (optional, can be null or empty).
         status: The status of the product (required, one of 'active', 'archived', or 'draft').
         created_at: The timestamp when the product was created (automatically set when the object is created).
         updated_at: The timestamp when the product was last updated (can be null if the product has not been updated).
         published_at: The timestamp when the product was published (optional, can be null if the product is not published).
     """
-    name = models.CharField(max_length=255)
+    product_name = models.CharField(max_length=255)
     description = models.TextField(null=True)
     STATUS_CHOICES = [
 
@@ -33,4 +33,15 @@ class Product(models.Model):
     published_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.product_name
+
+
+class ProductOption(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    option_name = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('product', 'option_name')
+
+    def __str__(self):
+        return self.option_name
