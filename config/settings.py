@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # --- Made by me ---
     'apps.core',
+    'apps.shop',
 
 ]
 
