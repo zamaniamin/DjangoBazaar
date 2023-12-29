@@ -38,6 +38,8 @@ class CreateProductTest(APITestCase):
           attached to it.
         """
 
+        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+
         # --- request ---
         payload = {
             "product_name": "test product",
@@ -50,3 +52,5 @@ class CreateProductTest(APITestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+# TODO test access permissions
