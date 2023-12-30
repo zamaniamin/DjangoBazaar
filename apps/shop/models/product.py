@@ -17,7 +17,7 @@ class Product(models.Model):
         published_at: The timestamp when the product was published (optional, can be null if the product is not published).
     """
     product_name = models.CharField(max_length=255)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
     STATUS_CHOICES = [
 
         # The product is ready to sell and is available to customers on the online store, sales channels, and apps.
