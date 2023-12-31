@@ -1,8 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from apps.shop.managers.product_manager import ProductManager
-
 
 class Product(models.Model):
     """
@@ -34,8 +32,6 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
-
-    objects = ProductManager()
 
     def __str__(self):
         return self.product_name
