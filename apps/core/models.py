@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .managers import UserManager
+from apps.core.managers.user_manager import UserManager
 
 
 class User(AbstractUser):
@@ -21,3 +21,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         self.username = self.email
         super().save(*args, **kwargs)
+
+
+class UserVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    new_email = models.EmailField(max_length=255)

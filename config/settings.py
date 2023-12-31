@@ -9,8 +9,13 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
+from datetime import timedelta
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@!+3jr$c1xtf9&&%b@06&#13j5uoqr=#qz8%)c%o$s3#&s3v4+'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # --- External Packages ---
     'rest_framework',
@@ -42,6 +48,7 @@ INSTALLED_APPS = [
 
     # --- Made by me ---
     'apps.core',
+    'apps.shop',
 
 ]
 
@@ -53,6 +60,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # --- Site Framework ---
+    'django.contrib.sites.middleware.CurrentSiteMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -124,13 +134,34 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
-}
+# -------------------------
+# --- Custom User Model ---
+# -------------------------
+
+AUTH_USER_MODEL = 'core.User'
+
+# ----------------------
+# --- Site Framework ---
+# ----------------------
+
+SITE_ID = 1
+
+# ----------------------
+# --- Email Settings ---
+# ----------------------
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# -------------------------
+# --- REST-API Settings ---
+# -------------------------
 
 REST_FRAMEWORK = {
-    # YOUR SETTINGS
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -145,4 +176,28 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-AUTH_USER_MODEL = 'core.User'
+# --------------------
+# --- JWT Settings ---
+# --------------------
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'UPDATE_LAST_LOGIN': True,
+}
+
+# --------------------
+# --- OTP Settings ---
+# --------------------
+
+OTP_SECRET_KEY = os.getenv('OTP_SECRET_KEY')
+OTP_EXPIRE_SECONDS = os.getenv('OTP_EXPIRE_SECONDS')
+
+# ----------------------
+# --- Django Testing ---
+# ----------------------
+
+# faster hashing algorithm, reduce tests time.
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.MD5PasswordHasher",
+]
