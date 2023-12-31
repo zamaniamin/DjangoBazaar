@@ -30,6 +30,7 @@ class ProductManager(Manager):
         """
         Create new option if it doesn't exist and update its items.
         """
+
         from apps.shop.models.product import ProductOption, ProductOptionItem
 
         if self.options_data:
@@ -47,6 +48,7 @@ class ProductManager(Manager):
         """
         Get all options of a product
         """
+        
         from apps.shop.models.product import ProductOption, ProductOptionItem
 
         product_options = []
