@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # --- External Packages ---
     'rest_framework',
     'drf_spectacular',
+    'debug_toolbar',
 
     # --- Made by me ---
     'apps.core',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -200,4 +202,12 @@ OTP_EXPIRE_SECONDS = os.getenv('OTP_EXPIRE_SECONDS')
 # faster hashing algorithm, reduce tests time.
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
+]
+
+# ----------------------------
+# --- Django Debug Toolbar ---
+# ----------------------------
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
