@@ -40,11 +40,20 @@ class ProductService:
         """
 
         if cls.options_data:
+            options_to_create = []
+            items_to_create = []
+
             for option in cls.options_data:
-                new_option = ProductOption.objects.create(product=cls.product, option_name=option['option_name'])
+                new_option = ProductOption(product=cls.product, option_name=option['option_name'])
+                options_to_create.append(new_option)
 
                 for item in option['items']:
-                    ProductOptionItem.objects.create(option=new_option, item_name=item)
+                    new_item = ProductOptionItem(option=new_option, item_name=item)
+                    items_to_create.append(new_item)
+
+            ProductOption.objects.bulk_create(options_to_create)
+            ProductOptionItem.objects.bulk_create(items_to_create)
+
             cls.options = cls.retrieve_options(cls.product.id)
         else:
             cls.options = None
@@ -56,33 +65,30 @@ class ProductService:
         """
 
         if cls.options:
-
-            # create variants by options combination
             items_id = cls.__get_item_ids_by_product_id(cls.product.id)
             variants = list(options_combination(*items_id))
+            variants_to_create = []
+
             for variant in variants:
                 values_tuple = tuple(variant)
 
-                # set each value to an option and set none if it doesn't exist
                 while len(values_tuple) < 3:
                     values_tuple += (None,)
                 option1, option2, option3 = values_tuple
 
-                ProductVariant.objects.create(
+                new_variant = ProductVariant(
                     product=cls.product,
-                    option1=ProductOptionItem.objects.get(id=option1) if option1 else None,
-                    option2=ProductOptionItem.objects.get(id=option2) if option2 else None,
-                    option3=ProductOptionItem.objects.get(id=option3) if option3 else None,
+                    option1_id=option1,
+                    option2_id=option2,
+                    option3_id=option3,
                     price=cls.price,
                     stock=cls.stock
                 )
+                variants_to_create.append(new_variant)
+
+            ProductVariant.objects.bulk_create(variants_to_create)
         else:
-            # set a default variant
-            ProductVariant.objects.create(
-                product_id=cls.product.id,
-                price=cls.price,
-                stock=cls.stock
-            )
+            ProductVariant.objects.create(product=cls.product, price=cls.price, stock=cls.stock)
 
         cls.variants = cls.retrieve_variants(cls.product.id)
 
@@ -115,14 +121,20 @@ class ProductService:
         """
 
         product_options = []
-        options = ProductOption.objects.filter(product=product_id)
+
+        # Fetch ProductOption and related ProductOptionItem objects in a single query
+        options = ProductOption.objects.select_related('product').prefetch_related('productoptionitem_set').filter(
+            product=product_id)
+
         for option in options:
-            items = ProductOptionItem.objects.filter(option=option)
+            items = option.productoptionitem_set.all()
+
             product_options.append({
                 'option_id': option.id,
                 'option_name': option.option_name,
                 'items': [{'item_id': item.id, 'item_name': item.item_name} for item in items]
             })
+
         if product_options:
             return product_options
         else:
@@ -135,19 +147,20 @@ class ProductService:
         """
 
         product_variants = []
-        variants: list[ProductVariant] = ProductVariant.objects.filter(product=product_id)
+        variants: list[ProductVariant] = (
+            ProductVariant.objects
+            .filter(product=product_id)
+            .select_related('option1', 'option2', 'option3')
+        )
         for variant in variants:
             product_variants.append({
                 "variant_id": variant.id,
                 "product_id": variant.product_id,
                 "price": variant.price,
                 "stock": variant.stock,
-                "option1": ProductOptionItem.objects.get(
-                    id=variant.option1.id).item_name if variant.option1 else None,
-                "option2": ProductOptionItem.objects.get(
-                    id=variant.option2.id).item_name if variant.option2 else None,
-                "option3": ProductOptionItem.objects.get(
-                    id=variant.option3.id).item_name if variant.option3 else None,
+                "option1": variant.option1.item_name if variant.option1 else None,
+                "option2": variant.option2.item_name if variant.option2 else None,
+                "option3": variant.option3.item_name if variant.option3 else None,
                 "created_at": DateTime.string(variant.created_at),
                 "updated_at": DateTime.string(variant.updated_at)
             })
