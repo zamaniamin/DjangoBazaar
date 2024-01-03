@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
 from apps.core.services.time_service import DateTime
@@ -17,8 +17,17 @@ class ProductView(viewsets.ModelViewSet):
         'create': s.ProductCreateSerializer,
     }
 
+    ACTION_PERMISSIONS = {
+        'list': [AllowAny()],
+        'retrieve': [AllowAny()]
+    }
+
     def get_serializer_class(self):
         return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
+
+    def get_permissions(self):
+        #  If the action is not in the dictionary, it falls back to the default permission class/.
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def create(self, request, *args, **kwargs):
         # --- validate
