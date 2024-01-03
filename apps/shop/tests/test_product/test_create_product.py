@@ -68,6 +68,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
         # --- request ---
         payload = {
             "product_name": "test product",
+            "description": "test description",
+            "status": "active",
             "options": [
                 {
                     "option_name": "color",
@@ -90,8 +92,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
         expected = response.json()
         self.assertIsInstance(expected['product_id'], int)
         self.assertEqual(expected['product_name'], payload['product_name'])
-        self.assertTrue(expected['description'] is None)
-        self.assertEqual(expected['status'], 'draft')
+        self.assertEqual(expected['description'], payload['description'])
+        self.assertEqual(expected['status'], payload['status'])
 
         # --- expected options ---
         self.assertIsInstance(expected['options'], list)
