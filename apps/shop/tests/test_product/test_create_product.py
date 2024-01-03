@@ -126,9 +126,10 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assert_datetime_format(expected['created_at'])
         self.assert_datetime_format(expected['updated_at'])
         self.assertTrue(expected['published_at'] is None)
-        # self.out_response(response.data)
 
         # --- expected variants ---
+        self.assertIsInstance(expected['variants'], list)
+        # self.out_response(expected['variants'][0])
 
         # --- expected media ---
 
