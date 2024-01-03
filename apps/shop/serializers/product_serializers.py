@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework import serializers
 
 from apps.shop.models import Product, ProductOption, ProductOptionItem
@@ -26,10 +27,14 @@ class ProductOptionSerializer(serializers.ModelSerializer):
 class ProductCreateSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(many=True, required=False)
     status = serializers.CharField(max_length=10, allow_blank=True, required=False)
+    price = serializers.DecimalField(max_digits=12, decimal_places=2, default=0.00,
+                                     validators=[MinValueValidator(limit_value=0),
+                                                 MaxValueValidator(limit_value=9999999999.99)])
+    stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     class Meta:
         model = Product
-        fields = ['product_name', 'description', 'status', 'options']
+        fields = ['product_name', 'description', 'status', 'price', 'stock', 'options']
 
     def validate_options(self, options):
         """
