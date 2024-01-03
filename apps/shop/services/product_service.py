@@ -15,12 +15,10 @@ class ProductService:
 
     @classmethod
     def create_product(cls, **data):
-        try:
-            cls.price = data.pop('price', 0)
-            cls.stock = data.pop('stock', 0)
-            cls.options_data = data.pop('options')
-        except KeyError:
-            ...
+
+        cls.price = data.pop('price')
+        cls.stock = data.pop('stock')
+        cls.options_data = data.pop('options')
 
         # --- create product ---
         cls.product = Product.objects.create(**data)
