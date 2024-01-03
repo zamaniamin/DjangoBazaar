@@ -70,6 +70,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
             "product_name": "test product",
             "description": "test description",
             "status": "active",
+            "price": 11,
+            "stock": 11,
             "options": [
                 {
                     "option_name": "color",
@@ -131,6 +133,14 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         # --- expected variants ---
         self.assertIsInstance(expected['variants'], list)
+        self.assertTrue(len(expected['variants']) == 8)
+        for variant in expected['variants']:
+            self.assertIsInstance(variant['variant_id'], int)
+            self.assertIsInstance(variant['product_id'], int)
+            self.assertIsInstance(variant['price'], float)
+            self.assertEqual(variant['price'], 11)
+            self.assertEqual(variant['stock'], 11)
+
         # self.out_response(expected['variants'][0])
 
         # --- expected media ---
