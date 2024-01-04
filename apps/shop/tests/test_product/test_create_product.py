@@ -127,8 +127,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
                               f"Item name '{item['item_name']}' not found in payload items")
 
         # --- expected date and time ---
-        self.assert_datetime_format(expected['created_at'])
-        self.assert_datetime_format(expected['updated_at'])
+        self.assertDatetimeFormat(expected['created_at'])
+        self.assertDatetimeFormat(expected['updated_at'])
         self.assertTrue(expected['published_at'] is None)
 
         # --- expected variants ---
@@ -143,8 +143,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.assertIsInstance(variant['option1'], str)
             self.assertIsInstance(variant['option2'], str)
             self.assertIsInstance(variant['option3'], str)
-            self.assert_datetime_format(variant['created_at'])
-            self.assert_datetime_format(variant['updated_at'])
+            self.assertDatetimeFormat(variant['created_at'])
+            self.assertDatetimeFormat(variant['updated_at'])
 
         # --- expected media ---
 
