@@ -1,5 +1,7 @@
 from itertools import product as options_combination
 
+from django.db.models import Prefetch
+
 from apps.core.services.time_service import DateTime
 from apps.shop.models.product import Product, ProductOption, ProductOptionItem, ProductVariant
 
@@ -15,7 +17,6 @@ class ProductService:
 
     @classmethod
     def create_product(cls, **data):
-
         cls.price = data.pop('price')
         cls.stock = data.pop('stock')
         cls.options_data = data.pop('options')
@@ -26,10 +27,12 @@ class ProductService:
         # --- create options ---
         cls.__create_product_options()
 
-        # --- create variants ---
-        cls.__create_product_variants()
-
-        return cls.product, cls.options, cls.variants
+        # --- return product object ---
+        select_related_variant_options = ProductVariant.objects.select_related('option1', 'option2', 'option3')
+        prefetch_variants = Prefetch('productvariant_set', queryset=select_related_variant_options)
+        prefetch_product = Product.objects.prefetch_related('productoption_set__productoptionitem_set',
+                                                            prefetch_variants)
+        return prefetch_product.get(pk=cls.product.id)
 
     @classmethod
     def __create_product_options(cls):
@@ -52,17 +55,17 @@ class ProductService:
             ProductOption.objects.bulk_create(options_to_create)
             ProductOptionItem.objects.bulk_create(items_to_create)
 
-            cls.options = cls.retrieve_options(cls.product.id)
+            cls.__create_product_variants(bulk_create=True)
         else:
             cls.options = None
 
     @classmethod
-    def __create_product_variants(cls):
+    def __create_product_variants(cls, bulk_create: bool = False):
         """
         Create a default variant or create variants by options combination.
         """
 
-        if cls.options:
+        if bulk_create:
             items_id = cls.__get_item_ids_by_product_id(cls.product.id)
             variants = list(options_combination(*items_id))
             variants_to_create = []
@@ -87,8 +90,6 @@ class ProductService:
             ProductVariant.objects.bulk_create(variants_to_create)
         else:
             ProductVariant.objects.create(product=cls.product, price=cls.price, stock=cls.stock)
-
-        cls.variants = cls.retrieve_variants(cls.product.id)
 
     @staticmethod
     def __get_item_ids_by_product_id(product_id):
@@ -117,6 +118,7 @@ class ProductService:
         """
         Get all options of a product
         """
+        # TODO return an object not list
 
         product_options = []
 
@@ -143,6 +145,7 @@ class ProductService:
         """
         Get all variants of a product
         """
+        # TODO return an object not list
 
         product_variants = []
         variants: list[ProductVariant] = (
