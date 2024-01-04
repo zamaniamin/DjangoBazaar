@@ -17,17 +17,32 @@ class ProductService:
 
     @classmethod
     def create_product(cls, **data):
+        """
+        Create a new product with options and return the product object.
+
+        Args:
+            **data: Keyword arguments containing product data, including 'price', 'stock', and 'options'.
+
+        Returns:
+            Product: The created product object.
+
+        Note:
+            This method creates a new product instance, generates options, and optimizes queries
+            for retrieving the product with related options and variants.
+        """
+
+        # Extract relevant data
         cls.price = data.pop('price')
         cls.stock = data.pop('stock')
         cls.options_data = data.pop('options')
 
-        # --- create product ---
+        # Create product
         cls.product = Product.objects.create(**data)
 
-        # --- create options ---
+        # Create options
         cls.__create_product_options()
 
-        # --- return product object ---
+        # Return product object with optimized queries
         select_related_variant_options = ProductVariant.objects.select_related('option1', 'option2', 'option3')
         prefetch_variants = Prefetch('productvariant_set', queryset=select_related_variant_options)
         prefetch_product = Product.objects.prefetch_related('productoption_set__productoptionitem_set',
