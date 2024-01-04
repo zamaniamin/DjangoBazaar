@@ -1,9 +1,10 @@
+from django.db.models import Prefetch
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
 from apps.core.services.time_service import DateTime
-from apps.shop.models import Product
+from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
@@ -28,6 +29,13 @@ class ProductView(viewsets.ModelViewSet):
     def get_permissions(self):
         #  If the action is not in the dictionary, it falls back to the default permission class/.
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    def get_queryset(self):
+        return Product.objects.select_related().prefetch_related(
+            'productoption_set__productoptionitem_set',
+            Prefetch(
+                'productvariant_set',
+                queryset=ProductVariant.objects.select_related('option1', 'option2', 'option3')))
 
     def create(self, request, *args, **kwargs):
         # --- validate
