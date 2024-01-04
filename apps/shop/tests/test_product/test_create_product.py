@@ -140,8 +140,11 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.assertIsInstance(variant['price'], float)
             self.assertEqual(variant['price'], 11)
             self.assertEqual(variant['stock'], 11)
-
-        # self.out_response(expected['variants'][0])
+            self.assertIsInstance(variant['option1'], str)
+            self.assertIsInstance(variant['option2'], str)
+            self.assertIsInstance(variant['option3'], str)
+            self.assert_datetime_format(variant['created_at'])
+            self.assert_datetime_format(variant['updated_at'])
 
         # --- expected media ---
 
