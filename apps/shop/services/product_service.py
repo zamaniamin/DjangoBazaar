@@ -42,12 +42,33 @@ class ProductService:
         # Create options
         cls.__create_product_options()
 
-        # Return product object with optimized queries
+        # Return product object
+        return cls.retrieve_product_details(cls.product.id)
+
+    @staticmethod
+    def retrieve_product_details(product_id):
+        """
+        Retrieve and return product details with optimized queries.
+
+        Args:
+            product_id (int): The ID of the product to retrieve.
+
+        Returns:
+            Product: The product object with related options and variants.
+
+        Note:
+            This method retrieves a specific product along with its associated options and variants,
+            optimizing queries to minimize database round-trips for improved performance.
+        """
+
         select_related_variant_options = ProductVariant.objects.select_related('option1', 'option2', 'option3')
+
         prefetch_variants = Prefetch('productvariant_set', queryset=select_related_variant_options)
-        prefetch_product = Product.objects.prefetch_related('productoption_set__productoptionitem_set',
-                                                            prefetch_variants)
-        return prefetch_product.get(pk=cls.product.id)
+
+        prefetch_related_product_data = Product.objects.prefetch_related('productoption_set__productoptionitem_set',
+                                                                         prefetch_variants)
+
+        return prefetch_related_product_data.get(pk=product_id)
 
     @classmethod
     def __create_product_options(cls):
