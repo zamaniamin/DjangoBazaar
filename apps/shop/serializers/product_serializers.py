@@ -128,6 +128,17 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Product model.
+
+    Attributes:
+    - created_at (DateTimeField): Formatted representation of the product creation timestamp.
+    - updated_at (DateTimeField): Formatted representation of the product update timestamp.
+    - published_at (DateTimeField, optional): Formatted representation of the product publish timestamp.
+    - options (ProductOptionSerializer): Serializer for the product options.
+    - variants (ProductVariantSerializer): Serializer for the product variants.
+    """
+
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     published_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', required=False)
