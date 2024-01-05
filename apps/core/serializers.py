@@ -177,16 +177,52 @@ class ResendActivationSerializer(serializers.Serializer):
 
 
 class ChangeEmailSerializer(serializers.Serializer):
+    """
+    Serializer for changing user email.
+
+    Attributes:
+        new_email (str): The new email address to be associated with the user.
+
+    Methods:
+        validate_new_email_uniqueness(value): Validate the uniqueness of the new email.
+
+    Raises:
+        serializers.ValidationError: If the new email is already associated with another user.
+
+    """
     new_email = serializers.EmailField()
 
     @staticmethod
     def validate_new_email_uniqueness(value):
+        """
+        Validate the uniqueness of the new email.
+
+        Args:
+            value (str): The new email address.
+
+        Raises:
+            serializers.ValidationError: If the new email is already associated with another user.
+
+        """
         # Check if the new email address is not already associated with another user
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email has already been taken.")
         return value
 
     def validate(self, data):
+        """
+        Validate the input data.
+
+        Args:
+            data (dict): Input data containing the new email.
+
+        Returns:
+            str: The validated new email.
+
+        Raises:
+            serializers.ValidationError: If the new email is already associated with another user.
+
+        """
         self.validate_new_email_uniqueness(data['new_email'])
         return data['new_email']
 
