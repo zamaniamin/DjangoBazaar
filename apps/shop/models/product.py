@@ -7,13 +7,22 @@ class Product(models.Model):
     Represents a product in an online store.
 
     Attributes:
-        product_name: The name of the product (required, max length 255).
-        description: A description of the product (optional, can be null or empty).
-        status: The status of the product (required, one of 'active', 'archived', or 'draft').
-        created_at: The timestamp when the product was created (automatically set when the object is created).
-        updated_at: The timestamp when the product was last updated (can be null if the product has not been updated).
-        published_at: The timestamp when the product was published (optional, can be null if the product is not published).
+        product_name (CharField): The name of the product (required, max length 255).
+        description (TextField): A description of the product (optional, can be null or empty).
+        status (CharField): The status of the product (required, one of 'active', 'archived', or 'draft').
+        created_at (DateTimeField): The timestamp when the product was created (automatically set when the object is created).
+        updated_at (DateTimeField): The timestamp when the product was last updated (can be null if the product has not been updated).
+        published_at (DateTimeField): The timestamp when the product was published (optional, can be null if the product is not published).
+
+    Choices:
+        - 'active': The product is ready to sell and is available to customers on the online store, sales channels, and apps.
+        - 'archived': The product is no longer being sold and isn't available to customers on sales channels and apps.
+        - 'draft': The product isn't ready to sell and is unavailable to customers on sales channels and apps.
+
+    Methods:
+        - __str__: Returns the string representation of the product, which is its 'product_name'.
     """
+    
     product_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     STATUS_CHOICES = [
