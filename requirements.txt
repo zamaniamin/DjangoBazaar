@@ -1,5 +1,8 @@
 asgiref==3.7.2
 attrs==23.1.0
+black==23.12.1
+click==8.1.7
+colorama==0.4.6
 Django==5.0
 django-debug-toolbar==4.2.0
 djangorestframework==3.14.0
@@ -9,6 +12,10 @@ Faker==21.0.0
 inflection==0.5.1
 jsonschema==4.20.0
 jsonschema-specifications==2023.11.2
+mypy-extensions==1.0.0
+packaging==23.2
+pathspec==0.12.1
+platformdirs==4.1.0
 PyJWT==2.8.0
 pyotp==2.9.0
 python-dateutil==2.8.2
