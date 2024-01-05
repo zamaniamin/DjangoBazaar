@@ -24,11 +24,39 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.Serializer):
+    """
+    Serializer for user creation.
+
+    Attributes:
+        email (str): Email field for the user.
+        password (str): Password field for the user (write-only).
+        password_confirm (str): Password confirmation field (write-only).
+
+    Methods:
+        validate(data): Custom validation method to ensure password and password confirmation match.
+
+    Raises:
+        serializers.ValidationError: If passwords do not match.
+
+    """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """
+        Validate the provided data.
+
+        Args:
+            data (dict): Dictionary containing user creation data.
+
+        Returns:
+            dict: Validated data.
+
+        Raises:
+            serializers.ValidationError: If passwords do not match.
+
+        """
         password = data.get('password')
         password_confirm = data.pop('password_confirm')
 
@@ -86,7 +114,8 @@ class ResendActivationSerializer(serializers.Serializer):
 class ChangeEmailSerializer(serializers.Serializer):
     new_email = serializers.EmailField()
 
-    def validate_new_email_uniqueness(self, value):
+    @staticmethod
+    def validate_new_email_uniqueness(value):
         # Check if the new email address is not already associated with another user
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email has already been taken.")
