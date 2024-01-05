@@ -60,6 +60,20 @@ class ProductOptionItem(models.Model):
 
 
 class ProductVariant(models.Model):
+    """
+    Model representing a product variant.
+
+    Attributes:
+    - product (ForeignKey to Product): The product associated with the variant.
+    - price (DecimalField): The price of the variant.
+    - stock (IntegerField): The stock quantity of the variant.
+    - option1 (ForeignKey to ProductOptionItem, related_name='option1', optional): The first product option.
+    - option2 (ForeignKey to ProductOptionItem, related_name='option2', optional): The second product option.
+    - option3 (ForeignKey to ProductOptionItem, related_name='option3', optional): The third product option.
+    - created_at (DateTimeField): The timestamp when the variant was created.
+    - updated_at (DateTimeField): The timestamp when the variant was last updated.
+    """
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
