@@ -13,7 +13,7 @@ class UserChangeEmailViewTest(APITestCase):
         self.base_url = '/auth/users/me/change-email/'
 
         self.member = FakeUser.populate_user()
-        self.member_access_token = TokenService.jwt__get_access_token(self.member)
+        self.member_access_token = TokenService.jwt_get_access_token(self.member)
 
         self.inactive_user = FakeUser.populate_inactive_user()
 

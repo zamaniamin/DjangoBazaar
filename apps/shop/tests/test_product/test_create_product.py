@@ -21,10 +21,10 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         # --- create users ---
         cls.admin = FakeUser.populate_admin()
-        cls.admin_access_token = TokenService.jwt__get_access_token(cls.admin)
+        cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
         cls.member = FakeUser.populate_user()
-        cls.member_access_token = TokenService.jwt__get_access_token(cls.member)
+        cls.member_access_token = TokenService.jwt_get_access_token(cls.member)
 
         cls.inactive_user = FakeUser.populate_inactive_user()
 

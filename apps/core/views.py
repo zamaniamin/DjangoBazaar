@@ -181,7 +181,7 @@ class UserViewSet(ModelViewSet):
         update_last_login(None, user)
 
         # --- Create JWT tokens ---
-        access_token, refresh_token = TokenService.jwt__get_tokens(user)
+        access_token, refresh_token = TokenService.jwt_get_tokens(user)
         response_body = {
             'access': str(access_token),
             'refresh': str(refresh_token),
