@@ -127,28 +127,31 @@ class UserViewSet(ModelViewSet):
         - If the provided data is invalid, a 400 Bad Request response is returned.
         - If a user with the provided email already exists, a 400 Bad Request response is returned.
         - If there are issues with creating the user, an appropriate error response is returned.
+
         """
 
+        # Check user permissions
         if request.user.is_authenticated and not request.user.is_staff:
             return Response({"detail": "You do not have permission to perform this action."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        # --- validate ---
+        # Validate input data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_data = serializer.validated_data
 
-        # --- create user ---
+        # Create user
         try:
             user = get_user_model().objects.create_user(is_active=False, **user_data)
 
+            # Build response body
             response_body = {
                 'id': user.id,
                 'email': user.email,
             }
-
             return Response(response_body, status=status.HTTP_201_CREATED)
 
+        # Handle duplicate email
         except IntegrityError:
             return Response({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
