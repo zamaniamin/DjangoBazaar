@@ -228,16 +228,54 @@ class ChangeEmailSerializer(serializers.Serializer):
 
 
 class ChangeEmailConformationSerializer(serializers.Serializer):
+    """
+    Serializer for confirming the change of user email.
+
+    Attributes:
+        new_email (str): The new email address to be associated with the user.
+        otp (str): One-time password for verification.
+
+    Methods:
+        validate_new_email_uniqueness(value): Validate the uniqueness of the new email.
+        validate(data): Validate the input data, including OTP verification.
+
+    Raises:
+        serializers.ValidationError: If the new email is already associated with another user or if OTP is invalid.
+
+    """
     new_email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
 
     @staticmethod
     def validate_new_email_uniqueness(value):
+        """
+        Validate the uniqueness of the new email.
+
+        Args:
+            value (str): The new email address.
+
+        Raises:
+            serializers.ValidationError: If the new email is already associated with another user.
+
+        """
         if User.objects.filter(email=value).exists():
             raise ValidationError("This email has already been taken.")
         return value
 
     def validate(self, data):
+        """
+        Validate the input data, including OTP verification.
+
+        Args:
+            data (dict): Input data containing the new email and OTP.
+
+        Returns:
+            str: The validated new email.
+
+        Raises:
+            serializers.ValidationError: If the new email is already associated with another user or if OTP is invalid.
+
+        """
         email = self.validate_new_email_uniqueness(data['new_email'])
         if not TokenService.otp_verification(email, data['otp']):
             raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
