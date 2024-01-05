@@ -116,6 +116,17 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProductVariant model.
+
+    Attributes:
+    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
+    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
+    - option1 (CharField, optional): Display name of the first product option.
+    - option2 (CharField, optional): Display name of the second product option.
+    - option3 (CharField, optional): Display name of the third product option.
+    """
+    
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     option1 = serializers.CharField(source='option1.item_name', required=False)
