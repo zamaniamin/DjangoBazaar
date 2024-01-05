@@ -84,9 +84,9 @@ class UserViewTest(APITestCase):
             self.assertIsInstance(user['first_name'], str)
             self.assertIsInstance(user['last_name'], str)
             self.assertIsInstance(user['is_active'], bool)
-            self.assertDatetimeFormat(user['date_joined_formatted'])
+            self.assertDatetimeFormat(user['date_joined'])
             self.assertTrue(
-                user['last_login_formatted'] is None or self.assertDatetimeFormat(user['last_login_formatted']))
+                user['last_login'] is None or self.assertDatetimeFormat(user['last_login']))
 
     def test_list_users_as_member(self):
         """
@@ -137,9 +137,9 @@ class UserViewTest(APITestCase):
         self.assertIsInstance(expected['first_name'], str)
         self.assertIsInstance(expected['last_name'], str)
         self.assertIsInstance(expected['is_active'], bool)
-        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertDatetimeFormat(expected['date_joined'])
         self.assertTrue(
-            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
+            expected['last_login'] is None or self.assertDatetimeFormat(expected['last_login']))
 
     def test_read_user_as_member(self):
         """
@@ -194,9 +194,9 @@ class UserViewTest(APITestCase):
         self.assertEqual(expected['first_name'], payload['first_name'])
         self.assertEqual(expected['last_name'], payload['last_name'])
         self.assertEqual(expected['is_active'], payload['is_active'])
-        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertDatetimeFormat(expected['date_joined'])
         self.assertTrue(
-            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
+            expected['last_login'] is None or self.assertDatetimeFormat(expected['last_login']))
 
     def test_put_user_as_member(self):
         """
@@ -250,9 +250,9 @@ class UserViewTest(APITestCase):
         self.assertEqual(expected['first_name'], payload['first_name'])
         self.assertEqual(expected['last_name'], self.member.last_name)
         self.assertEqual(expected['is_active'], self.member.is_active)
-        self.assertDatetimeFormat(expected['date_joined_formatted'])
+        self.assertDatetimeFormat(expected['date_joined'])
         self.assertTrue(
-            expected['last_login_formatted'] is None or self.assertDatetimeFormat(expected['last_login_formatted']))
+            expected['last_login'] is None or self.assertDatetimeFormat(expected['last_login']))
 
     def test_patch_user_as_member(self):
         """
@@ -348,7 +348,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_read_me_as_member(self):
@@ -366,7 +366,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_read_me_as_guest(self):
@@ -404,7 +404,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_put_me_as_member(self):
@@ -425,7 +425,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_put_me_as_guest(self):
@@ -463,7 +463,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_patch_me_as_member(self):
@@ -484,7 +484,7 @@ class UserViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
-            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted', 'last_login_formatted'}
+            {'id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login'}
         )
 
     def test_patch_me_as_guest(self):

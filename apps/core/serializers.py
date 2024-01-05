@@ -11,17 +11,16 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the User model.
 
     Attributes:
-        date_joined_formatted (datetime): Formatted date and time when the user joined (read-only).
-        last_login_formatted (datetime): Formatted date and time of the last login (read-only).
+        date_joined (datetime): Formatted date and time when the user joined (read-only).
+        last_login (datetime): Formatted date and time of the last login (read-only).
 
     """
-    date_joined_formatted = serializers.DateTimeField(source='date_joined', format="%Y-%m-%d %H:%M:%S", read_only=True)
-    last_login_formatted = serializers.DateTimeField(source='last_login', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted',
-                  'last_login_formatted']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login']
 
 
 class UserCreateSerializer(serializers.Serializer):
@@ -62,13 +61,13 @@ class ActivationSerializer(serializers.Serializer):
 
 
 class MeSerializer(serializers.ModelSerializer):
-    date_joined_formatted = serializers.DateTimeField(source='date_joined', format="%Y-%m-%d %H:%M:%S", read_only=True)
-    last_login_formatted = serializers.DateTimeField(source='last_login', format="%Y-%m-%d %H:%M:%S", read_only=True)
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined_formatted',
-                  'last_login_formatted']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined',
+                  'last_login']
         read_only_fields = ['email', 'is_active']
 
 
