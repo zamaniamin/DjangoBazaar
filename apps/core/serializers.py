@@ -322,11 +322,39 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 class ResetPasswordConformationSerializer(serializers.Serializer):
+    """
+    Serializer for confirming the password reset with OTP.
+
+    Attributes:
+        email (str): The email address associated with the user account.
+        otp (str): The one-time password (OTP) provided by the user.
+        new_password (str): The new password for the user account.
+
+    Methods:
+        validate(data): Validate the input data and confirm the password reset.
+
+    Raises:
+        serializers.ValidationError: If the user does not exist or the OTP is invalid.
+
+    """
     email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True, validators=[validate_password])
 
     def validate(self, data):
+        """
+        Validate the input data and confirm the password reset.
+
+        Args:
+            data (dict): Input data containing email, OTP, and new password.
+
+        Returns:
+            tuple: A tuple containing the user object and the new password.
+
+        Raises:
+            serializers.ValidationError: If the user does not exist or the OTP is invalid.
+
+        """
         try:
             user = User.objects.get(email=data['email'])
             if not TokenService.otp_verification(user.email, data['otp']):
