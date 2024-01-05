@@ -30,6 +30,13 @@ class ProductView(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
+        """
+        Get the queryset for the Product model with related options and variants.
+
+        Returns:
+            QuerySet: A queryset for the Product model with select and prefetch related options and variants.
+        """
+
         return Product.objects.select_related().prefetch_related(
             'productoption_set__productoptionitem_set',
             Prefetch(
