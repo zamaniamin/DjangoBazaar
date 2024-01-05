@@ -5,6 +5,14 @@ from apps.shop.models import Product, ProductOption, ProductOptionItem, ProductV
 
 
 class ProductOptionItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProductOptionItem model.
+
+    Attributes:
+    - id (IntegerField): Unique identifier for the product option item.
+    - item_name (CharField): Display name of the product option item.
+    """
+
     class Meta:
         model = ProductOptionItem
         fields = ['id', 'item_name']
