@@ -368,10 +368,37 @@ class ResetPasswordConformationSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for changing the user's password.
+
+    Attributes:
+        current_password (str): The current password of the user.
+        new_password (str): The new password for the user.
+
+    Methods:
+        validate_current_password(value): Validate the current password against the user's stored password.
+
+    Raises:
+        serializers.ValidationError: If the current password is invalid.
+
+    """
     current_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True, validators=[validate_password])
 
     def validate_current_password(self, value):
+        """
+        Validate the current password against the user's stored password.
+
+        Args:
+            value (str): The current password provided by the user.
+
+        Returns:
+            str: The current password if valid.
+
+        Raises:
+            serializers.ValidationError: If the current password is invalid.
+
+        """
         is_password_valid = self.context['request'].user.check_password(value)
         if is_password_valid:
             return value
