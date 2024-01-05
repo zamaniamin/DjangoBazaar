@@ -67,10 +67,37 @@ class UserCreateSerializer(serializers.Serializer):
 
 
 class ActivationSerializer(serializers.Serializer):
+    """
+    Serializer for user activation.
+
+    Attributes:
+        email (str): Email field for user activation.
+        otp (str): One-time password (OTP) field for user activation (write-only).
+
+    Methods:
+        validate(attrs): Custom validation method to check user existence, activation status, and OTP validity.
+
+    Raises:
+        serializers.ValidationError: If the user does not exist, is already active, or if the OTP is invalid.
+
+    """
     email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        """
+        Validate the provided data.
+
+        Args:
+            attrs (dict): Dictionary containing user activation data.
+
+        Returns:
+            User: Validated user if successful.
+
+        Raises:
+            serializers.ValidationError: If the user does not exist, is already active, or if the OTP is invalid.
+
+        """
         try:
             user = User.objects.get(email=attrs['email'])
         except User.DoesNotExist:
