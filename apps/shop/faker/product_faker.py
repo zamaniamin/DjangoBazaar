@@ -3,6 +3,8 @@ import random
 from faker import Faker
 from faker.providers import lorem
 
+from apps.shop.services.product_service import ProductService
+
 
 class FakeProduct:
     """
@@ -78,3 +80,12 @@ class FakeProduct:
             'options': cls.generate_uniq_options()
         }
         return payload.copy()
+
+    @classmethod
+    def populate_product_with_options(cls):
+        """
+        Crete a product with options. (with all fields)
+        """
+
+        product_data = cls.get_payload_with_options()
+        return product_data.copy(), ProductService.create_product(**product_data)

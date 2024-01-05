@@ -6,7 +6,7 @@ from apps.core.services.time_service import DateTime
 class TimeTestCase:
 
     @staticmethod
-    def assert_datetime_format(date: str | datetime):
+    def assertDatetimeFormat(date: str | datetime):
         if isinstance(date, datetime):
             date = DateTime.string(date)
 

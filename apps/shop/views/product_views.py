@@ -1,9 +1,9 @@
+from django.db.models import Prefetch
 from rest_framework import viewsets, status
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
-from apps.core.services.time_service import DateTime
-from apps.shop.models import Product
+from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
@@ -17,8 +17,24 @@ class ProductView(viewsets.ModelViewSet):
         'create': s.ProductCreateSerializer,
     }
 
+    ACTION_PERMISSIONS = {
+        'list': [AllowAny()],
+        'retrieve': [AllowAny()]
+    }
+
     def get_serializer_class(self):
         return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
+
+    def get_permissions(self):
+        #  If the action is not in the dictionary, it falls back to the default permission class/.
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    def get_queryset(self):
+        return Product.objects.select_related().prefetch_related(
+            'productoption_set__productoptionitem_set',
+            Prefetch(
+                'productvariant_set',
+                queryset=ProductVariant.objects.select_related('option1', 'option2', 'option3')))
 
     def create(self, request, *args, **kwargs):
         # --- validate
@@ -27,18 +43,10 @@ class ProductView(viewsets.ModelViewSet):
         payload = serializer.validated_data
 
         # --- create product ---
-        product, options, variants = ProductService.create_product(**payload)
+        product = ProductService.create_product(**payload)
 
-        # --- response ---
-        response_body = {
-            "product_id": product.id,
-            "product_name": product.product_name,
-            "description": product.description,
-            "status": product.status,
-            "options": options,
-            "variants": variants,
-            "created_at": DateTime.string(product.created_at),
-            "updated_at": DateTime.string(product.updated_at),
-            "published_at": DateTime.string(product.published_at),
-        }
-        return Response(response_body, status=status.HTTP_201_CREATED)
+        # Serialize the created product for the response
+        response_serializer = s.ProductSerializer(product)
+
+        # Return the serialized response
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)

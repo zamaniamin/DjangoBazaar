@@ -61,7 +61,7 @@ class ProductOptionItem(models.Model):
 
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=12, decimal_places=2)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     option1 = models.ForeignKey(
