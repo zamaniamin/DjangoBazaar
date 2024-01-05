@@ -284,9 +284,35 @@ class ChangeEmailConformationSerializer(serializers.Serializer):
 
 
 class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for initiating the password reset process.
+
+    Attributes:
+        email (str): The email address associated with the user account.
+
+    Methods:
+        validate(attrs): Validate the input data and retrieve the corresponding user.
+
+    Raises:
+        serializers.ValidationError: If a user with the provided email does not exist.
+
+    """
     email = serializers.EmailField()
 
     def validate(self, attrs):
+        """
+        Validate the input data and retrieve the corresponding user.
+
+        Args:
+            attrs (dict): Input data containing the email address.
+
+        Returns:
+            User: The user corresponding to the provided email.
+
+        Raises:
+            serializers.ValidationError: If a user with the provided email does not exist.
+
+        """
         try:
             user = User.objects.get(email=attrs['email'])
             return user
