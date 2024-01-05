@@ -7,6 +7,14 @@ from apps.core.services.token_service import TokenService
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model.
+
+    Attributes:
+        date_joined_formatted (datetime): Formatted date and time when the user joined (read-only).
+        last_login_formatted (datetime): Formatted date and time of the last login (read-only).
+
+    """
     date_joined_formatted = serializers.DateTimeField(source='date_joined', format="%Y-%m-%d %H:%M:%S", read_only=True)
     last_login_formatted = serializers.DateTimeField(source='last_login', format="%Y-%m-%d %H:%M:%S", read_only=True)
 
