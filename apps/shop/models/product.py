@@ -21,8 +21,8 @@ class Product(models.Model):
 
     Methods:
         - __str__: Returns the string representation of the product, which is its 'product_name'.
+
     """
-    
     product_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     STATUS_CHOICES = [
@@ -59,8 +59,8 @@ class ProductOption(models.Model):
 
     Methods:
     - __str__: Returns the string representation of the option, which is its 'option_name'.
-    """
 
+    """
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     option_name = models.CharField(max_length=255)
 
@@ -84,8 +84,8 @@ class ProductOptionItem(models.Model):
 
     Methods:
     - __str__: Returns the string representation of the item, which is its 'item_name'.
-    """
 
+    """
     option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     item_name = models.CharField(max_length=255)
 
@@ -109,8 +109,8 @@ class ProductVariant(models.Model):
     - option3 (ForeignKey to ProductOptionItem, related_name='option3', optional): The third product option.
     - created_at (DateTimeField): The timestamp when the variant was created.
     - updated_at (DateTimeField): The timestamp when the variant was last updated.
-    """
 
+    """
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])

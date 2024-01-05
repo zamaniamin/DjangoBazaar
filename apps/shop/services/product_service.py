@@ -29,6 +29,7 @@ class ProductService:
         Note:
             This method creates a new product instance, generates options, and optimizes queries
             for retrieving the product with related options and variants.
+
         """
 
         # Extract relevant data
@@ -59,8 +60,8 @@ class ProductService:
         Note:
             This method retrieves a specific product along with its associated options and variants,
             optimizing queries to minimize database round-trips for improved performance.
-        """
 
+        """
         select_related_variant_options = ProductVariant.objects.select_related('option1', 'option2', 'option3')
 
         prefetch_variants = Prefetch('productvariant_set', queryset=select_related_variant_options)
@@ -83,8 +84,8 @@ class ProductService:
         Note:
         This method assumes that cls.product, cls.options_data, and cls.__create_product_variants are set
         appropriately before calling.
-        """
 
+        """
         if cls.options_data:
             options_to_create = []
             items_to_create = []
@@ -126,8 +127,8 @@ class ProductService:
 
         Note:
         This method assumes that cls.product, cls.price, and cls.stock are set appropriately before calling.
-        """
 
+        """
         if bulk_create:
 
             # Retrieve the IDs of the product options associated with the product
@@ -179,7 +180,6 @@ class ProductService:
         List[List[int]]: A list of lists where each sublist contains item_ids for a specific option.
 
         """
-
         item_ids_by_option = []
 
         # Query the ProductOptionItem table to retrieve item_ids

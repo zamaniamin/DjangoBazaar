@@ -11,6 +11,7 @@ class ProductOptionItemSerializer(serializers.ModelSerializer):
     Attributes:
     - id (IntegerField): Unique identifier for the product option item.
     - item_name (CharField): Display name of the product option item.
+
     """
 
     class Meta:
@@ -26,8 +27,8 @@ class ProductOptionSerializer(serializers.ModelSerializer):
     - id (IntegerField): Unique identifier for the product option.
     - option_name (CharField): Display name of the product option.
     - items (ListSerializer of CharField, optional): List of item names associated with the product option.
-    """
 
+    """
     items = serializers.ListSerializer(child=serializers.CharField(), source='productoptionitem_set', required=False)
 
     class Meta:
@@ -44,8 +45,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     - status (str): The status of the product.
     - stock (int): The stock quantity of the product.
     - price (Decimal): The price of the product.
-    """
 
+    """
     options = ProductOptionSerializer(many=True, required=False, default=None)
     status = serializers.CharField(max_length=10, allow_blank=True, required=False)
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -75,6 +76,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         Raises:
         - serializers.ValidationError: If the number of options exceeds the limit.
+
         """
 
         # If options is None, return None
@@ -124,8 +126,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         Returns:
         - str: The validated status value.
-        """
 
+        """
         valid_statuses = [status[0] for status in Product.STATUS_CHOICES]
         if value not in valid_statuses:
             return 'draft'
@@ -142,8 +144,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     - option1 (CharField, optional): Display name of the first product option.
     - option2 (CharField, optional): Display name of the second product option.
     - option3 (CharField, optional): Display name of the third product option.
-    """
 
+    """
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     option1 = serializers.CharField(source='option1.item_name', required=False)
@@ -165,8 +167,8 @@ class ProductSerializer(serializers.ModelSerializer):
     - published_at (DateTimeField, optional): Formatted representation of the product publish timestamp.
     - options (ProductOptionSerializer): Serializer for the product options.
     - variants (ProductVariantSerializer): Serializer for the product variants.
-    """
 
+    """
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     published_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', required=False)

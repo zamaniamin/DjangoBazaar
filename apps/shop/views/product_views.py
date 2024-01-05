@@ -64,8 +64,8 @@ class ProductView(viewsets.ModelViewSet):
 
         Returns:
             QuerySet: A queryset for the Product model with select and prefetch related options and variants.
-        """
 
+        """
         return Product.objects.select_related().prefetch_related(
             'productoption_set__productoptionitem_set',
             Prefetch(
