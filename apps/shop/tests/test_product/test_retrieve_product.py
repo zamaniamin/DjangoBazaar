@@ -8,7 +8,7 @@ from apps.shop.faker.product_faker import FakeProduct
 
 
 class RetrieveProductTest(APITestCase, TimeTestCase):
-    product_path = '/products/'
+    product_path = "/products/"
     member = None
     admin = None
 
@@ -41,12 +41,12 @@ class RetrieveProductTest(APITestCase, TimeTestCase):
     def test_retrieve_product(self):
         """"""
         # --- request ---
-        response = self.client.get(f'{self.product_path}{self.product.id}/')
+        response = self.client.get(f"{self.product_path}{self.product.id}/")
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertTrue('options' in expected)
-        for option in expected['options']:
-            self.assertTrue('items' in option)
+        self.assertTrue("options" in expected)
+        for option in expected["options"]:
+            self.assertTrue("items" in option)
         # TODO write optimized serializers for get the product details as response json that created with POST method

@@ -9,7 +9,7 @@ from apps.shop.faker.product_faker import FakeProduct
 
 
 class CreateProductTest(APITestCase, TimeTestCase):
-    product_path = '/products/'
+    product_path = "/products/"
     member = None
     admin = None
 
@@ -36,7 +36,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
         Set up data or conditions specific to each test method.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.admin_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
     def test_create_product(self):
         """
@@ -53,7 +53,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
             "status": "active",
             "price": 11,
             "stock": 11,
-            "options": ""
+            "options": "",
         }
         response = self.client.post(self.product_path, payload)
 
@@ -73,75 +73,83 @@ class CreateProductTest(APITestCase, TimeTestCase):
             "price": 11,
             "stock": 11,
             "options": [
-                {
-                    "option_name": "color",
-                    "items": ["red", "green"]
-                },
-                {
-                    "option_name": "size",
-                    "items": ["S", "M"]
-                },
-                {
-                    "option_name": "material",
-                    "items": ["Cotton", "Nylon"]
-                }
-            ]
+                {"option_name": "color", "items": ["red", "green"]},
+                {"option_name": "size", "items": ["S", "M"]},
+                {"option_name": "material", "items": ["Cotton", "Nylon"]},
+            ],
         }
-        response = self.client.post(self.product_path, data=json.dumps(payload), content_type='application/json')
+        response = self.client.post(
+            self.product_path, data=json.dumps(payload), content_type="application/json"
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
-        self.assertIsInstance(expected['id'], int)
-        self.assertEqual(expected['product_name'], payload['product_name'])
-        self.assertEqual(expected['description'], payload['description'])
-        self.assertEqual(expected['status'], payload['status'])
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["description"], payload["description"])
+        self.assertEqual(expected["status"], payload["status"])
 
         # --- expected options ---
-        self.assertIsInstance(expected['options'], list)
-        self.assertEqual(len(expected['options']), 3)
-        for option in expected['options']:
-            self.assertIsInstance(option['id'], int)
-            self.assertIsInstance(option['option_name'], str)
+        self.assertIsInstance(expected["options"], list)
+        self.assertEqual(len(expected["options"]), 3)
+        for option in expected["options"]:
+            self.assertIsInstance(option["id"], int)
+            self.assertIsInstance(option["option_name"], str)
 
             # Assert that the 'option_name' exists in the 'option' list
             self.assertTrue(
-                any(payload_option['option_name'] == option['option_name'] for payload_option in self.unique_options))
+                any(
+                    payload_option["option_name"] == option["option_name"]
+                    for payload_option in self.unique_options
+                )
+            )
 
             # --- expected items ---
-            self.assertIsInstance(option['items'], list)
-            self.assertTrue(len(option['items']) == 2)
-            for item in option['items']:
+            self.assertIsInstance(option["items"], list)
+            self.assertTrue(len(option["items"]) == 2)
+            for item in option["items"]:
                 # Find the corresponding payload option
-                payload_option = next((payload_option for payload_option in payload['options'] if
-                                       payload_option['option_name'] == option['option_name']), None)
+                payload_option = next(
+                    (
+                        payload_option
+                        for payload_option in payload["options"]
+                        if payload_option["option_name"] == option["option_name"]
+                    ),
+                    None,
+                )
 
-                self.assertIsNotNone(payload_option,
-                                     f"Option '{option['option_name']}' not found in payload options")
+                self.assertIsNotNone(
+                    payload_option,
+                    f"Option '{option['option_name']}' not found in payload options",
+                )
 
                 # Assert item name matches the payload
-                self.assertIn(item, payload_option['items'],
-                              f"Item name '{item}' not found in payload items")
+                self.assertIn(
+                    item,
+                    payload_option["items"],
+                    f"Item name '{item}' not found in payload items",
+                )
 
         # --- expected date and time ---
-        self.assertDatetimeFormat(expected['created_at'])
-        self.assertDatetimeFormat(expected['updated_at'])
-        self.assertTrue(expected['published_at'] is None)
+        self.assertDatetimeFormat(expected["created_at"])
+        self.assertDatetimeFormat(expected["updated_at"])
+        self.assertTrue(expected["published_at"] is None)
 
         # --- expected variants ---
-        self.assertIsInstance(expected['variants'], list)
-        self.assertTrue(len(expected['variants']) == 8)
-        for variant in expected['variants']:
-            self.assertIsInstance(variant['id'], int)
+        self.assertIsInstance(expected["variants"], list)
+        self.assertTrue(len(expected["variants"]) == 8)
+        for variant in expected["variants"]:
+            self.assertIsInstance(variant["id"], int)
             # self.assertIsInstance(variant['product_id'], int)
-            self.assertIsInstance(variant['price'], float)
-            self.assertEqual(variant['price'], 11)
-            self.assertEqual(variant['stock'], 11)
-            self.assertIsInstance(variant['option1'], str)
-            self.assertIsInstance(variant['option2'], str)
-            self.assertIsInstance(variant['option3'], str)
-            self.assertDatetimeFormat(variant['created_at'])
-            self.assertDatetimeFormat(variant['updated_at'])
+            self.assertIsInstance(variant["price"], float)
+            self.assertEqual(variant["price"], 11)
+            self.assertEqual(variant["stock"], 11)
+            self.assertIsInstance(variant["option1"], str)
+            self.assertIsInstance(variant["option2"], str)
+            self.assertIsInstance(variant["option3"], str)
+            self.assertDatetimeFormat(variant["created_at"])
+            self.assertDatetimeFormat(variant["updated_at"])
 
         # --- expected media ---
 
@@ -162,5 +170,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
 # TODO test access permissions

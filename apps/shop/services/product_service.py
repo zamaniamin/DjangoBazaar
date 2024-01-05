@@ -3,7 +3,12 @@ from itertools import product as options_combination
 from django.db.models import Prefetch
 
 from apps.core.services.time_service import DateTime
-from apps.shop.models.product import Product, ProductOption, ProductOptionItem, ProductVariant
+from apps.shop.models.product import (
+    Product,
+    ProductOption,
+    ProductOptionItem,
+    ProductVariant,
+)
 
 
 class ProductService:
@@ -33,9 +38,9 @@ class ProductService:
         """
 
         # Extract relevant data
-        cls.price = data.pop('price')
-        cls.stock = data.pop('stock')
-        cls.options_data = data.pop('options')
+        cls.price = data.pop("price")
+        cls.stock = data.pop("stock")
+        cls.options_data = data.pop("options")
 
         # Create product
         cls.product = Product.objects.create(**data)
@@ -62,12 +67,17 @@ class ProductService:
             optimizing queries to minimize database round-trips for improved performance.
 
         """
-        select_related_variant_options = ProductVariant.objects.select_related('option1', 'option2', 'option3')
+        select_related_variant_options = ProductVariant.objects.select_related(
+            "option1", "option2", "option3"
+        )
 
-        prefetch_variants = Prefetch('productvariant_set', queryset=select_related_variant_options)
+        prefetch_variants = Prefetch(
+            "productvariant_set", queryset=select_related_variant_options
+        )
 
-        prefetch_related_product_data = Product.objects.prefetch_related('productoption_set__productoptionitem_set',
-                                                                         prefetch_variants)
+        prefetch_related_product_data = Product.objects.prefetch_related(
+            "productoption_set__productoptionitem_set", prefetch_variants
+        )
 
         return prefetch_related_product_data.get(pk=product_id)
 
@@ -91,12 +101,13 @@ class ProductService:
             items_to_create = []
 
             for option in cls.options_data:
-
                 # Create a ProductOption instance for each option_name
-                new_option = ProductOption(product=cls.product, option_name=option['option_name'])
+                new_option = ProductOption(
+                    product=cls.product, option_name=option["option_name"]
+                )
                 options_to_create.append(new_option)
 
-                for item in option['items']:
+                for item in option["items"]:
                     # Create a ProductOptionItem instance for each item
                     new_item = ProductOptionItem(option=new_option, item_name=item)
                     items_to_create.append(new_item)
@@ -108,7 +119,6 @@ class ProductService:
             # generate and create product variants
             cls.__create_product_variants(bulk_create=True)
         else:
-
             # If no options_data is provided, set cls.options to None
             cls.options = None
 
@@ -130,7 +140,6 @@ class ProductService:
 
         """
         if bulk_create:
-
             # Retrieve the IDs of the product options associated with the product
             items_id = cls.__get_item_ids_by_product_id(cls.product.id)
 
@@ -153,16 +162,17 @@ class ProductService:
                     option2_id=option2,
                     option3_id=option3,
                     price=cls.price,
-                    stock=cls.stock
+                    stock=cls.stock,
                 )
                 variants_to_create.append(new_variant)
 
             # Bulk create the variants in the database
             ProductVariant.objects.bulk_create(variants_to_create)
         else:
-
             # Create a single ProductVariant instance for the product
-            ProductVariant.objects.create(product=cls.product, price=cls.price, stock=cls.stock)
+            ProductVariant.objects.create(
+                product=cls.product, price=cls.price, stock=cls.stock
+            )
 
     @staticmethod
     def __get_item_ids_by_product_id(product_id):
@@ -183,7 +193,9 @@ class ProductService:
         item_ids_by_option = []
 
         # Query the ProductOptionItem table to retrieve item_ids
-        items = (ProductOptionItem.objects.filter(option__product_id=product_id).values_list('option_id', 'id'))
+        items = ProductOptionItem.objects.filter(
+            option__product_id=product_id
+        ).values_list("option_id", "id")
 
         # Group item_ids by option_id
         item_ids_dict = {}
@@ -206,17 +218,25 @@ class ProductService:
         product_options = []
 
         # Fetch ProductOption and related ProductOptionItem objects in a single query
-        options = ProductOption.objects.select_related('product').prefetch_related('productoptionitem_set').filter(
-            product=product_id)
+        options = (
+            ProductOption.objects.select_related("product")
+            .prefetch_related("productoptionitem_set")
+            .filter(product=product_id)
+        )
 
         for option in options:
             items = option.productoptionitem_set.all()
 
-            product_options.append({
-                'option_id': option.id,
-                'option_name': option.option_name,
-                'items': [{'item_id': item.id, 'item_name': item.item_name} for item in items]
-            })
+            product_options.append(
+                {
+                    "option_id": option.id,
+                    "option_name": option.option_name,
+                    "items": [
+                        {"item_id": item.id, "item_name": item.item_name}
+                        for item in items
+                    ],
+                }
+            )
 
         if product_options:
             return product_options
@@ -232,23 +252,23 @@ class ProductService:
         # TODO return an object not list
 
         product_variants = []
-        variants: list[ProductVariant] = (
-            ProductVariant.objects
-            .filter(product=product_id)
-            .select_related('option1', 'option2', 'option3')
-        )
+        variants: list[ProductVariant] = ProductVariant.objects.filter(
+            product=product_id
+        ).select_related("option1", "option2", "option3")
         for variant in variants:
-            product_variants.append({
-                "variant_id": variant.id,
-                "product_id": variant.product_id,
-                "price": variant.price,
-                "stock": variant.stock,
-                "option1": variant.option1.item_name if variant.option1 else None,
-                "option2": variant.option2.item_name if variant.option2 else None,
-                "option3": variant.option3.item_name if variant.option3 else None,
-                "created_at": DateTime.string(variant.created_at),
-                "updated_at": DateTime.string(variant.updated_at)
-            })
+            product_variants.append(
+                {
+                    "variant_id": variant.id,
+                    "product_id": variant.product_id,
+                    "price": variant.price,
+                    "stock": variant.stock,
+                    "option1": variant.option1.item_name if variant.option1 else None,
+                    "option2": variant.option2.item_name if variant.option2 else None,
+                    "option3": variant.option3.item_name if variant.option3 else None,
+                    "created_at": DateTime.string(variant.created_at),
+                    "updated_at": DateTime.string(variant.updated_at),
+                }
+            )
 
         if product_variants:
             return product_variants

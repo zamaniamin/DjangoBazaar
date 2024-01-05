@@ -10,7 +10,8 @@ class Command(BaseCommand):
     Usage:
         python manage.py demo_users
     """
-    help = 'Populates the database with initial data'
+
+    help = "Populates the database with initial data"
 
     def handle(self, *args, **options):
         """

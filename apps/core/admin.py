@@ -10,8 +10,15 @@ class CustomUserAdmin(UserAdmin):
         (
             None,
             {
-                'classes': ('wide',),
-                'fields': ('first_name', 'last_name', 'username', 'email', 'password1', 'password2'),
+                "classes": ("wide",),
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "username",
+                    "email",
+                    "password1",
+                    "password2",
+                ),
             },
         ),
     )

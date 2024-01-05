@@ -21,15 +21,16 @@ class FakeUser:
         populate_demo_users(): Populate the database with demo users.
 
     """
+
     fake = Faker()
 
     # Demo users
-    superuser_email = 'super@test.test'
-    admin_email = 'admin@test.test'
-    user1_email = 'user1@test.test'
-    user2_email = 'user2@test.test'
-    user3_email = 'user3@test.test'
-    password = 'user1234'
+    superuser_email = "super@test.test"
+    admin_email = "admin@test.test"
+    user1_email = "user1@test.test"
+    user2_email = "user2@test.test"
+    user3_email = "user3@test.test"
+    password = "user1234"
 
     @classmethod
     def random_email(cls):
@@ -63,8 +64,12 @@ class FakeUser:
             User: The newly created superuser.
 
         """
-        user = User.objects.create_user(email=cls.superuser_email, password=cls.password, is_superuser=True,
-                                        is_staff=True)
+        user = User.objects.create_user(
+            email=cls.superuser_email,
+            password=cls.password,
+            is_superuser=True,
+            is_staff=True,
+        )
         return user
 
     @classmethod
@@ -76,7 +81,9 @@ class FakeUser:
             User: The newly created admin.
 
         """
-        user = User.objects.create_user(email=cls.admin_email, password=cls.password, is_staff=True)
+        user = User.objects.create_user(
+            email=cls.admin_email, password=cls.password, is_staff=True
+        )
         return user
 
     @classmethod
@@ -112,5 +119,7 @@ class FakeUser:
         if not email:
             email = cls.random_email()
 
-        user = User.objects.create_user(email=email, password=cls.password, is_active=False)
+        user = User.objects.create_user(
+            email=email, password=cls.password, is_active=False
+        )
         return user

@@ -17,9 +17,10 @@ class User(AbstractUser):
         REQUIRED_FIELDS (list): Additional fields required for creating a user (set to an empty list).
 
     """
+
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, blank=False, null=False)
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     # fix error [users.User: (auth.E002)], so you should remove 'email' from the 'REQUIRED_FIELDS', like this.
     REQUIRED_FIELDS = []
@@ -48,5 +49,6 @@ class UserVerification(models.Model):
         new_email (str): The new email address for verification (max length 255).
 
     """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     new_email = models.EmailField(max_length=255)

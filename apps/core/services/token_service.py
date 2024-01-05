@@ -32,7 +32,10 @@ class TokenService:
             str: The generated OTP token.
 
         """
-        totp = TOTP(cls.__generate_secret_key(user_email), interval=int(settings.OTP_EXPIRE_SECONDS))
+        totp = TOTP(
+            cls.__generate_secret_key(user_email),
+            interval=int(settings.OTP_EXPIRE_SECONDS),
+        )
         return totp.now()
 
     @staticmethod
@@ -47,9 +50,9 @@ class TokenService:
             str: The generated secret key.
 
         """
-        combined_data = f"{user_email}+{settings.OTP_SECRET_KEY}".encode('utf-8')
+        combined_data = f"{user_email}+{settings.OTP_SECRET_KEY}".encode("utf-8")
         hashed_data = hashlib.sha256(combined_data).digest()
-        return base64.b32encode(hashed_data).decode('utf-8')
+        return base64.b32encode(hashed_data).decode("utf-8")
 
     @classmethod
     def otp_verification(cls, user_email: str, otp: str) -> bool:
@@ -64,7 +67,10 @@ class TokenService:
             bool: True if the OTP is valid, False otherwise.
 
         """
-        totp = TOTP(cls.__generate_secret_key(user_email), interval=int(settings.OTP_EXPIRE_SECONDS))
+        totp = TOTP(
+            cls.__generate_secret_key(user_email),
+            interval=int(settings.OTP_EXPIRE_SECONDS),
+        )
         return totp.verify(otp)
 
     # -----------

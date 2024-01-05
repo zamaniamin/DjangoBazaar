@@ -23,20 +23,18 @@ class Product(models.Model):
         - __str__: Returns the string representation of the product, which is its 'product_name'.
 
     """
+
     product_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     STATUS_CHOICES = [
-
         # The product is ready to sell and is available to customers on the online store, sales channels, and apps.
-        ('active', 'Active'),
-
+        ("active", "Active"),
         # The product is no longer being sold and isn't available to customers on sales channels and apps.
-        ('archived', 'Archived'),
-
+        ("archived", "Archived"),
         # The product isn't ready to sell and is unavailable to customers on sales channels and apps.
-        ('draft', 'Draft'),
+        ("draft", "Draft"),
     ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -61,11 +59,12 @@ class ProductOption(models.Model):
     - __str__: Returns the string representation of the option, which is its 'option_name'.
 
     """
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     option_name = models.CharField(max_length=255)
 
     class Meta:
-        unique_together = ('product', 'option_name')
+        unique_together = ("product", "option_name")
 
     def __str__(self):
         return self.option_name
@@ -86,11 +85,12 @@ class ProductOptionItem(models.Model):
     - __str__: Returns the string representation of the item, which is its 'item_name'.
 
     """
+
     option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     item_name = models.CharField(max_length=255)
 
     class Meta:
-        unique_together = ('option', 'item_name')
+        unique_together = ("option", "item_name")
 
     def __str__(self):
         return self.item_name
@@ -111,18 +111,34 @@ class ProductVariant(models.Model):
     - updated_at (DateTimeField): The timestamp when the variant was last updated.
 
     """
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     option1 = models.ForeignKey(
-        ProductOptionItem, related_name='option1', on_delete=models.CASCADE, null=True, blank=True)
+        ProductOptionItem,
+        related_name="option1",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     option2 = models.ForeignKey(
-        ProductOptionItem, related_name='option2', on_delete=models.CASCADE, null=True, blank=True)
+        ProductOptionItem,
+        related_name="option2",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     option3 = models.ForeignKey(
-        ProductOptionItem, related_name='option3', on_delete=models.CASCADE, null=True, blank=True)
+        ProductOptionItem,
+        related_name="option3",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

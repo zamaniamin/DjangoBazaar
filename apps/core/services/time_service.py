@@ -2,7 +2,6 @@ from datetime import datetime
 
 
 class DateTime:
-
     @classmethod
     def string(cls, obj: datetime):
         """
@@ -16,4 +15,4 @@ class DateTime:
 
         """
 
-        return obj.strftime('%Y-%m-%d %H:%M:%S') if obj else None
+        return obj.strftime("%Y-%m-%d %H:%M:%S") if obj else None

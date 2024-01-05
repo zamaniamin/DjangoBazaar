@@ -15,12 +15,21 @@ class UserSerializer(serializers.ModelSerializer):
         last_login (datetime): Formatted date and time of the last login (read-only).
 
     """
-    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
-    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    last_login = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login']
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_active",
+            "date_joined",
+            "last_login",
+        ]
 
 
 class UserCreateSerializer(serializers.Serializer):
@@ -39,6 +48,7 @@ class UserCreateSerializer(serializers.Serializer):
         serializers.ValidationError: If passwords do not match.
 
     """
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
@@ -57,11 +67,11 @@ class UserCreateSerializer(serializers.Serializer):
             serializers.ValidationError: If passwords do not match.
 
         """
-        password = data.get('password')
-        password_confirm = data.pop('password_confirm')
+        password = data.get("password")
+        password_confirm = data.pop("password_confirm")
 
         if password != password_confirm:
-            raise serializers.ValidationError('Passwords do not match.')
+            raise serializers.ValidationError("Passwords do not match.")
 
         return data
 
@@ -81,6 +91,7 @@ class ActivationSerializer(serializers.Serializer):
         serializers.ValidationError: If the user does not exist, is already active, or if the OTP is invalid.
 
     """
+
     email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
 
@@ -99,20 +110,26 @@ class ActivationSerializer(serializers.Serializer):
 
         """
         try:
-            user = User.objects.get(email=attrs['email'])
+            user = User.objects.get(email=attrs["email"])
         except User.DoesNotExist:
-            raise serializers.ValidationError(detail='User with this email does not exist.',
-                                              code=status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError(
+                detail="User with this email does not exist.",
+                code=status.HTTP_404_NOT_FOUND,
+            )
 
         if user.is_active:
-            raise serializers.ValidationError(detail='User is already active.',
-                                              code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            raise serializers.ValidationError(
+                detail="User is already active.",
+                code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
 
-        if TokenService.otp_verification(attrs['email'], attrs['otp']):
+        if TokenService.otp_verification(attrs["email"], attrs["otp"]):
             return user
         else:
-            raise serializers.ValidationError(detail='Invalid OTP. Please enter the correct OTP.',
-                                              code=status.HTTP_406_NOT_ACCEPTABLE)
+            raise serializers.ValidationError(
+                detail="Invalid OTP. Please enter the correct OTP.",
+                code=status.HTTP_406_NOT_ACCEPTABLE,
+            )
 
 
 class MeSerializer(serializers.ModelSerializer):
@@ -129,13 +146,22 @@ class MeSerializer(serializers.ModelSerializer):
         read_only_fields (list): List of fields that are read-only in the serialized output.
 
     """
-    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
-    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    last_login = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login']
-        read_only_fields = ['email', 'is_active']
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_active",
+            "date_joined",
+            "last_login",
+        ]
+        read_only_fields = ["email", "is_active"]
 
 
 class ResendActivationSerializer(serializers.Serializer):
@@ -152,6 +178,7 @@ class ResendActivationSerializer(serializers.Serializer):
         serializers.ValidationError: If the user with the provided email does not exist.
 
     """
+
     email = serializers.EmailField()
 
     def validate(self, attrs):
@@ -169,11 +196,13 @@ class ResendActivationSerializer(serializers.Serializer):
 
         """
         try:
-            user = User.objects.get(email=attrs['email'])
+            user = User.objects.get(email=attrs["email"])
             return user
         except User.DoesNotExist:
-            raise serializers.ValidationError(detail='User with this email does not exist.',
-                                              code=status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError(
+                detail="User with this email does not exist.",
+                code=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class ChangeEmailSerializer(serializers.Serializer):
@@ -190,6 +219,7 @@ class ChangeEmailSerializer(serializers.Serializer):
         serializers.ValidationError: If the new email is already associated with another user.
 
     """
+
     new_email = serializers.EmailField()
 
     @staticmethod
@@ -223,8 +253,8 @@ class ChangeEmailSerializer(serializers.Serializer):
             serializers.ValidationError: If the new email is already associated with another user.
 
         """
-        self.validate_new_email_uniqueness(data['new_email'])
-        return data['new_email']
+        self.validate_new_email_uniqueness(data["new_email"])
+        return data["new_email"]
 
 
 class ChangeEmailConformationSerializer(serializers.Serializer):
@@ -243,6 +273,7 @@ class ChangeEmailConformationSerializer(serializers.Serializer):
         serializers.ValidationError: If the new email is already associated with another user or if OTP is invalid.
 
     """
+
     new_email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
 
@@ -276,11 +307,13 @@ class ChangeEmailConformationSerializer(serializers.Serializer):
             serializers.ValidationError: If the new email is already associated with another user or if OTP is invalid.
 
         """
-        email = self.validate_new_email_uniqueness(data['new_email'])
-        if not TokenService.otp_verification(email, data['otp']):
-            raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
-                                              code=status.HTTP_406_NOT_ACCEPTABLE)
-        return data['new_email']
+        email = self.validate_new_email_uniqueness(data["new_email"])
+        if not TokenService.otp_verification(email, data["otp"]):
+            raise serializers.ValidationError(
+                "Invalid OTP. Please enter the correct OTP.",
+                code=status.HTTP_406_NOT_ACCEPTABLE,
+            )
+        return data["new_email"]
 
 
 class ResetPasswordSerializer(serializers.Serializer):
@@ -297,6 +330,7 @@ class ResetPasswordSerializer(serializers.Serializer):
         serializers.ValidationError: If a user with the provided email does not exist.
 
     """
+
     email = serializers.EmailField()
 
     def validate(self, attrs):
@@ -314,11 +348,13 @@ class ResetPasswordSerializer(serializers.Serializer):
 
         """
         try:
-            user = User.objects.get(email=attrs['email'])
+            user = User.objects.get(email=attrs["email"])
             return user
         except User.DoesNotExist:
-            raise serializers.ValidationError(detail='User with this email does not exist.',
-                                              code=status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError(
+                detail="User with this email does not exist.",
+                code=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class ResetPasswordConformationSerializer(serializers.Serializer):
@@ -337,9 +373,12 @@ class ResetPasswordConformationSerializer(serializers.Serializer):
         serializers.ValidationError: If the user does not exist or the OTP is invalid.
 
     """
+
     email = serializers.EmailField()
     otp = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+    new_password = serializers.CharField(
+        write_only=True, validators=[validate_password]
+    )
 
     def validate(self, data):
         """
@@ -356,15 +395,19 @@ class ResetPasswordConformationSerializer(serializers.Serializer):
 
         """
         try:
-            user = User.objects.get(email=data['email'])
-            if not TokenService.otp_verification(user.email, data['otp']):
-                raise serializers.ValidationError("Invalid OTP. Please enter the correct OTP.",
-                                                  code=status.HTTP_406_NOT_ACCEPTABLE)
+            user = User.objects.get(email=data["email"])
+            if not TokenService.otp_verification(user.email, data["otp"]):
+                raise serializers.ValidationError(
+                    "Invalid OTP. Please enter the correct OTP.",
+                    code=status.HTTP_406_NOT_ACCEPTABLE,
+                )
 
-            return user, data['new_password']
+            return user, data["new_password"]
         except User.DoesNotExist:
-            raise serializers.ValidationError(detail='User with this email does not exist.',
-                                              code=status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError(
+                detail="User with this email does not exist.",
+                code=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -382,8 +425,11 @@ class ChangePasswordSerializer(serializers.Serializer):
         serializers.ValidationError: If the current password is invalid.
 
     """
+
     current_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+    new_password = serializers.CharField(
+        write_only=True, validators=[validate_password]
+    )
 
     def validate_current_password(self, value):
         """
@@ -399,8 +445,10 @@ class ChangePasswordSerializer(serializers.Serializer):
             serializers.ValidationError: If the current password is invalid.
 
         """
-        is_password_valid = self.context['request'].user.check_password(value)
+        is_password_valid = self.context["request"].user.check_password(value)
         if is_password_valid:
             return value
         else:
-            raise serializers.ValidationError(detail='invalid_password.', code=status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError(
+                detail="invalid_password.", code=status.HTTP_404_NOT_FOUND
+            )

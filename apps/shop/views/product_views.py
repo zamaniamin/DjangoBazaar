@@ -25,18 +25,16 @@ class ProductView(viewsets.ModelViewSet):
         get_permissions(): Get the permissions based on the current action.
 
     """
+
     queryset = Product.objects.all()
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
 
     ACTION_SERIALIZERS = {
-        'create': s.ProductCreateSerializer,
+        "create": s.ProductCreateSerializer,
     }
 
-    ACTION_PERMISSIONS = {
-        'list': [AllowAny()],
-        'retrieve': [AllowAny()]
-    }
+    ACTION_PERMISSIONS = {"list": [AllowAny()], "retrieve": [AllowAny()]}
 
     def get_serializer_class(self):
         """
@@ -67,10 +65,14 @@ class ProductView(viewsets.ModelViewSet):
 
         """
         return Product.objects.select_related().prefetch_related(
-            'productoption_set__productoptionitem_set',
+            "productoption_set__productoptionitem_set",
             Prefetch(
-                'productvariant_set',
-                queryset=ProductVariant.objects.select_related('option1', 'option2', 'option3')))
+                "productvariant_set",
+                queryset=ProductVariant.objects.select_related(
+                    "option1", "option2", "option3"
+                ),
+            ),
+        )
 
     def create(self, request, *args, **kwargs):
         # --- validate
