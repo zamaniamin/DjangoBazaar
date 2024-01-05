@@ -139,9 +139,35 @@ class MeSerializer(serializers.ModelSerializer):
 
 
 class ResendActivationSerializer(serializers.Serializer):
+    """
+    Serializer for resending activation email.
+
+    Attributes:
+        email (str): Email address of the user.
+
+    Methods:
+        validate(attrs): Validate the input attributes.
+
+    Raises:
+        serializers.ValidationError: If the user with the provided email does not exist.
+
+    """
     email = serializers.EmailField()
 
     def validate(self, attrs):
+        """
+        Validate the input attributes.
+
+        Args:
+            attrs (dict): Input attributes.
+
+        Returns:
+            User: The user with the provided email.
+
+        Raises:
+            serializers.ValidationError: If the user with the provided email does not exist.
+
+        """
         try:
             user = User.objects.get(email=attrs['email'])
             return user
