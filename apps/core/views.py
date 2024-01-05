@@ -63,15 +63,14 @@ Please note that users cannot log in to their accounts until their email address
     activation=extend_schema(
         tags=["User Activation"],
         summary="Confirm User Registration",
-        description="Verify a new user registration by confirming the provided One-Time Password (OTP). "
-                    "This action confirms the user's email address and activates their account.",
+        description="""Verify a new user registration by confirming the provided One-Time Password (OTP).
+        This action confirms the user's email address and activates their account.""",
     ),
     resend_activation=extend_schema(
         tags=["User Activation"],
         summary="Resend OTP for Registration Confirmation",
-        description="Resend the One-Time Password (OTP) to the user's email for confirming their registration. "
-                    "This action allows the user to receive a new OTP in case the previous one was not received or "
-                    "expired.",
+        description="""Resend the One-Time Password (OTP) to the user's email for confirming their registration.
+        This action allows the user to receive a new OTP in case the previous one was not received or expired.""",
     ),
 )
 class UserViewSet(ModelViewSet):
