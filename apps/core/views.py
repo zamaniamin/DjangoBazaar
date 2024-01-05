@@ -78,7 +78,6 @@ Please note that users cannot log in to their accounts until their email address
 class UserViewSet(ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = serializers.UserSerializer
-    lookup_field = 'pk'
 
     ACTION_PERMISSIONS = {
         'create': [AllowAny()],
