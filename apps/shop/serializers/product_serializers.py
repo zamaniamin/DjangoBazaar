@@ -19,6 +19,16 @@ class ProductOptionSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new Product instance.
+
+    Attributes:
+    - options (list of dict): A list containing dictionaries with 'option_name' and 'productoptionitem_set'.
+    - status (str): The status of the product.
+    - stock (int): The stock quantity of the product.
+    - price (Decimal): The price of the product.
+    """
+
     options = ProductOptionSerializer(many=True, required=False, default=None)
     status = serializers.CharField(max_length=10, allow_blank=True, required=False)
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -30,45 +40,75 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['product_name', 'description', 'status', 'price', 'stock', 'options']
 
-    def validate_options(self, options):
+    @staticmethod
+    def validate_options(options):
         """
-        Merge dictionaries with the same "option_name" and make the "items" unique.
-        Remove options with an empty "items" list.
-        Check max 3 options per product.
+        Validate and process the 'options' field.
+
+        Explanation:
+        - Merge dictionaries with the same 'option_name' and make the 'items' unique.
+        - Remove options with an empty 'items' list.
+        - Check maximum 3 options per product.
+
+        Args:
+        - options (list of dict): A list containing dictionaries with 'option_name' and 'productoptionitem_set'.
+
+        Returns:
+        - list of dict: A processed and validated list of unique options.
+
+        Raises:
+        - serializers.ValidationError: If the number of options exceeds the limit.
         """
 
+        # If options is None, return None
         if options is None:
             return None
 
+        # Dictionary to store merged options
         merged_options = {}
 
+        # Iterate through each option in the list
         for option in options:
+
+            # Extract 'option_name' and 'productoptionitem_set' from the option
             option_name = option['option_name']
             items = option['productoptionitem_set']
 
+            # If 'items' is not empty, update the merged_options dictionary
             if items:
                 if option_name in merged_options:
                     merged_options[option_name].update(items)
                 else:
                     merged_options[option_name] = set(items)
 
+        # Create a list of unique options with sorted 'items'
         unique_options = [
             {"option_name": option_name, "items": list(items)}
             for option_name, items in merged_options.items()
         ]
+
+        # Check if the number of unique options exceeds the limit
         if len(unique_options) > 3:
             raise serializers.ValidationError("A product can have a maximum of 3 options.")
 
-        # I need to sort option-names and item-names, for use to compare two dict in `assertEqual` function in the tests
+        # Sort option-names and item-names for use in comparing two dictionaries in `assertEqual` function in tests
         for option in unique_options:
             option['items'] = sorted(option['items'])
         unique_options = sorted(unique_options, key=lambda x: x['option_name'])
         return unique_options
 
-    def validate_status(self, value):
+    @staticmethod
+    def validate_status(value):
         """
-        Validate the "status" field and return `draft` if it is invalid or not set
+        Validate the 'status' field and return 'draft' if it is invalid or not set.
+
+        Args:
+        - value (str): The status value to be validated.
+
+        Returns:
+        - str: The validated status value.
         """
+
         valid_statuses = [status[0] for status in Product.STATUS_CHOICES]
         if value not in valid_statuses:
             return 'draft'
