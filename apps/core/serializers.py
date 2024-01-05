@@ -116,13 +116,25 @@ class ActivationSerializer(serializers.Serializer):
 
 
 class MeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user profile information.
+
+    Attributes:
+        date_joined (str): Formatted date and time of user registration (read-only).
+        last_login (str): Formatted date and time of user's last login (read-only).
+
+    Meta:
+        model (class): User model class for serialization.
+        fields (list): List of fields to include in the serialized output.
+        read_only_fields (list): List of fields that are read-only in the serialized output.
+
+    """
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
     last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined',
-                  'last_login']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined', 'last_login']
         read_only_fields = ['email', 'is_active']
 
 
