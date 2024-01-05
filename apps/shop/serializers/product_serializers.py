@@ -11,6 +11,15 @@ class ProductOptionItemSerializer(serializers.ModelSerializer):
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProductOption model.
+
+    Attributes:
+    - id (IntegerField): Unique identifier for the product option.
+    - option_name (CharField): Display name of the product option.
+    - items (ListSerializer of CharField, optional): List of item names associated with the product option.
+    """
+
     items = serializers.ListSerializer(child=serializers.CharField(), source='productoptionitem_set', required=False)
 
     class Meta:
@@ -126,7 +135,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     - option2 (CharField, optional): Display name of the second product option.
     - option3 (CharField, optional): Display name of the third product option.
     """
-    
+
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     option1 = serializers.CharField(source='option1.item_name', required=False)
