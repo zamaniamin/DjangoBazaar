@@ -38,6 +38,20 @@ class Product(models.Model):
 
 
 class ProductOption(models.Model):
+    """
+    Model representing a product option.
+
+    Attributes:
+    - product (ForeignKey to Product): The product to which the option belongs.
+    - option_name (CharField): The name of the option.
+
+    Meta:
+    - unique_together: Ensures uniqueness of the combination of 'product' and 'option_name'.
+
+    Methods:
+    - __str__: Returns the string representation of the option, which is its 'option_name'.
+    """
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     option_name = models.CharField(max_length=255)
 
