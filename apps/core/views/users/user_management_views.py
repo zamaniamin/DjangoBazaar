@@ -72,6 +72,9 @@ Please note that users cannot log in to their accounts until their email address
         description="""Resend the One-Time Password (OTP) to the user's email for confirming their registration.
         This action allows the user to receive a new OTP in case the previous one was not received or expired.""",
     ),
+    me=extend_schema(
+        tags=["User Profile"], summary="Manage authenticated user's profile"
+    ),
     change_email=extend_schema(
         tags=["User Profile"],
         summary="Initiate the process of changing the authenticated user's email",
