@@ -10,10 +10,10 @@ from apps.core.services.token_service import TokenService
 
 class UserChangeEmailViewTest(APITestCase):
     def setUp(self):
-        self.base_url = '/auth/users/me/change-email/'
+        self.base_url = "/auth/users/me/change-email/"
 
         self.member = FakeUser.populate_user()
-        self.member_access_token = TokenService.jwt__get_access_token(self.member)
+        self.member_access_token = TokenService.jwt_get_access_token(self.member)
 
         self.inactive_user = FakeUser.populate_inactive_user()
 
@@ -27,7 +27,7 @@ class UserChangeEmailViewTest(APITestCase):
         """
 
         # --- init ---
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
         new_email = FakeUser.random_email()
 
         # --- request ---
@@ -54,16 +54,16 @@ class UserChangeEmailViewTest(APITestCase):
         """
 
         # --- init --
-        self.client.credentials(HTTP_AUTHORIZATION=f'JWT {self.member_access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
         new_email = FakeUser.random_email()
         UserVerification.objects.update_or_create(user=self.member, new_email=new_email)
 
         # --- request ---
         payload = {
             "new_email": new_email,
-            "otp": TokenService.create_otp_token(new_email)
+            "otp": TokenService.create_otp_token(new_email),
         }
-        response = self.client.post(self.base_url + 'conformation/', payload)
+        response = self.client.post(self.base_url + "conformation/", payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -75,6 +75,7 @@ class UserChangeEmailViewTest(APITestCase):
         # --- expected email is removed from UserVerification ---
         with self.assertRaises(ObjectDoesNotExist):
             UserVerification.objects.get(user_id=self.member.id)
+
 
 # TODO test if user already activated.
 # TODO test if the email entered does not match the requested email.

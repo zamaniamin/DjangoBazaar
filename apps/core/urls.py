@@ -2,7 +2,7 @@ from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views
 
-from apps.core.views import UserViewSet
+from apps.core.views.users.user_management_views import UserViewSet
 
 router = DefaultRouter()
 router.register("users", UserViewSet)

@@ -13,11 +13,11 @@ class FakeProduct:
 
     fake = Faker()
 
-    options = ['color', 'size', 'material', 'Style']
-    option_color_items = ['red', 'green', 'black', 'blue', 'yellow']
-    option_size_items = ['S', 'M', 'L', 'XL', 'XXL']
-    option_material_items = ['Cotton', 'Nylon', 'Plastic', 'Wool', 'Leather']
-    option_style_items = ['Casual', 'Formal']
+    options = ["color", "size", "material", "Style"]
+    option_color_items = ["red", "green", "black", "blue", "yellow"]
+    option_size_items = ["S", "M", "L", "XL", "XXL"]
+    option_material_items = ["Cotton", "Nylon", "Plastic", "Wool", "Leather"]
+    option_style_items = ["Casual", "Formal"]
 
     def fill_products(self):
         """
@@ -44,40 +44,31 @@ class FakeProduct:
     @classmethod
     def generate_uniq_options(cls):
         return [
-            {
-                "option_name": "color",
-                "items": cls.option_color_items[:2]
-            },
-            {
-                "option_name": "size",
-                "items": cls.option_size_items[:2]
-            },
-            {
-                "option_name": "material",
-                "items": cls.option_material_items[:2]
-            }
+            {"option_name": "color", "items": cls.option_color_items[:2]},
+            {"option_name": "size", "items": cls.option_size_items[:2]},
+            {"option_name": "material", "items": cls.option_material_items[:2]},
         ]
 
     @classmethod
     def get_payload(cls):
         payload = {
-            'product_name': cls.generate_name(),
-            'description': cls.generate_description(),
-            'status': 'active',
-            'price': cls.get_random_price(),
-            'stock': cls.get_random_stock()
+            "product_name": cls.generate_name(),
+            "description": cls.generate_description(),
+            "status": "active",
+            "price": cls.get_random_price(),
+            "stock": cls.get_random_stock(),
         }
         return payload.copy()
 
     @classmethod
     def get_payload_with_options(cls):
         payload = {
-            'product_name': cls.generate_name(),
-            'description': cls.generate_description(),
-            'status': 'active',
-            'price': cls.get_random_price(),
-            'stock': cls.get_random_stock(),
-            'options': cls.generate_uniq_options()
+            "product_name": cls.generate_name(),
+            "description": cls.generate_description(),
+            "status": "active",
+            "price": cls.get_random_price(),
+            "stock": cls.get_random_stock(),
+            "options": cls.generate_uniq_options(),
         }
         return payload.copy()
 
