@@ -37,28 +37,28 @@ Please note that users cannot log in to their accounts until their email address
     ),
     list=extend_schema(
         tags=["User Management"],
-        summary="",
-        description="",
+        summary="List all users",
+        description="Retrieve a list of all users.",
     ),
     retrieve=extend_schema(
         tags=["User Management"],
-        summary="",
-        description="",
+        summary="Retrieve user details",
+        description="Retrieve details of a specific user by ID.",
     ),
     update=extend_schema(
         tags=["User Management"],
-        summary="",
-        description="",
+        summary="Update user details",
+        description="Update details of a specific user by ID.",
     ),
     partial_update=extend_schema(
         tags=["User Management"],
-        summary="",
-        description="",
+        summary="Partial update user details",
+        description="Partially update details of a specific user by ID.",
     ),
     destroy=extend_schema(
         tags=["User Management"],
-        summary="",
-        description="",
+        summary="Delete a user",
+        description="Delete a specific user by ID.",
     ),
     activation=extend_schema(
         tags=["User Activation"],
@@ -71,6 +71,31 @@ Please note that users cannot log in to their accounts until their email address
         summary="Resend OTP for Registration Confirmation",
         description="""Resend the One-Time Password (OTP) to the user's email for confirming their registration.
         This action allows the user to receive a new OTP in case the previous one was not received or expired.""",
+    ),
+    change_email=extend_schema(
+        tags=["User Profile"],
+        summary="Initiate the process of changing the authenticated user's email",
+        description="Send an OTP code to the new email address and save the new email in the UserVerification model.",
+    ),
+    change_email_conformation=extend_schema(
+        tags=["User Profile"],
+        summary="Confirm the change of the authenticated user's email",
+        description="Update the user's email to the new email after confirming the provided OTP.",
+    ),
+    change_password=extend_schema(
+        tags=["User Profile"],
+        summary="Change the authenticated user's password",
+        description="Set a new password for the authenticated user.",
+    ),
+    reset_password=extend_schema(
+        tags=["User Profile"],
+        summary="Reset the authenticated user's password",
+        description="Send a reset password email to the user.",
+    ),
+    reset_password_conformation=extend_schema(
+        tags=["User Profile"],
+        summary="Confirm the reset of the authenticated user's password",
+        description="Set a new password for the user after confirming the provided OTP.",
     ),
 )
 class UserViewSet(ModelViewSet):
@@ -226,32 +251,9 @@ class UserViewSet(ModelViewSet):
     # ----------
     # --- me ---
     # ----------
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
+
     @action(["get", "put", "patch"], detail=False)
     def me(self, request, *args, **kwargs):
-        """
-        Endpoint for managing the authenticated user's profile.
-
-        GET:
-        Retrieve details of the authenticated user.
-
-        PUT:
-        Update the details of the authenticated user.
-
-        PATCH:
-        Partially update the details of the authenticated user.
-
-        Returns:
-        - For GET: Returns a response with the details of the authenticated user.
-        - For PUT: Returns a response indicating the success of the update.
-        - For PATCH: Returns a response indicating the success of the partial update.
-
-        """
-
         self.get_object = self.get_instance
         if request.method == "GET":
             return self.retrieve(request, *args, **kwargs)
@@ -259,23 +261,12 @@ class UserViewSet(ModelViewSet):
             return self.update(request, *args, **kwargs)
         elif request.method == "PATCH":
             return self.partial_update(request, *args, **kwargs)
-        # elif request.method == 'DELETE':
-        #     return self.destroy(request, *args, **kwargs)
 
     # --------------------
     # --- change email ---
     # --------------------
 
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
-    @action(
-        ["post"],
-        url_path="me/change-email",
-        detail=False,
-    )
+    @action(["post"], url_path="me/change-email", detail=False)
     def change_email(self, request, *args, **kwargs):
         """
         Endpoint for initiating the process of changing the authenticated user's email.
@@ -304,11 +295,6 @@ class UserViewSet(ModelViewSet):
         EmailService.send_change_email(new_email)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
     @action(["post"], url_path="me/change-email/conformation", detail=False)
     def change_email_conformation(self, request, *args, **kwargs):
         """
@@ -352,11 +338,6 @@ class UserViewSet(ModelViewSet):
     # --- change password ---
     # -----------------------
 
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
     @action(["post"], url_path="me/change-password", detail=False)
     def change_password(self, request, *args, **kwargs):
         # --- validate ---
@@ -370,11 +351,6 @@ class UserViewSet(ModelViewSet):
         # logout_user(self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
     @action(["post"], url_path="me/reset-password", detail=False)
     def reset_password(self, request, *args, **kwargs):
         # --- validate ---
@@ -390,11 +366,6 @@ class UserViewSet(ModelViewSet):
             {"detail": "first activate you account"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-    @extend_schema(
-        tags=["User Profile"],
-        summary="",
-        description="",
-    )
     @action(["post"], url_path="me/reset-password/conformation", detail=False)
     def reset_password_conformation(self, request, *args, **kwargs):
         # --- validate ---
