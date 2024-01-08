@@ -205,9 +205,11 @@ PASSWORD_HASHERS = [
 # --- Django Debug Toolbar ---
 # ----------------------------
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+# Debug Toolbar is displayed if our IP address is listed in INTERNAL_IPS, in our case, only if we are in DEBUG mode
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
 
 # -------------
 # --- Redis ---
