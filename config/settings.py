@@ -219,7 +219,6 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/"),
-        "KEY_PREFIX": "imdb",
         "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
         # "TIMEOUT": None,  # cache keys never expire, the default value is 5 minutes (300 seconds)
         # "TIMEOUT": 0,  # expire the cache immediately (don’t cache)
