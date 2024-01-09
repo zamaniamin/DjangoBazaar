@@ -227,19 +227,24 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 
-    def assertExpectedDatetimeFormat(self, product_datetime):
+    def assertExpectedDatetimeFormat(
+        self, expected_product, published_at: str | None = ""
+    ):
         """
         Asserts the expected format for datetime strings.
         """
-        self.assertDatetimeFormat(product_datetime["created_at"])
-        self.assertDatetimeFormat(product_datetime["updated_at"])
-        self.assertDatetimeFormat(product_datetime["published_at"])
+        self.assertDatetimeFormat(expected_product["created_at"])
+        self.assertDatetimeFormat(expected_product["updated_at"])
+        if published_at is not None:
+            self.assertDatetimeFormat(expected_product["published_at"])
+        else:
+            self.assertIs(expected_product["published_at"], None)
 
     # ---------------------
     # --- Test Payloads ---
     # ---------------------
 
-    def _test_create_product_required_fields(self):
+    def test_create_product_required_fields(self):
         """
         Test create a product with required fields.
         """
@@ -250,8 +255,26 @@ class CreateProductTest(APITestCase, TimeTestCase):
         }
         response = self.client.post(self.product_path, payload)
 
-        # --- expected ---
+        # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["description"], None)
+        self.assertEqual(expected["status"], "draft")
+
+        # --- expected product date and time ---
+        self.assertExpectedDatetimeFormat(expected, published_at=None)
+
+        # --- expected product options ---
+        self.assertEqual(expected["options"], None)
+
+        # --- expected product variants ---
+        self.assertEqual(len(expected["variants"]), 1)
+        self.assertExpectedVariants(
+            expected["variants"],
+            has_options=False,
+        )
 
 
 # TODO test access permissions
