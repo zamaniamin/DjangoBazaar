@@ -276,5 +276,34 @@ class CreateProductTest(APITestCase, TimeTestCase):
             has_options=False,
         )
 
+    def test_create_product_invalid_required_fields(self):
+        """
+        Test various scenarios with invalid 'product_name' in the payload during product creation.
+        """
+        invalid_payloads = [
+            {"product_name": ""},
+            {"product_name": " "},
+            {"product_name": 1},
+            {"product_name": []},
+            {"product_name": ["d"]},
+            {"product_name": ["d", "l"]},
+            {"product_name": [{"": 0}]},
+            {"product_name": None},
+            {"product_name": True},
+            {"product_name": False},
+            {"product_name": {}},
+            {"product_name": ()},
+            {"product_name": ("d",)},
+            {"product_name": 0},
+            {"product_name": 0.0},
+            {"product_name": 0j},
+            {"product_name": "1" * 256},
+        ]
+        for payload in invalid_payloads:
+            response = self.client.post(
+                self.product_path, payload, content_type="application/json"
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 # TODO test access permissions
