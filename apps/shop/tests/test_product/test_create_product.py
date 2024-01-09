@@ -66,9 +66,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["status"], payload["status"])
 
         # --- expected product date and time ---
-        self.assertDatetimeFormat(expected["created_at"])
-        self.assertDatetimeFormat(expected["updated_at"])
-        self.assertDatetimeFormat(expected["published_at"])
+        self.assertExpectedDatetimeFormat(expected)
 
         # --- expected product options ---
         self.assertEqual(expected["options"], None)
@@ -121,10 +119,31 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
+        # --- expected product date and time ---
+        self.assertExpectedDatetimeFormat(expected)
+
         # --- expected product options ---
-        self.assertIsInstance(expected["options"], list)
         self.assertEqual(len(expected["options"]), 3)
-        for option in expected["options"]:
+        self.assertExpectedOptions(expected["options"], payload["options"])
+
+        # --- expected product variants ---
+        self.assertTrue(len(expected["variants"]) == 8)
+        self.assertExpectedVariants(
+            expected["variants"], payload["price"], payload["stock"]
+        )
+
+        # --- expected product media ---
+        # TODO add media
+        # self.assertEqual(expected["media"], None)
+
+    def assertExpectedOptions(self, expected_options, payload_options):
+        """
+        Asserts the expected options in the response.
+        """
+
+        self.assertIsInstance(expected_options, list)
+
+        for option in expected_options:
             self.assertIsInstance(option["id"], int)
             self.assertIsInstance(option["option_name"], str)
 
@@ -132,59 +151,72 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.assertTrue(
                 any(
                     payload_option["option_name"] == option["option_name"]
-                    for payload_option in self.unique_options
+                    for payload_option in expected_options
                 )
             )
 
-            # --- expected items ---
+            # Expected items
             self.assertIsInstance(option["items"], list)
-            self.assertTrue(len(option["items"]) == 2)
-            for item in option["items"]:
-                # Find the corresponding payload option
-                payload_option = next(
-                    (
-                        payload_option
-                        for payload_option in payload["options"]
-                        if payload_option["option_name"] == option["option_name"]
-                    ),
-                    None,
-                )
+            self.assertExpectedItems(option, payload_options)
 
-                self.assertIsNotNone(
-                    payload_option,
-                    f"Option '{option['option_name']}' not found in payload options",
-                )
+    def assertExpectedItems(self, expected_option, payload_options):
+        """
+        Asserts the expected items in the response.
+        """
 
-                # Assert item name matches the payload
-                self.assertIn(
-                    item,
-                    payload_option["items"],
-                    f"Item name '{item}' not found in payload items",
-                )
+        option_name = expected_option["option_name"]
+        option_items = expected_option["items"]
+        self.assertIsInstance(option_items, list)
 
-        # --- expected product date and time ---
-        self.assertDatetimeFormat(expected["created_at"])
-        self.assertDatetimeFormat(expected["updated_at"])
-        self.assertDatetimeFormat(expected["published_at"])
+        # Iterate through each item in the actual option's 'items'
+        for item in option_items:
+            # Find the corresponding payload option in the payload_options list
+            payload_option = next(
+                (
+                    payload_option
+                    for payload_option in payload_options
+                    if payload_option["option_name"] == option_name
+                ),
+                None,
+            )
 
-        # --- expected product variants ---
-        self.assertIsInstance(expected["variants"], list)
-        self.assertTrue(len(expected["variants"]) == 8)
-        for variant in expected["variants"]:
+            # Check if the payload option corresponding to the current item exists
+            self.assertIsNotNone(
+                payload_option,
+                f"Option '{expected_option['option_name']}' not found in payload options",
+            )
+
+            # Assert that the item name in the response matches the payload items for the corresponding option
+            self.assertIn(
+                item,
+                payload_option["items"],
+                f"Item name '{item}' not found in payload items",
+            )
+
+    def assertExpectedVariants(self, actual_variants, expected_price, expected_stock):
+        """
+        Asserts the expected variants in the response.
+        """
+        self.assertIsInstance(actual_variants, list)
+
+        for variant in actual_variants:
             self.assertIsInstance(variant["id"], int)
-            # self.assertIsInstance(variant['product_id'], int)
             self.assertIsInstance(variant["price"], float)
-            self.assertEqual(variant["price"], 11)
-            self.assertEqual(variant["stock"], 11)
+            self.assertEqual(variant["price"], expected_price)
+            self.assertEqual(variant["stock"], expected_stock)
             self.assertIsInstance(variant["option1"], str)
             self.assertIsInstance(variant["option2"], str)
             self.assertIsInstance(variant["option3"], str)
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 
-        # --- expected product media ---
-        # TODO add media
-        # self.assertEqual(expected["media"], None)
+    def assertExpectedDatetimeFormat(self, product_datetime):
+        """
+        Asserts the expected format for datetime strings.
+        """
+        self.assertDatetimeFormat(product_datetime["created_at"])
+        self.assertDatetimeFormat(product_datetime["updated_at"])
+        self.assertDatetimeFormat(product_datetime["published_at"])
 
     # ---------------------
     # --- Test Payloads ---
