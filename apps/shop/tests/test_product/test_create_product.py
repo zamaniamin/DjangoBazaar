@@ -66,6 +66,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["status"], payload["status"])
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
+        self.assertDatetimeFormat(expected["published_at"])
 
         # --- expected product options ---
         self.assertEqual(expected["options"], None)
