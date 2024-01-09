@@ -52,7 +52,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     """
 
     options = ProductOptionSerializer(many=True, required=False, default=None)
-    status = serializers.CharField(max_length=10, allow_blank=True, required=False)
+    status = serializers.CharField(
+        max_length=10, allow_blank=True, required=False, default="draft"
+    )
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
     price = serializers.DecimalField(
         max_digits=12,
