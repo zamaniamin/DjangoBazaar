@@ -64,6 +64,8 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["product_name"], payload["product_name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
+
+        # --- expected product date and time ---
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
         self.assertDatetimeFormat(expected["published_at"])
@@ -111,7 +113,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.product_path, data=json.dumps(payload), content_type="application/json"
         )
 
-        # --- expected ---
+        # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
@@ -119,7 +121,7 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
-        # --- expected options ---
+        # --- expected product options ---
         self.assertIsInstance(expected["options"], list)
         self.assertEqual(len(expected["options"]), 3)
         for option in expected["options"]:
@@ -160,12 +162,12 @@ class CreateProductTest(APITestCase, TimeTestCase):
                     f"Item name '{item}' not found in payload items",
                 )
 
-        # --- expected date and time ---
+        # --- expected product date and time ---
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
-        self.assertTrue(expected["published_at"] is None)
+        self.assertDatetimeFormat(expected["published_at"])
 
-        # --- expected variants ---
+        # --- expected product variants ---
         self.assertIsInstance(expected["variants"], list)
         self.assertTrue(len(expected["variants"]) == 8)
         for variant in expected["variants"]:
@@ -183,10 +185,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
         # --- expected product media ---
         # TODO add media
         # self.assertEqual(expected["media"], None)
-
-    # def out_response(self, data):
-    #     for data, value in data.items():
-    #         print(data, ":", value)
 
     # ---------------------
     # --- Test Payloads ---
