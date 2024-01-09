@@ -73,7 +73,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         # --- expected product variants ---
         self.assertEqual(len(expected["variants"]), 1)
-        variant = expected["variants"]
         self.assertExpectedVariants(
             expected["variants"],
             expected_price=payload["price"],
