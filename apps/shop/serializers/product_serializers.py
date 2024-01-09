@@ -210,3 +210,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
         ]
+
+# TODO update examples response body values in swagger base on the serializers
