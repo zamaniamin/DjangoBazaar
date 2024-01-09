@@ -85,6 +85,10 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertDatetimeFormat(variant["created_at"])
         self.assertDatetimeFormat(variant["updated_at"])
 
+        # --- expected product media ---
+        # TODO add media
+        # self.assertEqual(expected["media"], None)
+
     def test_create_product_with_options(self):
         """
         Test create a product with options.
@@ -176,7 +180,9 @@ class CreateProductTest(APITestCase, TimeTestCase):
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 
-        # --- expected media ---
+        # --- expected product media ---
+        # TODO add media
+        # self.assertEqual(expected["media"], None)
 
     # def out_response(self, data):
     #     for data, value in data.items():
