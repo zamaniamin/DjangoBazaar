@@ -120,6 +120,7 @@ class ProductService:
             cls.__create_product_variants(bulk_create=True)
         else:
             # If no options_data is provided, set cls.options to None
+            cls.__create_product_variants()
             cls.options = None
 
     @classmethod

@@ -90,7 +90,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         """
 
         # If options is None, return None
-        if options is None:
+        if not options:
             return None
 
         # Dictionary to store merged options
@@ -160,9 +160,15 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    option1 = serializers.CharField(source="option1.item_name", required=False)
-    option2 = serializers.CharField(source="option2.item_name", required=False)
-    option3 = serializers.CharField(source="option3.item_name", required=False)
+    option1 = serializers.CharField(
+        source="option1.item_name", required=False, default=None
+    )
+    option2 = serializers.CharField(
+        source="option2.item_name", required=False, default=None
+    )
+    option3 = serializers.CharField(
+        source="option3.item_name", required=False, default=None
+    )
 
     class Meta:
         model = ProductVariant
@@ -210,5 +216,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
         ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Check if the "options" field is an empty list and set it to None
+        if not representation["options"]:
+            representation["options"] = None
+
+        return representation
+
 
 # TODO update examples response body values in swagger base on the serializers
