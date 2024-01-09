@@ -57,18 +57,20 @@ class CreateProductTest(APITestCase, TimeTestCase):
         }
         response = self.client.post(self.product_path, payload)
 
-        # --- expected ---
+        # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
         self.assertEqual(expected["product_name"], payload["product_name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
+        self.assertDatetimeFormat(expected["created_at"])
+        self.assertDatetimeFormat(expected["updated_at"])
 
-        # --- options ---
+        # --- expected product options ---
         self.assertEqual(expected["options"], None)
 
-        # --- variants ---
+        # --- expected product variants ---
         self.assertIsInstance(expected["variants"], list)
         self.assertEqual(len(expected["variants"]), 1)
         variant = expected["variants"][0]
