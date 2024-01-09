@@ -72,18 +72,14 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertEqual(expected["options"], None)
 
         # --- expected product variants ---
-        self.assertIsInstance(expected["variants"], list)
         self.assertEqual(len(expected["variants"]), 1)
-        variant = expected["variants"][0]
-        self.assertIsInstance(variant["id"], int)
-        self.assertIsInstance(variant["price"], float)
-        self.assertEqual(variant["price"], 11)
-        self.assertEqual(variant["stock"], 11)
-        self.assertEqual(variant["option1"], None)
-        self.assertEqual(variant["option2"], None)
-        self.assertEqual(variant["option3"], None)
-        self.assertDatetimeFormat(variant["created_at"])
-        self.assertDatetimeFormat(variant["updated_at"])
+        variant = expected["variants"]
+        self.assertExpectedVariants(
+            expected["variants"],
+            expected_price=payload["price"],
+            expected_stock=payload["stock"],
+            has_options=False,
+        )
 
         # --- expected product media ---
         # TODO add media
@@ -193,20 +189,42 @@ class CreateProductTest(APITestCase, TimeTestCase):
                 f"Item name '{item}' not found in payload items",
             )
 
-    def assertExpectedVariants(self, actual_variants, expected_price, expected_stock):
+    def assertExpectedVariants(
+        self,
+        expected_variants,
+        expected_price: int | float = None,
+        expected_stock: int = None,
+        has_options: bool = True,
+    ):
         """
         Asserts the expected variants in the response.
         """
-        self.assertIsInstance(actual_variants, list)
+        self.assertIsInstance(expected_variants, list)
 
-        for variant in actual_variants:
+        for variant in expected_variants:
             self.assertIsInstance(variant["id"], int)
+
+            # --- price ---
             self.assertIsInstance(variant["price"], float)
-            self.assertEqual(variant["price"], expected_price)
-            self.assertEqual(variant["stock"], expected_stock)
-            self.assertIsInstance(variant["option1"], str)
-            self.assertIsInstance(variant["option2"], str)
-            self.assertIsInstance(variant["option3"], str)
+            if expected_price is not None:
+                self.assertEqual(variant["price"], expected_price)
+
+            # --- stock ---
+            self.assertIsInstance(variant["stock"], int)
+            if expected_stock is not None:
+                self.assertEqual(variant["stock"], expected_stock)
+
+            # --- options ---
+            if not has_options:
+                self.assertEqual(variant["option1"], None)
+                self.assertEqual(variant["option2"], None)
+                self.assertEqual(variant["option3"], None)
+            else:
+                self.assertIsInstance(variant["option1"], str)
+                self.assertIsInstance(variant["option2"], str)
+                self.assertIsInstance(variant["option3"], str)
+
+            # --- datetime ---
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 
