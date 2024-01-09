@@ -53,12 +53,34 @@ class CreateProductTest(APITestCase, TimeTestCase):
             "status": "active",
             "price": 11,
             "stock": 11,
-            "options": "",
+            "options": [],
         }
         response = self.client.post(self.product_path, payload)
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["description"], payload["description"])
+        self.assertEqual(expected["status"], payload["status"])
+
+        # --- options ---
+        self.assertEqual(expected["options"], None)
+
+        # --- variants ---
+        self.assertIsInstance(expected["variants"], list)
+        self.assertEqual(len(expected["variants"]), 1)
+        variant = expected["variants"][0]
+        self.assertIsInstance(variant["id"], int)
+        self.assertIsInstance(variant["price"], float)
+        self.assertEqual(variant["price"], 11)
+        self.assertEqual(variant["stock"], 11)
+        self.assertEqual(variant["option1"], None)
+        self.assertEqual(variant["option2"], None)
+        self.assertEqual(variant["option3"], None)
+        self.assertDatetimeFormat(variant["created_at"])
+        self.assertDatetimeFormat(variant["updated_at"])
 
     def test_create_product_with_options(self):
         """
@@ -156,6 +178,10 @@ class CreateProductTest(APITestCase, TimeTestCase):
     # def out_response(self, data):
     #     for data, value in data.items():
     #         print(data, ":", value)
+
+    # ---------------------
+    # --- Test Payloads ---
+    # ---------------------
 
     def _test_create_product_required_fields(self):
         """
