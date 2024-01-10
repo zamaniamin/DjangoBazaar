@@ -100,9 +100,14 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         # Iterate through each option in the list
         for option in options:
-            # Extract 'option_name' and 'productoptionitem_set' from the option
-            option_name = option["option_name"]
-            items = option["productoptionitem_set"]
+            option_name = option.get("option_name")
+            items = option.get("productoptionitem_set")
+
+            # Raise an error if 'productoptionitem_set' is missing
+            if items is None:
+                raise serializers.ValidationError(
+                    "Each option in 'options' must have a 'items'."
+                )
 
             # If 'items' is not empty, update the merged_options dictionary
             if items:
