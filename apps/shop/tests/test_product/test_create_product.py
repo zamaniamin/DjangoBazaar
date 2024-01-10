@@ -38,6 +38,33 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
+    def test_create_access_as_member(self):
+        """
+        Test create a product, base on user role, current user is a member.
+        - authenticated users.
+        """
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+
+        # --- request ---
+        response = self.client.post(self.product_path, {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_access_as_guest(self):
+        """
+        Test create a product, base on user role, current user is a guest.
+        - non-authenticated users.
+        """
+
+        # --- request ---
+        self.client.credentials()
+        response = self.client.post(self.product_path, {})
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_create_product(self):
         """
         Test create a product by assuming valid data.
@@ -518,10 +545,56 @@ class CreateProductTest(APITestCase, TimeTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_invalid_price(self):
+        """
+        Test create a product with invalid price.
+        """
+        invalid_options = [
+            {"product_name": "test", "price": -10},
+            {"product_name": "test", "price": None},
+            {"product_name": "test", "price": ""},
+        ]
+        for payload in invalid_options:
+            response = self.client.post(
+                self.product_path,
+                data=json.dumps(payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-# TODO test invalid_price
-# TODO test invalid_stock
-# TODO test max_3_options
+    def test_invalid_stock(self):
+        """
+        Test create a product with invalid stock.
+        """
+        invalid_options = [
+            {"product_name": "test", "stock": -10},
+            {"product_name": "test", "stock": None},
+            {"product_name": "test", "stock": ""},
+            {"product_name": "test", "stock": 1.2},
+        ]
+        for payload in invalid_options:
+            response = self.client.post(
+                self.product_path,
+                data=json.dumps(payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_max_3_options(self):
+        """
+        Test create a product with more than three options.
+        """
+        payload = {
+            "product_name": "blob",
+            "options": [
+                {"option_name": "color", "items": ["red"]},
+                {"option_name": "size", "items": ["small"]},
+                {"option_name": "material", "items": ["x1", "x2"]},
+                {"option_name": "blob", "items": ["b"]},
+            ],
+        }
 
-# TODO test access permissions
+        response = self.client.post(
+            self.product_path, json.dumps(payload), content_type="application/json"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
