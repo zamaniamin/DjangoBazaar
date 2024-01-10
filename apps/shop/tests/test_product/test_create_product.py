@@ -5,7 +5,6 @@ from rest_framework.utils import json
 from apps.core.faker.user_faker import FakeUser
 from apps.core.services.token_service import TokenService
 from apps.core.tests.base_test import TimeTestCase
-from apps.shop.faker.product_faker import FakeProduct
 
 
 class CreateProductTest(APITestCase, TimeTestCase):
@@ -25,11 +24,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         cls.member = FakeUser.populate_user()
         cls.member_access_token = TokenService.jwt_get_access_token(cls.member)
-
-        cls.inactive_user = FakeUser.populate_inactive_user()
-
-        # --- fake product ---
-        cls.unique_options = FakeProduct.generate_uniq_options()
 
     def setUp(self):
         """
