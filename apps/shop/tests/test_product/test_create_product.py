@@ -452,10 +452,73 @@ class CreateProductTest(APITestCase, TimeTestCase):
         self.assertTrue(len(expected["variants"]) == 4)
         self.assertExpectedVariants(expected["variants"])
 
+    def test_remove_empty_options(self):
+        """
+        Test Remove options if its "items" is empty list
+        """
 
-# TODO test blank_option
-# TODO test remove_empty_options
-# TODO test invalid_options
+        payload = {
+            "product_name": "string33",
+            "options": [
+                {"option_name": "color", "items": ["c"]},
+                {"option_name": "material", "items": ["m"]},
+                {"option_name": "size", "items": ["s"]},
+                {"option_name": "style", "items": []},
+            ],
+        }
+        response = self.client.post(
+            self.product_path, data=json.dumps(payload), content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(response.data["options"]), 3)
+
+    def test_invalid_options(self):
+        """
+        Test create a product with:
+        - invalid option in the payload
+        - invalid option-item in payload
+        """
+
+        invalid_options = [
+            {"product_name": "test", "options": ""},
+            {"product_name": "test", "options": [""]},
+            {"product_name": "test", "options": ["blob"]},
+            {"product_name": "test", "options": [{}]},
+            {"product_name": "test", "options": [{"option_name": []}]},
+            {"product_name": "test", "options": [{"option_name": ""}]},
+            {"product_name": "test", "options": [{"option_name": "", "items": []}]},
+            {"product_name": "test", "options": [{"option_name": "", "items": ["a"]}]},
+            {"product_name": "test", "options": [{"option_name": "blob", "items": ""}]},
+            # {
+            #     "product_name": "test",
+            #     "options": [{"option_name": "blob", "items": [1]}],
+            # },
+            {
+                "product_name": "test",
+                "options": [{"option_name": "blob", "items_blob": ["a"]}],
+            },
+            {
+                "product_name": "test",
+                "options": [{"option_blob": "blob", "items": ["a"]}],
+            },
+            {
+                "product_name": "test",
+                "options": [{"items": ["a"], "option_blob": "blob"}],
+            },
+            {
+                "product_name": "test",
+                "options": [{"option_name": "blob", "items": [["a", "b"]]}],
+            },
+        ]
+        for payload in invalid_options:
+            response = self.client.post(
+                self.product_path,
+                data=json.dumps(payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 # TODO test invalid_price
 # TODO test invalid_stock
 # TODO test max_3_options
