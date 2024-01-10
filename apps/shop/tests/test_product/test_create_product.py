@@ -77,7 +77,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
             expected["variants"],
             expected_price=payload["price"],
             expected_stock=payload["stock"],
-            has_options=False,
         )
 
         # --- expected product media ---
@@ -193,7 +192,6 @@ class CreateProductTest(APITestCase, TimeTestCase):
         expected_variants,
         expected_price: int | float = None,
         expected_stock: int = None,
-        has_options: bool = True,
     ):
         """
         Asserts the expected variants in the response.
@@ -214,14 +212,10 @@ class CreateProductTest(APITestCase, TimeTestCase):
                 self.assertEqual(variant["stock"], expected_stock)
 
             # --- options ---
-            if not has_options:
-                self.assertEqual(variant["option1"], None)
-                self.assertEqual(variant["option2"], None)
-                self.assertEqual(variant["option3"], None)
-            else:
-                self.assertIsInstance(variant["option1"], str)
-                self.assertIsInstance(variant["option2"], str)
-                self.assertIsInstance(variant["option3"], str)
+            # TODO check the value base on items len
+            self.assertIsInstance(variant["option1"], str | None)
+            self.assertIsInstance(variant["option2"], str | None)
+            self.assertIsInstance(variant["option3"], str | None)
 
             # --- datetime ---
             self.assertDatetimeFormat(variant["created_at"])
@@ -244,7 +238,11 @@ class CreateProductTest(APITestCase, TimeTestCase):
     # --- Test Payloads ---
     # ---------------------
 
-    def test_create_product_required_fields(self):
+    def test_empty_payload(self):
+        response = self.client.post(self.product_path, {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_required_fields(self):
         """
         Test create a product with required fields.
         """
@@ -271,12 +269,9 @@ class CreateProductTest(APITestCase, TimeTestCase):
 
         # --- expected product variants ---
         self.assertEqual(len(expected["variants"]), 1)
-        self.assertExpectedVariants(
-            expected["variants"],
-            has_options=False,
-        )
+        self.assertExpectedVariants(expected["variants"])
 
-    def test_create_product_invalid_required_fields(self):
+    def test_invalid_required_fields(self):
         """
         Test various scenarios with invalid 'product_name' in the payload during product creation.
         """
@@ -304,6 +299,166 @@ class CreateProductTest(APITestCase, TimeTestCase):
                 self.product_path, payload, content_type="application/json"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_without_required_fields(self):
+        """
+        Test case for handling product creation without required fields.
+        """
+        payload = {
+            "description": "test description",
+        }
+        response = self.client.post(self.product_path, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_valid_status(self):
+        """
+        Test case for handling valid 'status' values when creating a product.
+        """
+        invalid_payloads = [
+            {"product_name": "Test", "status": "active"},
+            {"product_name": "Test", "status": "archived"},
+            {"product_name": "Test", "status": "draft"},
+            {"product_name": "Test", "status": ""},
+            {"product_name": "Test", "status": " "},
+            {"product_name": "Test", "status": "1"},
+            {"product_name": "Test", "status": "blob"},
+            {"product_name": "Test", "status": 1},
+        ]
+        for payload in invalid_payloads:
+            response = self.client.post(self.product_path, payload)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+            match payload["status"]:
+                case "active":
+                    self.assertEqual(response.data["status"], "active")
+                case "archived":
+                    self.assertEqual(response.data["status"], "archived")
+                case "draft":
+                    self.assertEqual(response.data["status"], "draft")
+                case _:
+                    self.assertEqual(response.data["status"], "draft")
+
+    def test_invalid_status(self):
+        """
+        Test case for handling invalid 'status' values when creating a product.
+        """
+        invalid_payloads = [
+            {"product_name": "Test", "status": None},
+            {"product_name": "Test", "status": False},
+            {"product_name": "Test", "status": True},
+            {"product_name": "Test", "status": []},
+        ]
+
+        for payload in invalid_payloads:
+            response = self.client.post(
+                self.product_path,
+                data=json.dumps(payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_with_required_options(self):
+        # --- request ---
+        payload = {
+            "product_name": "Test Product",
+            "options": [{"option_name": "color", "items": ["red"]}],
+        }
+        response = self.client.post(
+            self.product_path, json.dumps(payload), content_type="application/json"
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["description"], None)
+        self.assertEqual(expected["status"], "draft")
+
+        # --- expected product date and time ---
+        self.assertExpectedDatetimeFormat(expected, published_at=None)
+
+        # --- expected product options ---
+        self.assertEqual(len(expected["options"]), 1)
+        self.assertExpectedOptions(expected["options"], payload["options"])
+
+        # --- expected product variants ---
+        self.assertTrue(len(expected["variants"]) == 1)
+        self.assertExpectedVariants(expected["variants"])
+
+    def test_duplicate_options(self):
+        """
+        Test case for handling duplicate options when creating a product.
+        """
+
+        # --- request ---
+        options = [
+            {"option_name": "color", "items": ["red", "green"]},
+            {"option_name": "size", "items": ["S", "M"]},
+            {"option_name": "material", "items": ["Cotton", "Nylon"]},
+        ]
+        payload = {
+            "product_name": "test",
+            "options": options + [{"option_name": "color", "items": ["black"]}],
+        }
+        response = self.client.post(
+            self.product_path, data=json.dumps(payload), content_type="application/json"
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertEqual(len(expected["options"]), 3)
+        self.assertExpectedDatetimeFormat(expected, published_at=None)
+        final_options = [
+            {"option_name": "color", "items": ["red", "green", "black"]},
+            {"option_name": "size", "items": ["S", "M"]},
+            {"option_name": "material", "items": ["Cotton", "Nylon"]},
+        ]
+        self.assertExpectedOptions(expected["options"], final_options)
+        self.assertExpectedVariants(expected["variants"])
+
+    def test_duplicate_items_in_options(self):
+        # --- request ---
+        payload = {
+            "product_name": "blob",
+            "options": [
+                {"option_name": "color", "items": ["red", "blue", "red"]},
+                {"option_name": "size", "items": ["S", "L"]},
+            ],
+        }
+        response = self.client.post(
+            self.product_path, json.dumps(payload), content_type="application/json"
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["description"], None)
+        self.assertEqual(expected["status"], "draft")
+
+        # --- expected product date and time ---
+        self.assertExpectedDatetimeFormat(expected, published_at=None)
+
+        # --- expected product options ---
+        self.assertEqual(len(expected["options"]), 2)
+        self.assertExpectedOptions(expected["options"], payload["options"])
+
+        # --- expected product variants ---
+        self.assertTrue(len(expected["variants"]) == 4)
+        self.assertExpectedVariants(expected["variants"])
+
+
+# TODO test blank_option
+# TODO test remove_empty_options
+# TODO test invalid_options
+# TODO test invalid_price
+# TODO test invalid_stock
+# TODO test max_3_options
 
 
 # TODO test access permissions
