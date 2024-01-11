@@ -1,6 +1,7 @@
 from itertools import product as options_combination
 
 from django.db.models import Prefetch
+from django.utils import timezone
 
 from apps.core.services.time_service import DateTime
 from apps.shop.models.product import (
@@ -41,6 +42,9 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
+
+        if data["status"] == "active":
+            data["published_at"] = timezone.now()
 
         # Create product
         cls.product = Product.objects.create(**data)
@@ -120,6 +124,7 @@ class ProductService:
             cls.__create_product_variants(bulk_create=True)
         else:
             # If no options_data is provided, set cls.options to None
+            cls.__create_product_variants()
             cls.options = None
 
     @classmethod

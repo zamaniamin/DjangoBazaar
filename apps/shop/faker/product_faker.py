@@ -57,6 +57,7 @@ class FakeProduct:
             "status": "active",
             "price": cls.get_random_price(),
             "stock": cls.get_random_stock(),
+            "options": [],
         }
         return payload.copy()
 
@@ -80,3 +81,49 @@ class FakeProduct:
 
         product_data = cls.get_payload_with_options()
         return product_data.copy(), ProductService.create_product(**product_data)
+
+    @classmethod
+    def populate_product(cls):
+        product_data = cls.get_payload()
+        return product_data.copy(), ProductService.create_product(**product_data)
+
+    @classmethod
+    def populate_demo_products(cls):
+        for product in range(2):
+            cls.populate_product()
+
+        for product in range(2):
+            cls.populate_product_with_options()
+
+    @classmethod
+    def populate_active_product(cls):
+        payload = {
+            "product_name": "test",
+            "status": "active",
+            "price": cls.get_random_price(),
+            "stock": cls.get_random_stock(),
+            "options": [],
+        }
+        return ProductService.create_product(**payload)
+
+    @classmethod
+    def populate_archived_product(cls):
+        payload = {
+            "product_name": "test",
+            "status": "archived",
+            "price": cls.get_random_price(),
+            "stock": cls.get_random_stock(),
+            "options": [],
+        }
+        return ProductService.create_product(**payload)
+
+    @classmethod
+    def populate_draft_product(cls):
+        payload = {
+            "product_name": "test",
+            "status": "draft",
+            "price": cls.get_random_price(),
+            "stock": cls.get_random_stock(),
+            "options": [],
+        }
+        return ProductService.create_product(**payload)

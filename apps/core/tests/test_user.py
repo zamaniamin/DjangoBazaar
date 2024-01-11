@@ -12,8 +12,8 @@ from apps.core.services.token_service import TokenService
 
 class UserViewTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/"
-        self.me_url = self.base_url + "me/"
+        self.base_url = "/auth/users/"  # TODO use reverse()
+        self.me_url = self.base_url + "me/"  # TODO use reverse()
 
         self.admin = FakeUser.populate_admin()
         self.admin_access_token = TokenService.jwt_get_access_token(self.admin)
@@ -559,7 +559,7 @@ class UserViewTest(APITestCase):
 
 class JWTTests(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/jwt/"
+        self.base_url = "/auth/jwt/"  # TODO use reverse()
         self.user = FakeUser.populate_user()
 
     def test_create_jwt(self):

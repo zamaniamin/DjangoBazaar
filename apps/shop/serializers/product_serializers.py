@@ -52,7 +52,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     """
 
     options = ProductOptionSerializer(many=True, required=False, default=None)
-    status = serializers.CharField(max_length=10, allow_blank=True, required=False)
+    status = serializers.CharField(
+        max_length=10, allow_blank=True, required=False, default="draft"
+    )
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
     price = serializers.DecimalField(
         max_digits=12,
@@ -90,7 +92,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         """
 
         # If options is None, return None
-        if options is None:
+        if not options:
             return None
 
         # Dictionary to store merged options
@@ -98,9 +100,14 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         # Iterate through each option in the list
         for option in options:
-            # Extract 'option_name' and 'productoptionitem_set' from the option
-            option_name = option["option_name"]
-            items = option["productoptionitem_set"]
+            option_name = option.get("option_name")
+            items = option.get("productoptionitem_set")
+
+            # Raise an error if 'productoptionitem_set' is missing
+            if items is None:
+                raise serializers.ValidationError(
+                    "Each option in 'options' must have a 'items'."
+                )
 
             # If 'items' is not empty, update the merged_options dictionary
             if items:
@@ -160,9 +167,15 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    option1 = serializers.CharField(source="option1.item_name", required=False)
-    option2 = serializers.CharField(source="option2.item_name", required=False)
-    option3 = serializers.CharField(source="option3.item_name", required=False)
+    option1 = serializers.CharField(
+        source="option1.item_name", required=False, default=None
+    )
+    option2 = serializers.CharField(
+        source="option2.item_name", required=False, default=None
+    )
+    option3 = serializers.CharField(
+        source="option3.item_name", required=False, default=None
+    )
 
     class Meta:
         model = ProductVariant
@@ -210,3 +223,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
         ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Check if the "options" field is an empty list and set it to None
+        if not representation["options"]:
+            representation["options"] = None
+
+        return representation
+
+
+# TODO update examples response body values in swagger base on the serializers

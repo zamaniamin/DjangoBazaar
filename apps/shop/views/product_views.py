@@ -63,8 +63,11 @@ class ProductView(viewsets.ModelViewSet):
         Returns:
             QuerySet: A queryset for the Product model with select and prefetch related options and variants.
 
+        Notes:
+            - For non-admin users, products with a status of 'draft' are excluded from the queryset.
+
         """
-        return Product.objects.select_related().prefetch_related(
+        queryset = Product.objects.select_related().prefetch_related(
             "productoption_set__productoptionitem_set",
             Prefetch(
                 "productvariant_set",
@@ -74,13 +77,38 @@ class ProductView(viewsets.ModelViewSet):
             ),
         )
 
+        user = self.request.user
+        if not user.is_staff:  # Check if the user is not an admin
+            queryset = queryset.exclude(status="draft")
+
+        return queryset
+
     def create(self, request, *args, **kwargs):
-        # --- validate
+        """
+        Create method for product creation.
+
+        This method is part of a view or API endpoint for creating a new product. It performs the following steps:
+
+        1. Validates the request data using the provided serializer.
+        2. Creates a product using the ProductService.create_product method with the validated data.
+        3. Serializes the created product using the ProductSerializer.
+        4. Returns the serialized response with HTTP 201 Created status.
+
+        Parameters:
+            - request: The HTTP request object.
+            - args: Additional positional arguments.
+            - kwargs: Additional keyword arguments.
+
+        Returns:
+            - Response: Serialized data of the created product with HTTP 201 Created status.
+        """
+
+        # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.validated_data
 
-        # --- create product ---
+        # Create product
         product = ProductService.create_product(**payload)
 
         # Serialize the created product for the response

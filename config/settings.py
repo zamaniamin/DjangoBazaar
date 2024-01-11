@@ -205,6 +205,22 @@ PASSWORD_HASHERS = [
 # --- Django Debug Toolbar ---
 # ----------------------------
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+# Debug Toolbar is displayed if our IP address is listed in INTERNAL_IPS, in our case, only if we are in DEBUG mode
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
+
+# -------------
+# --- Redis ---
+# -------------
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/"),
+        "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
+        # "TIMEOUT": None,  # cache keys never expire, the default value is 5 minutes (300 seconds)
+        # "TIMEOUT": 0,  # expire the cache immediately (don’t cache)
+    }
+}
