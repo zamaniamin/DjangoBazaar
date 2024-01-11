@@ -23,6 +23,11 @@ class RetrieveProductTest(ProductBaseTestCase):
             cls.variable_product,
         ) = FakeProduct.populate_product_with_options()
 
+        # --- products with different status ---
+        cls.active_product = FakeProduct.populate_active_product()
+        cls.archived_product = FakeProduct.populate_archived_product()
+        cls.draft_product = FakeProduct.populate_draft_product()
+
     def test_retrieve_product(self):
         """
         Test retrieve a product:
@@ -111,18 +116,38 @@ class RetrieveProductTest(ProductBaseTestCase):
 
     def test_retrieve_product_by_admin(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
-        response = self.client.get(f"{self.product_path}{self.simple_product.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for product in [self.active_product, self.archived_product, self.draft_product]:
+            # --- request ---
+            response = self.client.get(f"{self.product_path}{product.id}/")
+
+            # --- expected
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_product_by_admin(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+
+        # --- request ---
         response = self.client.get(self.product_path)
+
+        # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        for product in expected:
+            self.assertIn(product["status"], ["active", "archived", "draft"])
 
     def test_retrieve_product_by_user(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
-        response = self.client.get(f"{self.product_path}{self.simple_product.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for product in [self.active_product, self.archived_product, self.draft_product]:
+            # --- request ---
+            response = self.client.get(f"{self.product_path}{product.id}/")
+
+            # --- expected --
+            if product.status in ["active", "archived"]:
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+            elif product.status == "draft":
+                self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_product_by_user(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
@@ -139,7 +164,6 @@ class RetrieveProductTest(ProductBaseTestCase):
         response = self.client.get(self.product_path)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
 # TODO test_with_media
 # TODO test_with_options_media
-
-
