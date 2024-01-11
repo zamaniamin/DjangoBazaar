@@ -84,6 +84,25 @@ class ProductView(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
+        """
+        Create method for product creation.
+
+        This method is part of a view or API endpoint for creating a new product. It performs the following steps:
+
+        1. Validates the request data using the provided serializer.
+        2. Creates a product using the ProductService.create_product method with the validated data.
+        3. Serializes the created product using the ProductSerializer.
+        4. Returns the serialized response with HTTP 201 Created status.
+
+        Parameters:
+            - request: The HTTP request object.
+            - args: Additional positional arguments.
+            - kwargs: Additional keyword arguments.
+
+        Returns:
+            - Response: Serialized data of the created product with HTTP 201 Created status.
+        """
+
         # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
