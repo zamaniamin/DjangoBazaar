@@ -84,12 +84,12 @@ class ProductView(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        # --- validate
+        # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.validated_data
 
-        # --- create product ---
+        # Create product
         product = ProductService.create_product(**payload)
 
         # Serialize the created product for the response
