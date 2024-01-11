@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.utils import json
 
@@ -21,7 +22,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
 
         # --- request ---
-        response = self.client.post(self.product_path, {})
+        response = self.client.post(reverse("product-list"), {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -34,7 +35,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         # --- request ---
         self.client.credentials()
-        response = self.client.post(self.product_path, {})
+        response = self.client.post(reverse("product-list"), {})
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -56,7 +57,7 @@ class CreateProductTest(ProductBaseTestCase):
             "stock": 11,
             "options": [],
         }
-        response = self.client.post(self.product_path, payload)
+        response = self.client.post(reverse("product-list"), payload)
 
         # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -103,7 +104,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            self.product_path, data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
         )
 
         # --- expected product ---
@@ -136,7 +137,7 @@ class CreateProductTest(ProductBaseTestCase):
     # ---------------------
 
     def test_empty_payload(self):
-        response = self.client.post(self.product_path, {})
+        response = self.client.post(reverse("product-list"), {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_required_fields(self):
@@ -148,7 +149,7 @@ class CreateProductTest(ProductBaseTestCase):
         payload = {
             "product_name": "test product",
         }
-        response = self.client.post(self.product_path, payload)
+        response = self.client.post(reverse("product-list"), payload)
 
         # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -193,7 +194,7 @@ class CreateProductTest(ProductBaseTestCase):
         ]
         for payload in invalid_payloads:
             response = self.client.post(
-                self.product_path, payload, content_type="application/json"
+                reverse("product-list"), payload, content_type="application/json"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -204,7 +205,7 @@ class CreateProductTest(ProductBaseTestCase):
         payload = {
             "description": "test description",
         }
-        response = self.client.post(self.product_path, payload)
+        response = self.client.post(reverse("product-list"), payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_valid_status(self):
@@ -222,7 +223,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"product_name": "Test", "status": 1},
         ]
         for payload in invalid_payloads:
-            response = self.client.post(self.product_path, payload)
+            response = self.client.post(reverse("product-list"), payload)
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
             match payload["status"]:
@@ -248,7 +249,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         for payload in invalid_payloads:
             response = self.client.post(
-                self.product_path,
+                reverse("product-list"),
                 data=json.dumps(payload),
                 content_type="application/json",
             )
@@ -261,7 +262,7 @@ class CreateProductTest(ProductBaseTestCase):
             "options": [{"option_name": "color", "items": ["red"]}],
         }
         response = self.client.post(
-            self.product_path, json.dumps(payload), content_type="application/json"
+            reverse("product-list"), json.dumps(payload), content_type="application/json"
         )
 
         # --- expected ---
@@ -300,7 +301,7 @@ class CreateProductTest(ProductBaseTestCase):
             "options": options + [{"option_name": "color", "items": ["black"]}],
         }
         response = self.client.post(
-            self.product_path, data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
         )
 
         # --- expected ---
@@ -326,7 +327,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            self.product_path, json.dumps(payload), content_type="application/json"
+            reverse("product-list"), json.dumps(payload), content_type="application/json"
         )
 
         # --- expected ---
@@ -364,7 +365,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            self.product_path, data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(response.data["options"]), 3)
@@ -409,7 +410,7 @@ class CreateProductTest(ProductBaseTestCase):
         ]
         for payload in invalid_options:
             response = self.client.post(
-                self.product_path,
+                reverse("product-list"),
                 data=json.dumps(payload),
                 content_type="application/json",
             )
@@ -426,7 +427,7 @@ class CreateProductTest(ProductBaseTestCase):
         ]
         for payload in invalid_options:
             response = self.client.post(
-                self.product_path,
+                reverse("product-list"),
                 data=json.dumps(payload),
                 content_type="application/json",
             )
@@ -444,7 +445,7 @@ class CreateProductTest(ProductBaseTestCase):
         ]
         for payload in invalid_options:
             response = self.client.post(
-                self.product_path,
+                reverse("product-list"),
                 data=json.dumps(payload),
                 content_type="application/json",
             )
@@ -465,6 +466,6 @@ class CreateProductTest(ProductBaseTestCase):
         }
 
         response = self.client.post(
-            self.product_path, json.dumps(payload), content_type="application/json"
+            reverse("product-list"), json.dumps(payload), content_type="application/json"
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST

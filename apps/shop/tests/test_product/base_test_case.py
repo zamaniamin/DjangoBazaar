@@ -6,7 +6,6 @@ from apps.core.tests.base_test import TimeTestCase
 
 
 class ProductBaseTestCase(APITestCase, TimeTestCase):
-    product_path = "/products/"
     member = None
     admin = None
 
