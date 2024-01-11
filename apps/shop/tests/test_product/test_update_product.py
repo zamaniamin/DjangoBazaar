@@ -31,11 +31,35 @@ class UpdateProductTest(ProductBaseTestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
+    def test_update_required_fields(self):
+        # --- request ---
+        payload = {"product_name": "updated name"}
+
+        response = self.client.put(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(expected["product_name"], "updated name")
+
+    def test_update_without_required_fields(self):
+        # --- request ---
+        payload = {"description": "updated description"}
+
+        response = self.client.put(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_partial_update(self):
         # --- request ---
         payloads = [
-            {"product_name": "updated name"},
-            {"description": "updated name"},
+            {"product_name": "partial updated name"},
+            {"description": "partial updated description"},
             {"status": "archived"},
         ]
         for payload in payloads:
@@ -49,6 +73,23 @@ class UpdateProductTest(ProductBaseTestCase):
             expected = response.json()
             for key, value in payload.items():
                 self.assertEqual(expected[key], value)
+
+    def test_partial_update_without_required_fields(self):
+        # --- request ---
+        payload = {"description": "updated description"}
+
+        response = self.client.patch(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+        )
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(expected["description"], "updated description")
+
+    # ------------------------
+    # --- invalid payloads ---
+    # ------------------------
 
 
 # TODO test update simple product
