@@ -31,32 +31,65 @@ class UpdateProductTest(ProductBaseTestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
-    def test_update_required_fields(self):
-        # --- request ---
-        payload = {"product_name": "updated name"}
+    def test_update_by_user(self):
+        """Test updating a product by a user (expects HTTP 403 Forbidden)."""
 
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        response = self.client.put(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_partial_update_by_user(self):
+        """Test partially updating a product by a user (expects HTTP 403 Forbidden)."""
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        response = self.client.patch(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_by_guest(self):
+        """Test updating a product by a guest (expects HTTP 401 Unauthorized)."""
+
+        self.client.credentials()
+        response = self.client.put(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_partial_update_by_guest(self):
+        """Test updating a product by a guest (expects HTTP 401 Unauthorized)."""
+
+        self.client.credentials()
+        response = self.client.patch(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_required_fields(self):
+        """Test updating required fields of a product."""
+
+        payload = {"product_name": "updated name"}
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
         )
-
-        # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["product_name"], "updated name")
 
     def test_update_without_required_fields(self):
-        # --- request ---
-        payload = {"description": "updated description"}
+        """Test updating a product without required fields (expects HTTP 400 Bad Request)."""
 
+        payload = {"description": "updated description"}
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
         )
-
-        # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_partial_update(self):
-        # --- request ---
+        """Test partial updates of a product."""
+
         payloads = [
             {"product_name": "partial updated name"},
             {"description": "partial updated description"},
@@ -67,32 +100,18 @@ class UpdateProductTest(ProductBaseTestCase):
                 reverse("product-detail", kwargs={"pk": self.simple_product.id}),
                 payload,
             )
-
-            # --- expected ---
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             expected = response.json()
             for key, value in payload.items():
                 self.assertEqual(expected[key], value)
 
     def test_partial_update_without_required_fields(self):
-        # --- request ---
-        payload = {"description": "updated description"}
+        """Test partial update without required fields of a product."""
 
+        payload = {"description": "updated description"}
         response = self.client.patch(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
         )
-
-        # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["description"], "updated description")
-
-    # ------------------------
-    # --- invalid payloads ---
-    # ------------------------
-
-
-# TODO test update simple product
-# TODO test update variable product
-# TODO test partial update
-# TODO test access permissions
