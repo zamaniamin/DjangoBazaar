@@ -63,8 +63,11 @@ class ProductView(viewsets.ModelViewSet):
         Returns:
             QuerySet: A queryset for the Product model with select and prefetch related options and variants.
 
+        Notes:
+            - For non-admin users, products with a status of 'draft' are excluded from the queryset.
+
         """
-        return Product.objects.select_related().prefetch_related(
+        queryset = Product.objects.select_related().prefetch_related(
             "productoption_set__productoptionitem_set",
             Prefetch(
                 "productvariant_set",
@@ -73,6 +76,12 @@ class ProductView(viewsets.ModelViewSet):
                 ),
             ),
         )
+
+        user = self.request.user
+        if not user.is_staff:  # Check if the user is not an admin
+            queryset = queryset.exclude(status="draft")
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         # --- validate
