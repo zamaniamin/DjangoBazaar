@@ -93,6 +93,7 @@ class FakeProduct:
             cls.populate_product()
 
         for product in range(2):
+            # TODO populate product with random options
             cls.populate_product_with_options()
 
     @classmethod
