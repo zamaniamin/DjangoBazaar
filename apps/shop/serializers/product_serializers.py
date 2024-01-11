@@ -223,11 +223,17 @@ class ProductSerializer(serializers.ModelSerializer):
 
     """
 
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    published_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False)
-    options = ProductOptionSerializer(many=True, source="productoption_set")
-    variants = ProductVariantSerializer(many=True, source="productvariant_set")
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    published_at = serializers.DateTimeField(
+        format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
+    )
+    options = ProductOptionSerializer(
+        many=True, source="productoption_set", read_only=True
+    )
+    variants = ProductVariantSerializer(
+        many=True, source="productvariant_set", read_only=True
+    )
 
     class Meta:
         model = Product
@@ -236,13 +242,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "product_name",
             "description",
             "status",
-            "options",
-            "variants",
-            "created_at",
-            "updated_at",
-            "published_at",
-        ]
-        read_only_fields = [
             "options",
             "variants",
             "created_at",
