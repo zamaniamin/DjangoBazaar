@@ -129,6 +129,13 @@ class RetrieveProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_product_by_admin(self):
+        """
+        Test case to retrieve product details by an admin user.
+
+        The test sets the admin user's credentials and then sends GET requests for product details
+        for each of the active, archived, and draft products. It asserts that the response status code
+        is HTTP 200 OK for each request.
+        """
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
@@ -140,8 +147,15 @@ class RetrieveProductTest(ProductBaseTestCase):
             # --- expected
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_product_by_guest(self):
-        self.client.credentials()
+    def test_retrieve_product_by_user(self):
+        """
+        Test case to retrieve product details by a regular user.
+
+        The test sets the regular user's credentials and then sends GET requests for product details
+        for each of the active, archived, and draft products. It asserts that the response status code is
+        HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
+        """
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -155,8 +169,15 @@ class RetrieveProductTest(ProductBaseTestCase):
             elif product.status == "draft":
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_retrieve_product_by_user(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+    def test_retrieve_product_by_guest(self):
+        """
+        Test case to retrieve product details by a guest user.
+
+        The test resets the client's credentials, simulating a guest user, and then sends GET requests
+        for product details for each of the active, archived, and draft products. It asserts that the
+        response status code is HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
+        """
+        self.client.credentials()
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -175,6 +196,15 @@ class RetrieveProductTest(ProductBaseTestCase):
     # --------------------
 
     def test_list_product_by_admin(self):
+        """
+        Test case to list all products by an admin user.
+
+        The test sets the admin user's credentials and then sends a GET request to retrieve the list of all products.
+        It asserts that the response status code is HTTP 200 OK, the number of products in the response is 5,
+        and each product has a status of "active", "archived", or "draft".
+
+        """
+
         # --- request ---
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
         response = self.client.get(reverse("product-list"))
@@ -187,6 +217,14 @@ class RetrieveProductTest(ProductBaseTestCase):
             self.assertIn(product["status"], ["active", "archived", "draft"])
 
     def test_list_product_by_user(self):
+        """
+        Test case to list products by a regular user.
+
+        The test sets the regular user's credentials and then sends a GET request to retrieve the list of products.
+        It asserts that the response status code is HTTP 200 OK, the number of products in the response is 4,
+        and each product has a status of "active" or "archived", excluding "draft" products.
+        """
+
         # --- request ---
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
         response = self.client.get(reverse("product-list"))
@@ -200,6 +238,15 @@ class RetrieveProductTest(ProductBaseTestCase):
             self.assertIn(product["status"], ["active", "archived"])
 
     def test_list_product_by_guest(self):
+        """
+        Test case to list products by a guest user.
+
+        The test resets the client's credentials, simulating a guest user, and then sends a GET request
+        to retrieve the list of products. It asserts that the response status code is HTTP 200 OK,
+        the number of products in the response is 4, and each product has a status of "active" or "archived",
+        excluding "draft" products.
+        """
+
         # --- request ---
         self.client.credentials()
         response = self.client.get(reverse("product-list"))
@@ -213,6 +260,14 @@ class RetrieveProductTest(ProductBaseTestCase):
             self.assertIn(product["status"], ["active", "archived"])
 
     def test_list_products_check_product_detail(self):
+        """
+        Test case to list products and check the structure of each product's details.
+
+        The test resets the client's credentials, simulating a guest user, and then sends a GET request
+        to retrieve the list of products. It asserts that the response status code is HTTP 200 OK,
+        the number of products in the response is 4, and each product has the expected structure.
+        """
+
         # --- request ---
         self.client.credentials()
         response = self.client.get(reverse("product-list"))
@@ -237,6 +292,13 @@ class RetrieveProductTest(ProductBaseTestCase):
 
 class ListNoProductsTest(APITestCase):
     def test_list_no_products(self):
+        """
+        Test case for listing products when there are none available.
+
+        The test sends a GET request to retrieve the list of products and asserts that the response status code
+        is HTTP 200 OK, and the number of products in the response is 0.
+        """
+
         # --- request ---
         response = self.client.get(reverse("product-list"))
 
@@ -247,8 +309,14 @@ class ListNoProductsTest(APITestCase):
 
 
 class ListDraftProductsTest(APITestCase):
-
     def test_list_draft_products(self):
+        """
+        Test case to list draft products.
+
+        The test populates a draft product, sends a GET request to retrieve the list of products,
+        and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
+        """
+        
         FakeProduct.populate_draft_product()
 
         # --- request ---
