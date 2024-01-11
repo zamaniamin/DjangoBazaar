@@ -151,19 +151,45 @@ class RetrieveProductTest(ProductBaseTestCase):
 
     def test_list_product_by_user(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+
+        # --- request ---
         response = self.client.get(self.product_path)
+
+        # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        for product in expected:
+            self.assertNotIn(product["status"], ["draft"])
+            self.assertIn(product["status"], ["active", "archived"])
 
     def test_retrieve_product_by_guest(self):
         self.client.credentials()
-        response = self.client.get(f"{self.product_path}{self.simple_product.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        for product in [self.active_product, self.archived_product, self.draft_product]:
+            # --- request ---
+            response = self.client.get(f"{self.product_path}{product.id}/")
+
+            # --- expected --
+            if product.status in ["active", "archived"]:
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+            elif product.status == "draft":
+                self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_product_by_guest(self):
         self.client.credentials()
-        response = self.client.get(self.product_path)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # --- request ---
+        response = self.client.get(self.product_path)
+
+        # --- expected ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        for product in expected:
+            self.assertNotIn(product["status"], ["draft"])
+            self.assertIn(product["status"], ["active", "archived"])
+
+
+# TODO test_list_products
 
 # TODO test_with_media
 # TODO test_with_options_media
