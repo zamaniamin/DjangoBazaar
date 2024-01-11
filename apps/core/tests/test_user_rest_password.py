@@ -8,7 +8,7 @@ from apps.core.services.token_service import TokenService
 
 class UserResetPasswordViewTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/me/"
+        self.base_url = "/auth/users/me/"  # TODO use reverse()
 
         self.member = FakeUser.populate_user()
         self.member_access_token = TokenService.jwt_get_access_token(self.member)
