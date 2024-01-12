@@ -39,6 +39,47 @@ class ProductOptionSerializer(serializers.ModelSerializer):
         fields = ["id", "option_name", "items"]
 
 
+class ProductVariantSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ProductVariant model.
+
+    Attributes:
+    - product_id (IntegerField): ID of the associated product.
+    - option1 (CharField, optional): Display name of the first product option.
+    - option2 (CharField, optional): Display name of the second product option.
+    - option3 (CharField, optional): Display name of the third product option.
+    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
+    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
+    """
+
+    product_id = serializers.IntegerField(source="product.id", read_only=True)
+    option1 = serializers.CharField(
+        source="option1.item_name", required=False, default=None, read_only=True
+    )
+    option2 = serializers.CharField(
+        source="option2.item_name", required=False, default=None, read_only=True
+    )
+    option3 = serializers.CharField(
+        source="option3.item_name", required=False, default=None, read_only=True
+    )
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "id",
+            "product_id",
+            "price",
+            "stock",
+            "option1",
+            "option2",
+            "option3",
+            "created_at",
+            "updated_at",
+        ]
+
+
 class ProductCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating a new Product instance.
@@ -51,7 +92,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
     """
 
-    options = ProductOptionSerializer(many=True, required=False, default=None)
     status = serializers.CharField(
         max_length=10, allow_blank=True, required=False, default="draft"
     )
@@ -65,10 +105,30 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             MaxValueValidator(limit_value=9999999999.99),
         ],
     )
+    options = ProductOptionSerializer(many=True, required=False, default=None)
+    variants = ProductVariantSerializer(
+        many=True, source="productvariant_set", read_only=True
+    )
 
     class Meta:
         model = Product
-        fields = ["product_name", "description", "status", "price", "stock", "options"]
+        fields = [
+            "product_name",
+            "description",
+            "status",
+            "price",
+            "stock",
+            "options",
+            "variants",
+            "created_at",
+            "updated_at",
+            "published_at",
+        ]
+        read_only_fields = [
+            "created_at",
+            "updated_at",
+            "published_at",
+        ]
 
     @staticmethod
     def validate_options(options):
@@ -152,45 +212,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         return value
 
 
-class ProductVariantSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the ProductVariant model.
-
-    Attributes:
-    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
-    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
-    - option1 (CharField, optional): Display name of the first product option.
-    - option2 (CharField, optional): Display name of the second product option.
-    - option3 (CharField, optional): Display name of the third product option.
-
-    """
-
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    option1 = serializers.CharField(
-        source="option1.item_name", required=False, default=None
-    )
-    option2 = serializers.CharField(
-        source="option2.item_name", required=False, default=None
-    )
-    option3 = serializers.CharField(
-        source="option3.item_name", required=False, default=None
-    )
-
-    class Meta:
-        model = ProductVariant
-        fields = [
-            "id",
-            "price",
-            "stock",
-            "option1",
-            "option2",
-            "option3",
-            "created_at",
-            "updated_at",
-        ]
-
-
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serializer for the Product model.
@@ -204,11 +225,17 @@ class ProductSerializer(serializers.ModelSerializer):
 
     """
 
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    published_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False)
-    options = ProductOptionSerializer(many=True, source="productoption_set")
-    variants = ProductVariantSerializer(many=True, source="productvariant_set")
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    published_at = serializers.DateTimeField(
+        format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
+    )
+    options = ProductOptionSerializer(
+        many=True, source="productoption_set", read_only=True
+    )
+    variants = ProductVariantSerializer(
+        many=True, source="productvariant_set", read_only=True
+    )
 
     class Meta:
         model = Product
@@ -232,6 +259,3 @@ class ProductSerializer(serializers.ModelSerializer):
             representation["options"] = None
 
         return representation
-
-
-# TODO update examples response body values in swagger base on the serializers

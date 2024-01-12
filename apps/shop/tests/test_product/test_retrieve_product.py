@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.shop.faker.product_faker import FakeProduct
+from apps.shop.faker.product_faker import ProductFaker
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -19,16 +19,16 @@ class RetrieveProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = FakeProduct.populate_product()
+        ) = ProductFaker.populate_product_by_payload()
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = FakeProduct.populate_product_with_options()
+        ) = ProductFaker.populate_variable_product_by_payload()
 
         # --- products with different status ---
-        cls.active_product = FakeProduct.populate_active_product()
-        cls.archived_product = FakeProduct.populate_archived_product()
-        cls.draft_product = FakeProduct.populate_draft_product()
+        cls.active_product = ProductFaker.populate_active_product()
+        cls.archived_product = ProductFaker.populate_archived_product()
+        cls.draft_product = ProductFaker.populate_draft_product()
 
     # ----------------------
     # --- single product ---
@@ -155,7 +155,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for each of the active, archived, and draft products. It asserts that the response status code is
         HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -226,7 +226,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---
@@ -317,7 +317,7 @@ class ListDraftProductsTest(APITestCase):
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
         
-        FakeProduct.populate_draft_product()
+        ProductFaker.populate_draft_product()
 
         # --- request ---
         response = self.client.get(reverse("product-list"))

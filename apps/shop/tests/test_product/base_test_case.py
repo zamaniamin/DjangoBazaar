@@ -1,27 +1,7 @@
-from rest_framework.test import APITestCase
-
-from apps.core.faker.user_faker import FakeUser
-from apps.core.services.token_service import TokenService
-from apps.core.tests.base_test import TimeTestCase
+from apps.core.tests.base_test import BaseCoreTestCase
 
 
-class ProductBaseTestCase(APITestCase, TimeTestCase):
-    member = None
-    admin = None
-
-    @classmethod
-    def setUpTestData(cls):
-        """
-        Set up data that will be shared across all test methods in this class.
-        """
-
-        # --- create users ---
-        cls.admin = FakeUser.populate_admin()
-        cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
-
-        cls.member = FakeUser.populate_user()
-        cls.member_access_token = TokenService.jwt_get_access_token(cls.member)
-
+class ProductBaseTestCase(BaseCoreTestCase):
     def assertExpectedOptions(self, expected_options, payload_options):
         """
         Asserts the expected options in the response.
@@ -81,7 +61,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
 
     def assertExpectedVariants(
         self,
-        expected_variants,
+        expected_variants: list,
         expected_price: int | float = None,
         expected_stock: int = None,
     ):
@@ -92,6 +72,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
 
         for variant in expected_variants:
             self.assertIsInstance(variant["id"], int)
+            self.assertIsInstance(variant["product_id"], int)
 
             # --- price ---
             self.assertIsInstance(variant["price"], float)
