@@ -74,7 +74,7 @@ class FakeProduct:
         return payload.copy()
 
     @classmethod
-    def populate_product_with_options(cls):
+    def populate_variable_product_by_payload(cls):
         """
         Crete a product with options. (with all fields)
         """
@@ -83,18 +83,18 @@ class FakeProduct:
         return product_data.copy(), ProductService.create_product(**product_data)
 
     @classmethod
-    def populate_product(cls):
+    def populate_product_by_payload(cls):
         product_data = cls.get_payload()
         return product_data.copy(), ProductService.create_product(**product_data)
 
     @classmethod
     def populate_demo_products(cls):
         for product in range(2):
-            cls.populate_product()
+            cls.populate_product_by_payload()
 
         for product in range(2):
             # TODO populate product with random options
-            cls.populate_product_with_options()
+            cls.populate_variable_product_by_payload()
 
     @classmethod
     def populate_active_product(cls):

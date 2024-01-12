@@ -19,11 +19,11 @@ class RetrieveProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = FakeProduct.populate_product()
+        ) = FakeProduct.populate_product_by_payload()
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = FakeProduct.populate_product_with_options()
+        ) = FakeProduct.populate_variable_product_by_payload()
 
         # --- products with different status ---
         cls.active_product = FakeProduct.populate_active_product()
