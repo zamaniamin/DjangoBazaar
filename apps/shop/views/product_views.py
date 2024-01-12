@@ -1,31 +1,28 @@
 from django.db.models import Prefetch
-from rest_framework import viewsets, status
+from drf_spectacular.utils import extend_schema_view, extend_schema
+from rest_framework import viewsets, status, mixins
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
 
+@extend_schema_view(
+    create=extend_schema(tags=["Product"], summary="Create a new product"),
+    retrieve=extend_schema(tags=["Product"], summary="Retrieve a single product."),
+    list=extend_schema(tags=["Product"], summary="Retrieve a list of products"),
+    update=extend_schema(tags=["Product"], summary="Update a product"),
+    partial_update=extend_schema(tags=["Product"], summary="Partial update a product"),
+    destroy=extend_schema(tags=["Product"], summary="Deletes a product"),
+    list_variant=extend_schema(
+        tags=["Product Variant"], summary="Retrieves a list of product variants"
+    ),
+)
 class ProductViewSet(viewsets.ModelViewSet):
-    """
-    A ViewSet for managing Product instances.
-
-    Attributes:
-        queryset: The queryset of Product instances.
-        serializer_class: The serializer class for Product instances.
-        permission_classes: The permission classes for accessing Product instances.
-
-    ACTION_SERIALIZERS (dict): A dictionary mapping actions to specific serializer classes.
-    ACTION_PERMISSIONS (dict): A dictionary mapping actions to specific permission classes.
-
-    Methods:
-        get_serializer_class(): Get the serializer class based on the current action.
-        get_permissions(): Get the permissions based on the current action.
-
-    """
-
     queryset = Product.objects.all()
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
@@ -34,39 +31,19 @@ class ProductViewSet(viewsets.ModelViewSet):
         "create": s.ProductCreateSerializer,
     }
 
-    ACTION_PERMISSIONS = {"list": [AllowAny()], "retrieve": [AllowAny()]}
+    ACTION_PERMISSIONS = {
+        "list": [AllowAny()],
+        "retrieve": [AllowAny()],
+        "list_variant": [AllowAny()],
+    }
 
     def get_serializer_class(self):
-        """
-        Get the serializer class based on the current action.
-
-        Returns:
-            type: The serializer class to use for the current action.
-
-        """
         return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
 
     def get_permissions(self):
-        """
-        Get the permissions based on the current action.
-
-        Returns:
-            list: The list of permission classes to apply for the current action.
-
-        """
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
-        """
-        Get the queryset for the Product model with related options and variants.
-
-        Returns:
-            QuerySet: A queryset for the Product model with select and prefetch related options and variants.
-
-        Notes:
-            - For non-admin users, products with a status of 'draft' are excluded from the queryset.
-
-        """
         queryset = Product.objects.select_related().prefetch_related(
             "productoption_set__productoptionitem_set",
             Prefetch(
@@ -78,31 +55,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
 
         user = self.request.user
-        if not user.is_staff:  # Check if the user is not an admin
+        if not user.is_staff:
             queryset = queryset.exclude(status="draft")
 
         return queryset
 
     def create(self, request, *args, **kwargs):
-        """
-        Create method for product creation.
-
-        This method is part of a view or API endpoint for creating a new product. It performs the following steps:
-
-        1. Validates the request data using the provided serializer.
-        2. Creates a product using the ProductService.create_product method with the validated data.
-        3. Serializes the created product using the ProductSerializer.
-        4. Returns the serialized response with HTTP 201 Created status.
-
-        Parameters:
-            - request: The HTTP request object.
-            - args: Additional positional arguments.
-            - kwargs: Additional keyword arguments.
-
-        Returns:
-            - Response: Serialized data of the created product with HTTP 201 Created status.
-        """
-
         # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -117,4 +75,47 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Return the serialized response
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+    # TODO add new variant to product and update the product options base on new items in the variant
+    # @action(detail=True, methods=["post"], url_path="variants")
+    # def create_variant(self, request, pk=None):
+    #     """"Creates a new product variant""""
+    #     ...
 
+    @action(detail=True, methods=["get"], url_path="variants")
+    def list_variant(self, request, pk=None):
+        """Retrieve and return a list of variants associated with a specific product."""
+
+        product = self.get_object()
+        variants = product.productvariant_set.all()
+        serializer = s.ProductVariantSerializer(variants, many=True)
+        return Response(serializer.data)
+
+
+@extend_schema_view(
+    retrieve=extend_schema(
+        tags=["Product Variant"], summary="Retrieves a single product variant"
+    ),
+    update=extend_schema(
+        tags=["Product Variant"], summary="Updates an existing product variant"
+    ),
+    partial_update=extend_schema(
+        tags=["Product Variant"], summary="Partial updates an existing product variant"
+    ),
+    destroy=extend_schema(
+        tags=["Product Variant"], summary="Remove an existing product variant"
+    ),
+)
+class ProductVariantViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericViewSet,
+):
+    queryset = ProductVariant.objects.all()
+    serializer_class = s.ProductVariantSerializer
+    permission_classes = [IsAdminUser]
+
+    ACTION_PERMISSIONS = {"retrieve": [AllowAny()]}
+
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
