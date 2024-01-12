@@ -6,7 +6,7 @@ from apps.core.tests.base_test import TimeTestCase
 
 
 class ProductBaseTestCase(APITestCase, TimeTestCase):
-    member = None
+    regular_user = None
     admin = None
 
     @classmethod
@@ -19,8 +19,8 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
         cls.admin = FakeUser.populate_admin()
         cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
-        cls.member = FakeUser.populate_user()
-        cls.user_access_token = TokenService.jwt_get_access_token(cls.member)
+        cls.regular_user = FakeUser.populate_user()
+        cls.user_access_token = TokenService.jwt_get_access_token(cls.regular_user)
 
     def assertExpectedOptions(self, expected_options, payload_options):
         """
@@ -81,7 +81,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
 
     def assertExpectedVariants(
         self,
-        expected_variants:list,
+        expected_variants: list,
         expected_price: int | float = None,
         expected_stock: int = None,
     ):
