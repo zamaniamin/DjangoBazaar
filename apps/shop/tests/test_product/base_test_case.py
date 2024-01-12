@@ -81,7 +81,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
 
     def assertExpectedVariants(
         self,
-        expected_variants,
+        expected_variants:list,
         expected_price: int | float = None,
         expected_stock: int = None,
     ):
@@ -92,6 +92,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
 
         for variant in expected_variants:
             self.assertIsInstance(variant["id"], int)
+            self.assertIsInstance(variant["product_id"], int)
 
             # --- price ---
             self.assertIsInstance(variant["price"], float)
