@@ -54,13 +54,13 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
-        source="option1.item_name", required=False, default=None
+        source="option1.item_name", required=False, default=None, read_only=True
     )
     option2 = serializers.CharField(
-        source="option2.item_name", required=False, default=None
+        source="option2.item_name", required=False, default=None, read_only=True
     )
     option3 = serializers.CharField(
-        source="option3.item_name", required=False, default=None
+        source="option3.item_name", required=False, default=None, read_only=True
     )
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
