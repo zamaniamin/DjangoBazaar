@@ -20,7 +20,7 @@ class ProductBaseTestCase(APITestCase, TimeTestCase):
         cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
         cls.member = FakeUser.populate_user()
-        cls.member_access_token = TokenService.jwt_get_access_token(cls.member)
+        cls.user_access_token = TokenService.jwt_get_access_token(cls.member)
 
     def assertExpectedOptions(self, expected_options, payload_options):
         """

@@ -155,7 +155,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for each of the active, archived, and draft products. It asserts that the response status code is
         HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -226,7 +226,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---

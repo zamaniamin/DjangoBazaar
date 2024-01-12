@@ -22,7 +22,7 @@ class DestroyProductTest(ProductBaseTestCase):
     def test_delete_by_user(self):
         """Test deleting a product by a user (expects HTTP 403 Forbidden)."""
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         response = self.client.delete(
             reverse("product-detail", kwargs={"pk": self.active_product.id})
         )

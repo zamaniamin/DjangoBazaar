@@ -19,7 +19,7 @@ class CreateProductTest(ProductBaseTestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
 
         # --- request ---
         response = self.client.post(reverse("product-list"), {})

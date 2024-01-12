@@ -34,7 +34,7 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_by_user(self):
         """Test updating a product by a user (expects HTTP 403 Forbidden)."""
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
@@ -43,7 +43,7 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_partial_update_by_user(self):
         """Test partially updating a product by a user (expects HTTP 403 Forbidden)."""
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         response = self.client.patch(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
