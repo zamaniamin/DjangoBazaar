@@ -5,7 +5,7 @@ from rest_framework_simplejwt import views
 from apps.core.views.users.user_management_views import UserViewSet
 
 router = DefaultRouter()
-router.register("users", UserViewSet)
+router.register("users", UserViewSet, basename="user")
 
 urlpatterns = router.urls
 
