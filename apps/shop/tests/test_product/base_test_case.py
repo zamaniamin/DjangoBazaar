@@ -1,13 +1,7 @@
-from rest_framework.test import APITestCase
-
-from apps.core.tests.base_test import TimeTestCase, BaseCoreTestCase
+from apps.core.tests.base_test import BaseCoreTestCase
 
 
-class ProductBaseTestCase(APITestCase, TimeTestCase, BaseCoreTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        BaseCoreTestCase.setUpTestData()
-
+class ProductBaseTestCase(BaseCoreTestCase):
     def assertExpectedOptions(self, expected_options, payload_options):
         """
         Asserts the expected options in the response.
