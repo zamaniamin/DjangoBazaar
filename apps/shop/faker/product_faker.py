@@ -146,11 +146,11 @@ class ProductFaker(BaseProductFaker):
         for product in range(2):
             cls.populate_active_product()
         for product in range(2):
-            cls.populate_variable_product()
+            ProductService.create_product(**cls().get_payload_with_random_options())
 
     @classmethod
     def populate_variable_product(cls):
-        return ProductService.create_product(**cls().get_payload_with_random_options())
+        return ProductService.create_product(**cls().get_payload_with_unique_options())
 
     @classmethod
     def populate_active_product(cls):
