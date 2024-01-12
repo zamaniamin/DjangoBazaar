@@ -44,16 +44,15 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     Serializer for the ProductVariant model.
 
     Attributes:
-    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
-    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
+    - product_id (IntegerField): ID of the associated product.
     - option1 (CharField, optional): Display name of the first product option.
     - option2 (CharField, optional): Display name of the second product option.
     - option3 (CharField, optional): Display name of the third product option.
-
+    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
+    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
     """
 
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
         source="option1.item_name", required=False, default=None
     )
@@ -63,11 +62,14 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     option3 = serializers.CharField(
         source="option3.item_name", required=False, default=None
     )
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = ProductVariant
         fields = [
             "id",
+            "product_id",
             "price",
             "stock",
             "option1",
