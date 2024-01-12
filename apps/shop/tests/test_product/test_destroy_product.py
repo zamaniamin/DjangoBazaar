@@ -5,7 +5,7 @@ from apps.shop.faker.product_faker import ProductFaker
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
-class DeleteProductTest(ProductBaseTestCase):
+class DestroyProductTest(ProductBaseTestCase):
     @classmethod
     def setUp(cls):
         cls.active_product = ProductFaker.populate_active_product()
@@ -36,3 +36,5 @@ class DeleteProductTest(ProductBaseTestCase):
             reverse("product-detail", kwargs={"pk": self.active_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+# TODO test destroy a product deletes all related information too
