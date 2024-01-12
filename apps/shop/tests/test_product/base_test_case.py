@@ -1,26 +1,12 @@
 from rest_framework.test import APITestCase
 
-from apps.core.faker.user_faker import FakeUser
-from apps.core.services.token_service import TokenService
-from apps.core.tests.base_test import TimeTestCase
+from apps.core.tests.base_test import TimeTestCase, BaseCoreTestCase
 
 
-class ProductBaseTestCase(APITestCase, TimeTestCase):
-    regular_user = None
-    admin = None
-
+class ProductBaseTestCase(APITestCase, TimeTestCase, BaseCoreTestCase):
     @classmethod
     def setUpTestData(cls):
-        """
-        Set up data that will be shared across all test methods in this class.
-        """
-
-        # --- create users ---
-        cls.admin = FakeUser.populate_admin()
-        cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
-
-        cls.regular_user = FakeUser.populate_user()
-        cls.user_access_token = TokenService.jwt_get_access_token(cls.regular_user)
+        BaseCoreTestCase.setUpTestData()
 
     def assertExpectedOptions(self, expected_options, payload_options):
         """
