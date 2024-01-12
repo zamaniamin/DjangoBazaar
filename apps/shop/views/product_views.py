@@ -18,7 +18,7 @@ from apps.shop.services.product_service import ProductService
     update=extend_schema(tags=["Product"], summary="Update a product"),
     partial_update=extend_schema(tags=["Product"], summary="Partial update a product"),
     destroy=extend_schema(tags=["Product"], summary="Deletes a product"),
-    list_variant=extend_schema(
+    list_variants=extend_schema(
         tags=["Product Variant"], summary="Retrieves a list of product variants"
     ),
 )
