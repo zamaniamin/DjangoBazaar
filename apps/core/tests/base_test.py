@@ -13,9 +13,8 @@ class BaseCoreTestCase(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # super().setUpTestData()
 
-        # --- create users ---
+        # create users
         cls.admin = FakeUser.populate_admin()
         cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
