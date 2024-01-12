@@ -34,7 +34,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     ACTION_PERMISSIONS = {
         "list": [AllowAny()],
         "retrieve": [AllowAny()],
-        "list_variant": [AllowAny()],
+        "list_variants": [AllowAny()],
     }
 
     def get_serializer_class(self):
@@ -82,7 +82,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     #     ...
 
     @action(detail=True, methods=["get"], url_path="variants")
-    def list_variant(self, request, pk=None):
+    def list_variants(self, request, pk=None):
         """Retrieve and return a list of variants associated with a specific product."""
 
         product = self.get_object()
