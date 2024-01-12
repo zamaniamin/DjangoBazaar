@@ -8,7 +8,7 @@ from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
 
-class ProductView(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for managing Product instances.
 
@@ -116,3 +116,5 @@ class ProductView(viewsets.ModelViewSet):
 
         # Return the serialized response
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
