@@ -4,6 +4,6 @@ from apps.shop.views.product_views import ProductViewSet, ProductVariantViewSet
 
 router = DefaultRouter()
 router.register("products", ProductViewSet, basename="product")
-router.register("variants", ProductVariantViewSet, basename="product-variant")
+router.register("variants", ProductVariantViewSet, basename="variant")
 
 urlpatterns = router.urls
