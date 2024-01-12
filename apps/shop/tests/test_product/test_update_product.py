@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import FakeProduct
+from apps.shop.faker.product_faker import ProductFaker
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -18,11 +18,11 @@ class UpdateProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = FakeProduct.populate_product_by_payload()
+        ) = ProductFaker.populate_product_by_payload()
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = FakeProduct.populate_variable_product_by_payload()
+        ) = ProductFaker.populate_variable_product_by_payload()
 
     def setUp(self):
         """

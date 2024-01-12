@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.shop.faker.product_faker import FakeProduct
+from apps.shop.faker.product_faker import ProductFaker
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -19,16 +19,16 @@ class RetrieveProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = FakeProduct.populate_product_by_payload()
+        ) = ProductFaker.populate_product_by_payload()
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = FakeProduct.populate_variable_product_by_payload()
+        ) = ProductFaker.populate_variable_product_by_payload()
 
         # --- products with different status ---
-        cls.active_product = FakeProduct.populate_active_product()
-        cls.archived_product = FakeProduct.populate_archived_product()
-        cls.draft_product = FakeProduct.populate_draft_product()
+        cls.active_product = ProductFaker.populate_active_product()
+        cls.archived_product = ProductFaker.populate_archived_product()
+        cls.draft_product = ProductFaker.populate_draft_product()
 
     # ----------------------
     # --- single product ---
@@ -317,7 +317,7 @@ class ListDraftProductsTest(APITestCase):
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
         
-        FakeProduct.populate_draft_product()
+        ProductFaker.populate_draft_product()
 
         # --- request ---
         response = self.client.get(reverse("product-list"))
