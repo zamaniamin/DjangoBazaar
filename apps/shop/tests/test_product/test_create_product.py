@@ -82,8 +82,7 @@ class CreateProductTest(ProductBaseTestCase):
         )
 
         # --- expected product media ---
-        # TODO add media
-        # self.assertIsNone(expected["media"])
+        self.assertIsNone(expected["images"])
 
     def test_create_product_with_options(self):
         """
