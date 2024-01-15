@@ -1,11 +1,9 @@
 from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
@@ -27,7 +25,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
+    # parser_classes = [MultiPartParser, FormParser]
 
     ACTION_SERIALIZERS = {
         "create": s.ProductCreateSerializer,
@@ -91,33 +89,3 @@ class ProductViewSet(viewsets.ModelViewSet):
         variants = product.productvariant_set.all()
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
-
-
-@extend_schema_view(
-    retrieve=extend_schema(
-        tags=["Product Variant"], summary="Retrieves a single product variant"
-    ),
-    update=extend_schema(
-        tags=["Product Variant"], summary="Updates an existing product variant"
-    ),
-    partial_update=extend_schema(
-        tags=["Product Variant"], summary="Partial updates an existing product variant"
-    ),
-    destroy=extend_schema(
-        tags=["Product Variant"], summary="Remove an existing product variant"
-    ),
-)
-class ProductVariantViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    GenericViewSet,
-):
-    queryset = ProductVariant.objects.all()
-    serializer_class = s.ProductVariantSerializer
-    permission_classes = [IsAdminUser]
-
-    ACTION_PERMISSIONS = {"retrieve": [AllowAny()]}
-
-    def get_permissions(self):
-        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
