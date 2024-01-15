@@ -57,7 +57,9 @@ class CreateProductTest(ProductBaseTestCase):
             "stock": 11,
             "options": [],
         }
-        response = self.client.post(reverse("product-list"), payload)
+        response = self.client.post(
+            reverse("product-list"), payload, format="multipart"
+        )
 
         # --- expected product ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -103,7 +105,9 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected product ---
@@ -261,7 +265,9 @@ class CreateProductTest(ProductBaseTestCase):
             "options": [{"option_name": "color", "items": ["red"]}],
         }
         response = self.client.post(
-            reverse("product-list"), json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---
@@ -300,7 +306,9 @@ class CreateProductTest(ProductBaseTestCase):
             "options": options + [{"option_name": "color", "items": ["black"]}],
         }
         response = self.client.post(
-            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---
@@ -326,7 +334,9 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            reverse("product-list"), json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---
@@ -364,7 +374,9 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.client.post(
-            reverse("product-list"), data=json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(response.data["options"]), 3)
@@ -465,6 +477,8 @@ class CreateProductTest(ProductBaseTestCase):
         }
 
         response = self.client.post(
-            reverse("product-list"), json.dumps(payload), content_type="application/json"
+            reverse("product-list"),
+            json.dumps(payload),
+            content_type="application/json",
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
