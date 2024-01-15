@@ -277,7 +277,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(len(expected), 4)
         for product in expected:
-            self.assertEqual(len(product), 9)
+            self.assertEqual(len(product), 10)
             self.assertIn("id", product)
             self.assertIn("product_name", product)
             self.assertIn("description", product)
