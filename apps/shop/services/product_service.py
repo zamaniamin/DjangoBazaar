@@ -9,6 +9,7 @@ from apps.shop.models.product import (
     ProductOption,
     ProductOptionItem,
     ProductVariant,
+    ProductMedia,
 )
 
 
@@ -42,6 +43,7 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
+        cls.media = data.pop("images")
 
         if data["status"] == "active":
             data["published_at"] = timezone.now()
@@ -52,8 +54,21 @@ class ProductService:
         # Create options
         cls.__create_product_options()
 
+        # Save media
+        cls.__save_product_media()
+
         # Return product object
         return cls.retrieve_product_details(cls.product.id)
+
+    @classmethod
+    def __save_product_media(cls):
+        if cls.media:
+            ProductMedia.objects.bulk_create(
+                [
+                    ProductMedia(product_id=cls.product.id, image=image_data)
+                    for image_data in cls.media
+                ]
+            )
 
     @staticmethod
     def retrieve_product_details(product_id):
@@ -81,7 +96,7 @@ class ProductService:
 
         prefetch_related_product_data = Product.objects.prefetch_related(
             "productoption_set__productoptionitem_set", prefetch_variants
-        )
+        ).prefetch_related("productmedia_set")
 
         return prefetch_related_product_data.get(pk=product_id)
 
