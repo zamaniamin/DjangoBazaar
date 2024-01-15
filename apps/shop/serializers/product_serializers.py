@@ -1,7 +1,13 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework import serializers
 
-from apps.shop.models import Product, ProductOption, ProductOptionItem, ProductVariant
+from apps.shop.models import (
+    Product,
+    ProductOption,
+    ProductOptionItem,
+    ProductVariant,
+    ProductMedia,
+)
 
 
 class ProductOptionItemSerializer(serializers.ModelSerializer):
@@ -80,6 +86,14 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         ]
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    # image = serializers.ListField(child=serializers.ImageField())
+
+    class Meta:
+        model = ProductMedia
+        fields = ["image"]
+
+
 class ProductCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating a new Product instance.
@@ -109,6 +123,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(
         many=True, source="productvariant_set", read_only=True
     )
+    # https://www.django-rest-framework.org/api-guide/fields/#imagefield
+    images = serializers.ListField(
+        child=serializers.ImageField(), required=False, default=None
+    )
 
     class Meta:
         model = Product
@@ -123,12 +141,18 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "published_at",
+            "images",
         ]
         read_only_fields = [
             "created_at",
             "updated_at",
             "published_at",
         ]
+
+    @staticmethod
+    def validate_images(images):
+        if not images:
+            return None
 
     @staticmethod
     def validate_options(options):
@@ -236,6 +260,9 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(
         many=True, source="productvariant_set", read_only=True
     )
+    images = ProductImageSerializer(
+        many=True, source="productmedia_set", read_only=True
+    )
 
     class Meta:
         model = Product
@@ -246,6 +273,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "status",
             "options",
             "variants",
+            "images",
             "created_at",
             "updated_at",
             "published_at",
@@ -257,5 +285,7 @@ class ProductSerializer(serializers.ModelSerializer):
         # Check if the "options" field is an empty list and set it to None
         if not representation["options"]:
             representation["options"] = None
+        if not representation["images"]:
+            representation["images"] = None
 
         return representation
