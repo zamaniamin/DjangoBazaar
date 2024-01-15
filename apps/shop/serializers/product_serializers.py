@@ -11,31 +11,12 @@ from apps.shop.models import (
 
 
 class ProductOptionItemSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the ProductOptionItem model.
-
-    Attributes:
-    - id (IntegerField): Unique identifier for the product option item.
-    - item_name (CharField): Display name of the product option item.
-
-    """
-
     class Meta:
         model = ProductOptionItem
         fields = ["id", "item_name"]
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the ProductOption model.
-
-    Attributes:
-    - id (IntegerField): Unique identifier for the product option.
-    - option_name (CharField): Display name of the product option.
-    - items (ListSerializer of CharField, optional): List of item names associated with the product option.
-
-    """
-
     items = serializers.ListSerializer(
         child=serializers.CharField(), source="productoptionitem_set", required=False
     )
@@ -46,18 +27,6 @@ class ProductOptionSerializer(serializers.ModelSerializer):
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the ProductVariant model.
-
-    Attributes:
-    - product_id (IntegerField): ID of the associated product.
-    - option1 (CharField, optional): Display name of the first product option.
-    - option2 (CharField, optional): Display name of the second product option.
-    - option3 (CharField, optional): Display name of the third product option.
-    - created_at (DateTimeField): Formatted representation of the variant creation timestamp.
-    - updated_at (DateTimeField): Formatted representation of the variant update timestamp.
-    """
-
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
         source="option1.item_name", required=False, default=None, read_only=True
@@ -95,17 +64,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for creating a new Product instance.
-
-    Attributes:
-    - options (list of dict): A list containing dictionaries with 'option_name' and 'productoptionitem_set'.
-    - status (str): The status of the product.
-    - stock (int): The stock quantity of the product.
-    - price (Decimal): The price of the product.
-
-    """
-
     status = serializers.CharField(
         max_length=10, allow_blank=True, required=False, default="draft"
     )
@@ -124,9 +82,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         many=True, source="productvariant_set", read_only=True
     )
     # https://www.django-rest-framework.org/api-guide/fields/#imagefield
-    images = serializers.ListField(
-        child=serializers.ImageField(), required=False, default=None
-    )
+    # images = serializers.ListField(
+    #     child=serializers.ImageField(), required=False, default=None
+    # )
 
     class Meta:
         model = Product
@@ -141,7 +99,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "published_at",
-            "images",
+            # "images",
         ]
         read_only_fields = [
             "created_at",
@@ -149,32 +107,13 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "published_at",
         ]
 
-    @staticmethod
-    def validate_images(images):
-        if not images:
-            return None
+    # @staticmethod
+    # def validate_images(images):
+    #     if not images:
+    #         return None
 
     @staticmethod
     def validate_options(options):
-        """
-        Validate and process the 'options' field.
-
-        Explanation:
-        - Merge dictionaries with the same 'option_name' and make the 'items' unique.
-        - Remove options with an empty 'items' list.
-        - Check maximum 3 options per product.
-
-        Args:
-        - options (list of dict): A list containing dictionaries with 'option_name' and 'productoptionitem_set'.
-
-        Returns:
-        - list of dict: A processed and validated list of unique options.
-
-        Raises:
-        - serializers.ValidationError: If the number of options exceeds the limit.
-
-        """
-
         # If options is None, return None
         if not options:
             return None
@@ -220,16 +159,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate_status(value):
-        """
-        Validate the 'status' field and return 'draft' if it is invalid or not set.
+        """Validate the 'status' field and return 'draft' if it is invalid or not set."""
 
-        Args:
-        - value (str): The status value to be validated.
-
-        Returns:
-        - str: The validated status value.
-
-        """
         valid_statuses = [status[0] for status in Product.STATUS_CHOICES]
         if value not in valid_statuses:
             return "draft"
@@ -237,18 +168,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Product model.
-
-    Attributes:
-    - created_at (DateTimeField): Formatted representation of the product creation timestamp.
-    - updated_at (DateTimeField): Formatted representation of the product update timestamp.
-    - published_at (DateTimeField, optional): Formatted representation of the product publish timestamp.
-    - options (ProductOptionSerializer): Serializer for the product options.
-    - variants (ProductVariantSerializer): Serializer for the product variants.
-
-    """
-
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     published_at = serializers.DateTimeField(
