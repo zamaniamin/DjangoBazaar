@@ -58,7 +58,9 @@ class CreateProductTest(ProductBaseTestCase):
             "options": [],
         }
         response = self.client.post(
-            reverse("product-list"), payload, format="multipart"
+            reverse("product-list"),
+            json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected product ---
@@ -106,7 +108,7 @@ class CreateProductTest(ProductBaseTestCase):
         }
         response = self.client.post(
             reverse("product-list"),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -122,6 +124,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertExpectedDatetimeFormat(expected)
 
         # --- expected product options ---
+        self.assertIsNotNone(expected["options"])
         self.assertEqual(len(expected["options"]), 3)
         self.assertExpectedOptions(expected["options"], payload["options"])
 
@@ -132,8 +135,7 @@ class CreateProductTest(ProductBaseTestCase):
         )
 
         # --- expected product media ---
-        # TODO add media
-        # self.assertIsNone(expected["media"])
+        self.assertIsNone(expected["images"])
 
     # ---------------------
     # --- Test Payloads ---
