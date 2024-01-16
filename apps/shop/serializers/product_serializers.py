@@ -56,11 +56,25 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
-    # image = serializers.ListField(child=serializers.ImageField())
+    product_id = serializers.IntegerField(source="product.id", read_only=True)
+    images = serializers.ListField(
+        child=serializers.ImageField(), required=False, default=None, write_only=True
+    )
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = ProductMedia
-        fields = ["image"]
+        fields = [
+            "id",
+            "product_id",
+            "src",
+            "alt",
+            "images",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["src", "alt", "created_at", "updated_at"]
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -81,10 +95,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(
         many=True, source="productvariant_set", read_only=True
     )
-    # https://www.django-rest-framework.org/api-guide/fields/#imagefield
-    # images = serializers.ListField(
-    #     child=serializers.ImageField(), required=False, default=None
-    # )
 
     class Meta:
         model = Product
@@ -106,11 +116,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
         ]
-
-    # @staticmethod
-    # def validate_images(images):
-    #     if not images:
-    #         return None
 
     @staticmethod
     def validate_options(options):
