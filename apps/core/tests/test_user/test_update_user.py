@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from rest_framework import status
 
@@ -19,7 +21,9 @@ class UpdateUserTest(BaseCoreTestCase):
             "is_active": True,
         }
         response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}), payload
+            reverse("user-detail", kwargs={"pk": self.regular_user.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---
@@ -59,7 +63,9 @@ class UpdateUserTest(BaseCoreTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
         payload = {"first_name": "test F name"}
         response = self.client.patch(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}), payload
+            reverse("user-detail", kwargs={"pk": self.regular_user.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---

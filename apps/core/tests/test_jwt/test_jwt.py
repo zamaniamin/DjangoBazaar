@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -16,7 +18,11 @@ class JWTTests(APITestCase):
 
         # --- request ---
         payload = {"email": self.user.email, "password": FakeUser.password}
-        response = self.client.post(self.base_url + "create/", payload)
+        response = self.client.post(
+            self.base_url + "create/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)

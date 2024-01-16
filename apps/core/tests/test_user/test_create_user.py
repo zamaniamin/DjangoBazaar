@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.urls import reverse
@@ -17,7 +19,11 @@ class CreateUserTest(APITestCase):
             "password": "Test_1234",
             "password_confirm": "Test_1234",
         }
-        response = self.client.post(reverse("user-list"), payload)
+        response = self.client.post(
+            reverse("user-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

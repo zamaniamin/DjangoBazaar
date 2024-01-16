@@ -316,7 +316,7 @@ class ListDraftProductsTest(APITestCase):
         The test populates a draft product, sends a GET request to retrieve the list of products,
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
-        
+
         ProductFaker.populate_draft_product()
 
         # --- request ---

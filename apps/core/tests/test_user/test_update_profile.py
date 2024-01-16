@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from rest_framework import status
 
@@ -16,7 +18,11 @@ class ProfileTest(BaseCoreTestCase):
             "first_name": "admin f name",
             "last_name": "admin l name",
         }
-        response = self.client.put(reverse("user-me"), payload)
+        response = self.client.put(
+            reverse("user-me"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -37,7 +43,11 @@ class ProfileTest(BaseCoreTestCase):
         # --- request ---
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         payload = {"first_name": "member f name"}
-        response = self.client.put(reverse("user-me"), payload)
+        response = self.client.put(
+            reverse("user-me"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -69,7 +79,11 @@ class ProfileTest(BaseCoreTestCase):
             "first_name": "admin f name",
             "last_name": "admin l name",
         }
-        response = self.client.patch(reverse("user-me"), payload)
+        response = self.client.patch(
+            reverse("user-me"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -90,7 +104,11 @@ class ProfileTest(BaseCoreTestCase):
         # --- request ---
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
         payload = {"first_name": "member f name"}
-        response = self.client.patch(reverse("user-me"), payload)
+        response = self.client.patch(
+            reverse("user-me"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)

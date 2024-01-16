@@ -1,3 +1,5 @@
+import json
+
 from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
@@ -34,7 +36,11 @@ class UserChangeEmailViewTest(APITestCase):
         payload = {
             "new_email": new_email,
         }
-        response = self.client.post(self.base_url, payload)
+        response = self.client.post(
+            self.base_url,
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -63,7 +69,11 @@ class UserChangeEmailViewTest(APITestCase):
             "new_email": new_email,
             "otp": TokenService.create_otp_token(new_email),
         }
-        response = self.client.post(self.base_url + "conformation/", payload)
+        response = self.client.post(
+            self.base_url + "conformation/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

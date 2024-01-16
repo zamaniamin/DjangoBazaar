@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from rest_framework import status
 
@@ -24,7 +26,9 @@ class UpdateVariantTest(ProductBaseTestCase):
             "stock": 111,
         }
         response = self.client.put(
-            reverse("variant-detail", kwargs={"pk": self.variant_id}), payload
+            reverse("variant-detail", kwargs={"pk": self.variant_id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---

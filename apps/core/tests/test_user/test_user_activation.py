@@ -1,3 +1,5 @@
+import json
+
 from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -29,7 +31,11 @@ class UserActivationViewTest(APITestCase):
             "email": self.inactive_user.email,
             "otp": TokenService.create_otp_token(self.inactive_user.email),
         }
-        response = self.client.patch(self.base_url + "activation/", payload)
+        response = self.client.patch(
+            self.base_url + "activation/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -58,7 +64,11 @@ class UserActivationViewTest(APITestCase):
 
         # --- request ---
         payload = {"email": self.inactive_user.email}
-        response = self.client.post(self.base_url + "resend-activation/", payload)
+        response = self.client.post(
+            self.base_url + "resend-activation/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

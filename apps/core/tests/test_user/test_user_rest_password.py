@@ -1,3 +1,5 @@
+import json
+
 from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -24,7 +26,11 @@ class UserResetPasswordViewTest(APITestCase):
         payload = {
             "email": self.member.email,
         }
-        response = self.client.post(self.base_url + "reset-password/", payload)
+        response = self.client.post(
+            self.base_url + "reset-password/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -46,7 +52,9 @@ class UserResetPasswordViewTest(APITestCase):
             "new_password": FakeUser.password + "test",
         }
         response = self.client.post(
-            self.base_url + "reset-password/conformation/", payload
+            self.base_url + "reset-password/conformation/",
+            data=json.dumps(payload),
+            content_type="application/json",
         )
 
         # --- expected ---
@@ -68,7 +76,11 @@ class UserResetPasswordViewTest(APITestCase):
             "current_password": FakeUser.password,
             "new_password": FakeUser.password + "test2",
         }
-        response = self.client.post(self.base_url + "change-password/", payload)
+        response = self.client.post(
+            self.base_url + "change-password/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

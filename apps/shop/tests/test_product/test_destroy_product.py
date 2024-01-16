@@ -37,4 +37,5 @@ class DestroyProductTest(ProductBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 # TODO test destroy a product deletes all related information too

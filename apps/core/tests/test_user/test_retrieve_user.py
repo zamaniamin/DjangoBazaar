@@ -48,7 +48,9 @@ class RetrieveUserTest(BaseCoreTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
         # --- request ---
-        response = self.client.get(reverse("user-detail",kwargs={"pk":self.regular_user.id}))
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+        )
 
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -67,9 +69,13 @@ class RetrieveUserTest(BaseCoreTestCase):
 
     def test_retrieve_user_by_member(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
-        response = self.client.get(reverse("user-detail",kwargs={"pk":self.regular_user.id}))
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_retrieve_user_by_guest(self):
-        response = self.client.get(reverse("user-detail",kwargs={"pk":self.regular_user.id}))
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
