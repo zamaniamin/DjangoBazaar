@@ -146,7 +146,8 @@ class ProductVariant(models.Model):
 
 class ProductMedia(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="products", blank=True, null=True)
+    src = models.ImageField(upload_to="products", blank=True, null=True)
+    alt = models.CharField(max_length=250, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
