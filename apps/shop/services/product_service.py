@@ -43,7 +43,6 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
-        cls.media = data.pop("images")
 
         if data["status"] == "active":
             data["published_at"] = timezone.now()
@@ -54,21 +53,17 @@ class ProductService:
         # Create options
         cls.__create_product_options()
 
-        # Save media
-        cls.__save_product_media()
-
         # Return product object
         return cls.retrieve_product_details(cls.product.id)
 
     @classmethod
-    def __save_product_media(cls):
-        if cls.media:
-            ProductMedia.objects.bulk_create(
-                [
-                    ProductMedia(product_id=cls.product.id, image=image_data)
-                    for image_data in cls.media
-                ]
-            )
+    def create_product_images(cls, product_id, **data):
+        ProductMedia.objects.bulk_create(
+            [
+                ProductMedia(product_id=product_id, src=image_data)
+                for image_data in data["images"]
+            ]
+        )
 
     @staticmethod
     def retrieve_product_details(product_id):
