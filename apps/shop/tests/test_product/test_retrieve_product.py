@@ -277,7 +277,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(len(expected), 4)
         for product in expected:
-            self.assertEqual(len(product), 9)
+            self.assertEqual(len(product), 10)
             self.assertIn("id", product)
             self.assertIn("product_name", product)
             self.assertIn("description", product)
@@ -316,7 +316,7 @@ class ListDraftProductsTest(APITestCase):
         The test populates a draft product, sends a GET request to retrieve the list of products,
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
-        
+
         ProductFaker.populate_draft_product()
 
         # --- request ---

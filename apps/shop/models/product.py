@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -139,6 +142,21 @@ class ProductVariant(models.Model):
         null=True,
         blank=True,
     )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+def generate_upload_path(instance, filename):
+    unique_id = uuid.uuid4().hex
+    _, ext = os.path.splitext(filename)
+    return f"products/{instance.product.id}/{unique_id}{ext}"
+
+
+class ProductMedia(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
+    alt = models.CharField(max_length=250, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

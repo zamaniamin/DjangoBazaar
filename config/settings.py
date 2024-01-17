@@ -165,6 +165,9 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "COERCE_DECIMAL_TO_STRING": False,
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
@@ -173,6 +176,8 @@ SPECTACULAR_SETTINGS = {
     online marketplaces. """,
     "VERSION": "0.1.2",
     "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,  # file upload representation in Swagger UI
+    # UPLOADED_FILES_USE_URL
 }
 
 # --------------------
@@ -224,3 +229,10 @@ CACHES = {
         # "TIMEOUT": 0,  # expire the cache immediately (don’t cache)
     }
 }
+
+# -------------
+# --- Media ---
+# -------------
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"

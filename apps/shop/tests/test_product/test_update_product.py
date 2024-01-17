@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from rest_framework import status
 
@@ -72,7 +74,9 @@ class UpdateProductTest(ProductBaseTestCase):
 
         payload = {"product_name": "updated name"}
         response = self.client.put(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
@@ -83,7 +87,9 @@ class UpdateProductTest(ProductBaseTestCase):
 
         payload = {"description": "updated description"}
         response = self.client.put(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -98,7 +104,8 @@ class UpdateProductTest(ProductBaseTestCase):
         for payload in payloads:
             response = self.client.patch(
                 reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-                payload,
+                data=json.dumps(payload),
+                content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             expected = response.json()
@@ -110,7 +117,9 @@ class UpdateProductTest(ProductBaseTestCase):
 
         payload = {"description": "updated description"}
         response = self.client.patch(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()

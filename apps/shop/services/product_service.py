@@ -9,6 +9,7 @@ from apps.shop.models.product import (
     ProductOption,
     ProductOptionItem,
     ProductVariant,
+    ProductMedia,
 )
 
 
@@ -55,6 +56,15 @@ class ProductService:
         # Return product object
         return cls.retrieve_product_details(cls.product.id)
 
+    @classmethod
+    def create_product_images(cls, product_id, **data):
+        ProductMedia.objects.bulk_create(
+            [
+                ProductMedia(product_id=product_id, src=image_data)
+                for image_data in data["images"]
+            ]
+        )
+
     @staticmethod
     def retrieve_product_details(product_id):
         """
@@ -81,7 +91,7 @@ class ProductService:
 
         prefetch_related_product_data = Product.objects.prefetch_related(
             "productoption_set__productoptionitem_set", prefetch_variants
-        )
+        ).prefetch_related("productmedia_set")
 
         return prefetch_related_product_data.get(pk=product_id)
 

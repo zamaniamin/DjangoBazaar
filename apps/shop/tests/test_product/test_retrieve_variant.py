@@ -98,5 +98,3 @@ class RetrieveVariantTest(ProductBaseTestCase):
             reverse("variant-detail", kwargs={"pk": self.variant_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-

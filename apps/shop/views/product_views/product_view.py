@@ -1,10 +1,9 @@
 from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
@@ -52,6 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                     "option1", "option2", "option3"
                 ),
             ),
+            "productmedia_set",
         )
 
         user = self.request.user
@@ -75,11 +75,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Return the serialized response
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-    # TODO add new variant to product and update the product options base on new items in the variant
-    # @action(detail=True, methods=["post"], url_path="variants")
-    # def create_variant(self, request, pk=None):
-    #     """"Creates a new product variant""""
-    #     ...
+    # ----------------
+    # --- variants ---
+    # ----------------
 
     @action(detail=True, methods=["get"], url_path="variants")
     def list_variants(self, request, pk=None):
@@ -91,31 +89,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-@extend_schema_view(
-    retrieve=extend_schema(
-        tags=["Product Variant"], summary="Retrieves a single product variant"
-    ),
-    update=extend_schema(
-        tags=["Product Variant"], summary="Updates an existing product variant"
-    ),
-    partial_update=extend_schema(
-        tags=["Product Variant"], summary="Partial updates an existing product variant"
-    ),
-    destroy=extend_schema(
-        tags=["Product Variant"], summary="Remove an existing product variant"
-    ),
-)
-class ProductVariantViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    GenericViewSet,
-):
-    queryset = ProductVariant.objects.all()
-    serializer_class = s.ProductVariantSerializer
-    permission_classes = [IsAdminUser]
-
-    ACTION_PERMISSIONS = {"retrieve": [AllowAny()]}
-
-    def get_permissions(self):
-        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+# TODO add new variant to product and update the product options base on new items in the variant
+# @action(detail=True, methods=["post"], url_path="variants")
+# def create_variant(self, request, pk=None):
+#     """"Creates a new product variant""""
+#     ...
