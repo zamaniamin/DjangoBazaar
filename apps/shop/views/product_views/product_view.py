@@ -76,6 +76,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Return the serialized response
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+    # ----------------
+    # --- variants ---
+    # ----------------
+
     @action(detail=True, methods=["get"], url_path="variants")
     def list_variants(self, request, pk=None):
         """Retrieve and return a list of variants associated with a specific product."""
@@ -84,6 +88,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         variants = product.productvariant_set.all()
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
+
+    # --------------
+    # --- images ---
+    # --------------
 
     @action(
         detail=True,
