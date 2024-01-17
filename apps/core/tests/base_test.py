@@ -1,5 +1,7 @@
+import io
 from datetime import datetime
 
+from PIL import Image
 from rest_framework.test import APITestCase
 
 from apps.core.faker.user_faker import FakeUser
@@ -29,3 +31,26 @@ class BaseCoreTestCase(APITestCase):
             "%Y-%m-%d %H:%M:%S"
         )
         assert date == formatted_date
+
+    @staticmethod
+    def generate_single_photo_file():
+        file = io.BytesIO()
+        image = Image.new("RGBA", size=(100, 100), color=(155, 0, 0))
+        image.save(file, "png")
+        file.name = "test.png"
+        file.seek(0)
+        return file
+
+    @staticmethod
+    def generate_list_photo_files():
+        files = []
+
+        for i in range(1, 5):
+            file = io.BytesIO()
+            image = Image.new("RGBA", size=(100, 100), color=(155 * i, 0, 0))
+            image.save(file, "png")
+            file.name = f"test_{i}.png"
+            file.seek(0)
+            files.append(file)
+
+        return files
