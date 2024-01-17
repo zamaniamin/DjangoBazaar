@@ -7,6 +7,7 @@ Django==5.0
 django-debug-toolbar==4.2.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
+drf-nested-routers==0.93.5
 drf-spectacular==0.27.0
 Faker==21.0.0
 hiredis==2.3.2
