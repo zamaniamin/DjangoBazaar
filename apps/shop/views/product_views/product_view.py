@@ -44,7 +44,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Product.objects.select_related().prefetch_related(
-            "productoption_set__items",
+            "options__items",
             Prefetch(
                 "variants",
                 queryset=ProductVariant.objects.select_related(

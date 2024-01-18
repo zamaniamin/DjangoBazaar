@@ -174,9 +174,7 @@ class ProductSerializer(serializers.ModelSerializer):
     published_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
     )
-    options = ProductOptionSerializer(
-        many=True, source="productoption_set", read_only=True
-    )
+    options = ProductOptionSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, source="media", read_only=True)
 
