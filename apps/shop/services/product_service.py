@@ -91,7 +91,7 @@ class ProductService:
         )
 
         prefetch_related_product_data = Product.objects.prefetch_related(
-            "productoption_set__productoptionitem_set", prefetch_variants
+            "productoption_set__items", prefetch_variants
         ).prefetch_related("media")
 
         return prefetch_related_product_data.get(pk=product_id)
@@ -236,12 +236,12 @@ class ProductService:
         # Fetch ProductOption and related ProductOptionItem objects in a single query
         options = (
             ProductOption.objects.select_related("product")
-            .prefetch_related("productoptionitem_set")
+            .prefetch_related("items")
             .filter(product=product_id)
         )
 
         for option in options:
-            items = option.productoptionitem_set.all()
+            items = option.items.all()
 
             product_options.append(
                 {

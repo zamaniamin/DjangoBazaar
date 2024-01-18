@@ -89,7 +89,9 @@ class ProductOptionItem(models.Model):
 
     """
 
-    option = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
+    option = models.ForeignKey(
+        ProductOption, on_delete=models.CASCADE, related_name="items"
+    )
     item_name = models.CharField(max_length=255)
 
     class Meta:

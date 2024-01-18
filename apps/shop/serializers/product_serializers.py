@@ -17,9 +17,7 @@ class ProductOptionItemSerializer(serializers.ModelSerializer):
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
-    items = serializers.ListSerializer(
-        child=serializers.CharField(), source="productoptionitem_set", required=False
-    )
+    items = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
     class Meta:
         model = ProductOption
@@ -127,9 +125,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         # Iterate through each option in the list
         for option in options:
             option_name = option.get("option_name")
-            items = option.get("productoptionitem_set")
+            items = option.get("items")
 
-            # Raise an error if 'productoptionitem_set' is missing
+            # Raise an error if 'items' is missing
             if items is None:
                 raise serializers.ValidationError(
                     "Each option in 'options' must have a 'items'."
