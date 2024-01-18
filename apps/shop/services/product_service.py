@@ -87,7 +87,7 @@ class ProductService:
         )
 
         prefetch_variants = Prefetch(
-            "variant", queryset=select_related_variant_options
+            "variants", queryset=select_related_variant_options
         )
 
         prefetch_related_product_data = Product.objects.prefetch_related(
