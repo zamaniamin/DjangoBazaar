@@ -92,9 +92,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         ],
     )
     options = ProductOptionSerializer(many=True, required=False, default=None)
-    variants = ProductVariantSerializer(
-        many=True, source="variants", read_only=True
-    )
+    variants = ProductVariantSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -181,12 +179,8 @@ class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(
         many=True, source="productoption_set", read_only=True
     )
-    variants = ProductVariantSerializer(
-        many=True, source="variants", read_only=True
-    )
-    images = ProductImageSerializer(
-        many=True, source="media", read_only=True
-    )
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, source="media", read_only=True)
 
     class Meta:
         model = Product
