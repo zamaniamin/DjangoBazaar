@@ -131,36 +131,17 @@ class BaseProductFaker:
         return payload.copy()
 
 
-class ProductFaker(BaseProductFaker):
+class SimpleProductFaker(BaseProductFaker):
     @classmethod
-    def populate_variable_product_by_payload(cls):
-        product_data = cls().get_payload_with_unique_options()
-        return product_data.copy(), ProductService.create_product(**product_data)
-
-    @classmethod
-    def populate_product_by_payload(cls):
+    def populate_active_simple_product(cls, get_payload: bool = False):
         product_data = cls().get_payload_status_active()
-        return product_data.copy(), ProductService.create_product(**product_data)
+        product = ProductService.create_product(**product_data)
+        if get_payload:
+            return product_data.copy(), product
+        return product
 
     @classmethod
-    def populate_demo_products(cls):
-        cls.populate_archived_product()
-        cls.populate_draft_product()
-        for product in range(2):
-            cls.populate_active_product()
-        for product in range(2):
-            ProductService.create_product(**cls().get_payload_with_random_options())
-
-    @classmethod
-    def populate_variable_product(cls):
-        return ProductService.create_product(**cls().get_payload_with_unique_options())
-
-    @classmethod
-    def populate_active_product(cls):
-        return ProductService.create_product(**cls().get_payload_status_active())
-
-    @classmethod
-    def populate_active_product_with_image(cls, get_images_object=False):
+    def populate_active_simple_product_with_image(cls, get_images_object=False):
         product = ProductService.create_product(**cls().get_payload_status_active())
         images = FakeImages.populate_images_for_product(product_id=product.id)
         product_images = ProductService.create_product_images(product.id, **images)
@@ -169,12 +150,40 @@ class ProductFaker(BaseProductFaker):
         return product
 
     @classmethod
-    def populate_archived_product(cls):
+    def populate_archived_simple_product(cls):
         return ProductService.create_product(**cls().get_payload_status_archived())
 
     @classmethod
-    def populate_draft_product(cls):
+    def populate_draft_simple_product(cls):
         return ProductService.create_product(**cls().get_payload_status_draft())
+
+
+class VariableProductFaker(BaseProductFaker):
+    @classmethod
+    def populate_variable_product(cls, get_payload: bool = False):
+        product_data = cls().get_payload_with_unique_options()
+        product = ProductService.create_product(**product_data)
+        if get_payload:
+            return product_data.copy(), product
+        return product
+
+    @classmethod
+    def populate_unique_variable_product(cls):
+        return ProductService.create_product(**cls().get_payload_with_unique_options())
+
+
+class ProductFaker(VariableProductFaker, SimpleProductFaker):
+    @classmethod
+    def populate_demo_products(cls):
+        cls.populate_archived_simple_product()
+        cls.populate_draft_simple_product()
+        # cls.populate_draft_product_with_image()
+        # cls.populate_draft_variable_with_image()
+        for product in range(6):
+            cls.populate_active_simple_product_with_image()
+        for product in range(4):
+            ProductService.create_product(**cls().get_payload_with_random_options())
+            # cls.populate_active_random_variable_with_image()
 
 
 class FakeImages:

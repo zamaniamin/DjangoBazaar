@@ -16,7 +16,7 @@ class CreateImageTest(ProductBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.active_product = ProductFaker.populate_active_product()
+        cls.active_product = ProductFaker.populate_active_simple_product()
         cls.files = cls.generate_list_photo_files()
         cls.file_count = len(cls.files)
 

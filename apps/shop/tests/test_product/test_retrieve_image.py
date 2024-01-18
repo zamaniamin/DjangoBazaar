@@ -18,12 +18,12 @@ class RetrieveImageTest(ProductBaseTestCase):
         (
             cls.active_product,
             cls.active_product_image,
-        ) = ProductFaker.populate_active_product_with_image(get_images_object=True)
+        ) = ProductFaker.populate_active_simple_product_with_image(get_images_object=True)
 
         (
             cls.active_product2,
             cls.active_product2_image,
-        ) = ProductFaker.populate_active_product_with_image(get_images_object=True)
+        ) = ProductFaker.populate_active_simple_product_with_image(get_images_object=True)
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
