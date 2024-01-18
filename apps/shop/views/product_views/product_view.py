@@ -51,7 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                     "option1", "option2", "option3"
                 ),
             ),
-            "productmedia_set",
+            "media",
         )
 
         user = self.request.user

@@ -158,7 +158,9 @@ def generate_upload_path(instance, filename):
 
 
 class ProductMedia(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="media"
+    )
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     alt = models.CharField(max_length=250, blank=True, null=True)
 

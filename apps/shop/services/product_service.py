@@ -92,7 +92,7 @@ class ProductService:
 
         prefetch_related_product_data = Product.objects.prefetch_related(
             "productoption_set__productoptionitem_set", prefetch_variants
-        ).prefetch_related("productmedia_set")
+        ).prefetch_related("media")
 
         return prefetch_related_product_data.get(pk=product_id)
 

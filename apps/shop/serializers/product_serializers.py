@@ -185,7 +185,7 @@ class ProductSerializer(serializers.ModelSerializer):
         many=True, source="productvariant_set", read_only=True
     )
     images = ProductImageSerializer(
-        many=True, source="productmedia_set", read_only=True
+        many=True, source="media", read_only=True
     )
 
     class Meta:
