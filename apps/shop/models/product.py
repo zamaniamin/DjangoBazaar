@@ -2,7 +2,6 @@ import os
 import sys
 import uuid
 
-from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -118,7 +117,7 @@ class ProductVariant(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    stock = models.PositiveSmallIntegerField()
 
     option1 = models.ForeignKey(
         ProductOptionItem,
