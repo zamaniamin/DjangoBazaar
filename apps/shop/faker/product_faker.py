@@ -75,66 +75,34 @@ class BaseProductFaker:
         else:
             return []
 
-    def get_payload_status_active(self):
-        payload = {
+    def get_payload(
+        self,
+        status: str = "active",
+        is_variable: bool = False,
+        random_options: bool = False,
+    ):
+        if is_variable:
+            if random_options:
+                options = self.__generate_random_options()
+            else:
+                options = self.__generate_uniq_options()
+        else:
+            options = []
+
+        return {
             "product_name": self.__generate_name(),
             "description": self.__generate_description(),
-            "status": "active",
+            "status": status,
             "price": self.__get_random_price(),
             "stock": self.__get_random_stock(),
-            "options": [],
+            "options": options,
         }
-        return payload.copy()
-
-    def get_payload_status_archived(self):
-        payload = {
-            "product_name": "A Archived Product",
-            "description": self.__generate_description(),
-            "status": "archived",
-            "price": self.__get_random_price(),
-            "stock": self.__get_random_stock(),
-            "options": [],
-        }
-        return payload.copy()
-
-    def get_payload_status_draft(self):
-        payload = {
-            "product_name": "A Draft Product",
-            "description": self.__generate_description(),
-            "status": "draft",
-            "price": self.__get_random_price(),
-            "stock": self.__get_random_stock(),
-            "options": [],
-        }
-        return payload.copy()
-
-    def get_payload_with_unique_options(self):
-        payload = {
-            "product_name": self.__generate_name(),
-            "description": self.__generate_description(),
-            "status": "active",
-            "price": self.__get_random_price(),
-            "stock": self.__get_random_stock(),
-            "options": self.__generate_uniq_options(),
-        }
-        return payload.copy()
-
-    def get_payload_with_random_options(self):
-        payload = {
-            "product_name": self.__generate_name(),
-            "description": self.__generate_description(),
-            "status": "active",
-            "price": self.__get_random_price(),
-            "stock": self.__get_random_stock(),
-            "options": self.__generate_random_options(),
-        }
-        return payload.copy()
 
 
 class SimpleProductFaker(BaseProductFaker):
     @classmethod
     def populate_active_simple_product(cls, get_payload: bool = False):
-        product_data = cls().get_payload_status_active()
+        product_data = cls().get_payload()
         product = ProductService.create_product(**product_data)
         if get_payload:
             return product_data.copy(), product
@@ -142,8 +110,8 @@ class SimpleProductFaker(BaseProductFaker):
 
     @classmethod
     def populate_active_simple_product_with_image(cls, get_images_object=False):
-        product = ProductService.create_product(**cls().get_payload_status_active())
-        images = FakeImages.populate_images_for_product(product_id=product.id)
+        product = ProductService.create_product(**cls().get_payload())
+        images = ProductImageFaker.populate_images(product_id=product.id)
         product_images = ProductService.create_product_images(product.id, **images)
         if get_images_object:
             return product, product_images
@@ -151,25 +119,21 @@ class SimpleProductFaker(BaseProductFaker):
 
     @classmethod
     def populate_archived_simple_product(cls):
-        return ProductService.create_product(**cls().get_payload_status_archived())
+        return ProductService.create_product(**cls().get_payload(status="archived"))
 
     @classmethod
     def populate_draft_simple_product(cls):
-        return ProductService.create_product(**cls().get_payload_status_draft())
+        return ProductService.create_product(**cls().get_payload(status="draft"))
 
 
 class VariableProductFaker(BaseProductFaker):
     @classmethod
-    def populate_variable_product(cls, get_payload: bool = False):
-        product_data = cls().get_payload_with_unique_options()
+    def populate_unique_variable_product(cls, get_payload: bool = False):
+        product_data = cls().get_payload(is_variable=True)
         product = ProductService.create_product(**product_data)
         if get_payload:
             return product_data.copy(), product
         return product
-
-    @classmethod
-    def populate_unique_variable_product(cls):
-        return ProductService.create_product(**cls().get_payload_with_unique_options())
 
 
 class ProductFaker(VariableProductFaker, SimpleProductFaker):
@@ -182,15 +146,17 @@ class ProductFaker(VariableProductFaker, SimpleProductFaker):
         for product in range(6):
             cls.populate_active_simple_product_with_image()
         for product in range(4):
-            ProductService.create_product(**cls().get_payload_with_random_options())
+            ProductService.create_product(
+                **cls().get_payload(is_variable=True, random_options=True)
+            )
             # cls.populate_active_random_variable_with_image()
 
 
-class FakeImages:
+class ProductImageFaker:
     product_demo_dir = Path(__file__).resolve().parent.parent / "demo/images/products"
 
     @classmethod
-    def populate_images_for_product(cls, product_id):
+    def populate_images(cls, product_id):
         """
         Attach some images to a product.
 

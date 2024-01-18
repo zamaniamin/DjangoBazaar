@@ -23,7 +23,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_variable_product(get_payload=True)
+        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
 
         # --- products with different status ---
         cls.active_product = ProductFaker.populate_active_simple_product()

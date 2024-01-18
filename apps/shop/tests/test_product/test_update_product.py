@@ -24,7 +24,7 @@ class UpdateProductTest(ProductBaseTestCase):
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_variable_product(get_payload=True)
+        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
 
     def setUp(self):
         """
