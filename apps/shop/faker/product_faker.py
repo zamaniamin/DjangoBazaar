@@ -1,5 +1,8 @@
+import os
 import random
+from pathlib import Path
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
 
 from apps.shop.services.product_service import ProductService
@@ -157,9 +160,51 @@ class ProductFaker(BaseProductFaker):
         return ProductService.create_product(**cls().get_payload_status_active())
 
     @classmethod
+    def populate_active_product_with_image(cls, get_images_object=False):
+        product = ProductService.create_product(**cls().get_payload_status_active())
+        images = FakeImages.populate_images_for_product(product_id=product.id)
+        product_images = ProductService.create_product_images(product.id, **images)
+        if get_images_object:
+            return product, product_images
+        return product
+
+    @classmethod
     def populate_archived_product(cls):
         return ProductService.create_product(**cls().get_payload_status_archived())
 
     @classmethod
     def populate_draft_product(cls):
         return ProductService.create_product(**cls().get_payload_status_draft())
+
+
+class FakeImages:
+    product_demo_dir = Path(__file__).resolve().parent.parent / "demo/images/products"
+
+    @classmethod
+    def populate_images_for_product(cls, product_id):
+        """
+        Attach some images to a product.
+
+        Read some image file in `.jpg` format from this directory:
+        `/apps/shop/demo/images/products/{number}` (you can replace your files in the dir)
+        """
+
+        directory_path = os.path.join(cls.product_demo_dir, str(product_id))
+        upload = []
+
+        if os.path.isdir(directory_path):
+            for filename in os.listdir(directory_path):
+                if filename.endswith(".jpg"):
+                    file_path = os.path.join(directory_path, filename)
+
+                    with open(file_path, "rb") as file:
+                        file_content = file.read()
+                        for_upload = SimpleUploadedFile(
+                            name=filename, content=file_content
+                        )
+                        upload.append(for_upload)
+
+        else:
+            raise FileNotFoundError(f"{cls.product_demo_dir}")
+
+        return {"images": upload}
