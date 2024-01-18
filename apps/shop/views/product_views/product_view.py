@@ -46,7 +46,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Product.objects.select_related().prefetch_related(
             "productoption_set__productoptionitem_set",
             Prefetch(
-                "productvariant_set",
+                "variant",
                 queryset=ProductVariant.objects.select_related(
                     "option1", "option2", "option3"
                 ),
@@ -84,7 +84,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         """Retrieve and return a list of variants associated with a specific product."""
 
         product = self.get_object()
-        variants = product.productvariant_set.all()
+        variants = product.variant.all()
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
 
