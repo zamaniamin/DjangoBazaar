@@ -19,16 +19,16 @@ class RetrieveProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFaker.populate_product_by_payload()
+        ) = ProductFaker.populate_active_simple_product(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_variable_product_by_payload()
+        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
 
         # --- products with different status ---
-        cls.active_product = ProductFaker.populate_active_product()
-        cls.archived_product = ProductFaker.populate_archived_product()
-        cls.draft_product = ProductFaker.populate_draft_product()
+        cls.active_product = ProductFaker.populate_active_simple_product()
+        cls.archived_product = ProductFaker.populate_archived_simple_product()
+        cls.draft_product = ProductFaker.populate_draft_simple_product()
 
     # ----------------------
     # --- single product ---
@@ -317,7 +317,7 @@ class ListDraftProductsTest(APITestCase):
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
 
-        ProductFaker.populate_draft_product()
+        ProductFaker.populate_draft_simple_product()
 
         # --- request ---
         response = self.client.get(reverse("product-list"))

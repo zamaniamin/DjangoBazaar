@@ -20,11 +20,11 @@ class UpdateProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFaker.populate_product_by_payload()
+        ) = ProductFaker.populate_active_simple_product(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_variable_product_by_payload()
+        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
 
     def setUp(self):
         """

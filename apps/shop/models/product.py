@@ -1,4 +1,5 @@
 import os
+import sys
 import uuid
 
 from django.core.validators import MinValueValidator
@@ -150,6 +151,10 @@ class ProductVariant(models.Model):
 def generate_upload_path(instance, filename):
     unique_id = uuid.uuid4().hex
     _, ext = os.path.splitext(filename)
+
+    # Add "test_" prefix to unique_id if running in test mode
+    if "test" in sys.argv:
+        unique_id = f"test_{unique_id}"
     return f"products/{instance.product.id}/{unique_id}{ext}"
 
 

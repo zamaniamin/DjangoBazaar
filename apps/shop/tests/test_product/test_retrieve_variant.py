@@ -12,7 +12,7 @@ class RetrieveVariantTest(ProductBaseTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.product = ProductFaker.populate_variable_product()
+        cls.product = ProductFaker.populate_unique_variable_product()
         cls.variant_id = cls.product.productvariant_set.first().id
 
     def test_retrieve_product_variants(self):

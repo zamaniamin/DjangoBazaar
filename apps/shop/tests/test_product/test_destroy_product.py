@@ -8,7 +8,7 @@ from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 class DestroyProductTest(ProductBaseTestCase):
     @classmethod
     def setUp(cls):
-        cls.active_product = ProductFaker.populate_active_product()
+        cls.active_product = ProductFaker.populate_active_simple_product()
 
     def test_delete_by_admin(self):
         """Test deleting a product by an admin (expects HTTP 204 No Content)."""

@@ -58,12 +58,13 @@ class ProductService:
 
     @classmethod
     def create_product_images(cls, product_id, **data):
-        ProductMedia.objects.bulk_create(
+        images = ProductMedia.objects.bulk_create(
             [
                 ProductMedia(product_id=product_id, src=image_data)
                 for image_data in data["images"]
             ]
         )
+        return images
 
     @staticmethod
     def retrieve_product_details(product_id):
