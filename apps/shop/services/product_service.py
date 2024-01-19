@@ -44,7 +44,7 @@ class ProductService:
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
 
-        if data["status"] == "active":
+        if data["status"] == Product.STATUS_ACTIVE:
             data["published_at"] = timezone.now()
 
         # Create product

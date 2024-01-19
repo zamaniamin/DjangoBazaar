@@ -27,18 +27,23 @@ class Product(models.Model):
 
     """
 
-    product_name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
+    STATUS_ACTIVE = "active"
+    STATUS_ARCHIVED = "archived"
+    STATUS_DRAFT = "draft"
     STATUS_CHOICES = [
         # The product is ready to sell and is available to customers on the online store, sales channels, and apps.
-        ("active", "Active"),
+        (STATUS_ACTIVE, "Active"),
         # The product is no longer being sold and isn't available to customers on sales channels and apps.
-        ("archived", "Archived"),
+        (STATUS_ARCHIVED, "Archived"),
         # The product isn't ready to sell and is unavailable to customers on sales channels and apps.
-        ("draft", "Draft"),
+        (STATUS_DRAFT, "Draft"),
     ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
 
+    product_name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)

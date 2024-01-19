@@ -77,7 +77,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductCreateSerializer(serializers.ModelSerializer):
     status = serializers.CharField(
-        max_length=10, allow_blank=True, required=False, default="draft"
+        max_length=10, allow_blank=True, required=False, default=Product.STATUS_DRAFT
     )
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
     price = serializers.DecimalField(
@@ -164,7 +164,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         valid_statuses = [status[0] for status in Product.STATUS_CHOICES]
         if value not in valid_statuses:
-            return "draft"
+            return Product.STATUS_DRAFT
         return value
 
 

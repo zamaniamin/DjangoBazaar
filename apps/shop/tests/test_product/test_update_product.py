@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.models import Product
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -99,7 +100,7 @@ class UpdateProductTest(ProductBaseTestCase):
         payloads = [
             {"product_name": "partial updated name"},
             {"description": "partial updated description"},
-            {"status": "archived"},
+            {"status": Product.STATUS_ARCHIVED},
         ]
         for payload in payloads:
             response = self.client.patch(

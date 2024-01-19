@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.models import Product
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -164,9 +165,9 @@ class RetrieveProductTest(ProductBaseTestCase):
             )
 
             # --- expected --
-            if product.status in ["active", "archived"]:
+            if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
-            elif product.status == "draft":
+            elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_product_by_guest(self):
@@ -186,9 +187,9 @@ class RetrieveProductTest(ProductBaseTestCase):
             )
 
             # --- expected --
-            if product.status in ["active", "archived"]:
+            if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
-            elif product.status == "draft":
+            elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # --------------------
@@ -214,7 +215,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(len(expected), 5)
         for product in expected:
-            self.assertIn(product["status"], ["active", "archived", "draft"])
+            self.assertIn(
+                product["status"],
+                [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
+            )
 
     def test_list_product_by_user(self):
         """
@@ -234,8 +238,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(len(expected), 4)
         for product in expected:
-            self.assertNotIn(product["status"], ["draft"])
-            self.assertIn(product["status"], ["active", "archived"])
+            self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
+            self.assertIn(
+                product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
+            )
 
     def test_list_product_by_guest(self):
         """
@@ -256,8 +262,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(len(expected), 4)
         for product in expected:
-            self.assertNotIn(product["status"], ["draft"])
-            self.assertIn(product["status"], ["active", "archived"])
+            self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
+            self.assertIn(
+                product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
+            )
 
     def test_list_products_check_product_detail(self):
         """

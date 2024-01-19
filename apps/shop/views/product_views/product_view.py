@@ -56,7 +56,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         user = self.request.user
         if not user.is_staff:
-            queryset = queryset.exclude(status="draft")
+            queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
         return queryset
 
