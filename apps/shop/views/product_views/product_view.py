@@ -90,6 +90,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 # TODO filter products by status, IDs, names, options, price, stock, date,
+# TODO order by price
+# TODO order by stock
+# TODO order by date
 # TODO add new variant to product and update the product options base on new items in the variant
 # @action(detail=True, methods=["post"], url_path="variants")
 # def create_variant(self, request, pk=None):
