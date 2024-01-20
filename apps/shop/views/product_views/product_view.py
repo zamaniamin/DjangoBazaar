@@ -22,7 +22,6 @@ from apps.shop.services.product_service import ProductService
     ),
 )
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
 
@@ -43,6 +42,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
+        # TODO move queryset to product manager
         queryset = Product.objects.select_related().prefetch_related(
             "options__items",
             Prefetch(
@@ -56,6 +56,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         user = self.request.user
         if not user.is_staff:
+            # TODO move queryset to product manager
             queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
         return queryset
