@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     # --- External Packages ---
+    "django_filters",
     "rest_framework",
     "drf_spectacular",
     "debug_toolbar",
