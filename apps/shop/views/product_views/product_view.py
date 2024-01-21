@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.models import Product, ProductVariant
+from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
@@ -28,6 +29,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
+    pagination_class = DefaultPagination
 
     ACTION_SERIALIZERS = {
         "create": s.ProductCreateSerializer,
@@ -53,7 +55,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "variants",
                 queryset=ProductVariant.objects.select_related(
                     "option1", "option2", "option3"
-                ),
+                ).order_by("id"),
             ),
             "media",
         )
@@ -63,7 +65,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             # TODO move queryset to product manager
             queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
-        return queryset
+        return queryset.order_by("id")
 
     def create(self, request, *args, **kwargs):
         # Validate
