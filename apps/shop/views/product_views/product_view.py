@@ -1,10 +1,12 @@
 from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
+from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.models import Product, ProductVariant
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
@@ -24,6 +26,8 @@ from apps.shop.services.product_service import ProductService
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     ACTION_SERIALIZERS = {
         "create": s.ProductCreateSerializer,
