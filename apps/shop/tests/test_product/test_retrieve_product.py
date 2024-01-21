@@ -213,8 +213,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 5)
-        for product in expected:
+        self.assertEqual(expected["count"], 5)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 5)
+        for product in expected_products:
             self.assertIn(
                 product["status"],
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
@@ -236,8 +238,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 4)
-        for product in expected:
+        self.assertEqual(expected["count"], 4)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 4)
+        for product in expected_products:
             self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
             self.assertIn(
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
@@ -260,8 +264,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 4)
-        for product in expected:
+        self.assertEqual(expected["count"], 4)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 4)
+        for product in expected_products:
             self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
             self.assertIn(
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
@@ -283,8 +289,10 @@ class RetrieveProductTest(ProductBaseTestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 4)
-        for product in expected:
+        self.assertEqual(expected["count"], 4)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 4)
+        for product in expected_products:
             self.assertEqual(len(product), 10)
             self.assertIn("id", product)
             self.assertIn("product_name", product)
@@ -313,7 +321,9 @@ class ListNoProductsTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 0)
+        self.assertEqual(expected["count"], 0)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 0)
 
 
 class ListDraftProductsTest(APITestCase):
@@ -333,7 +343,9 @@ class ListDraftProductsTest(APITestCase):
         # --- expected ---
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(len(expected), 0)
+        self.assertEqual(expected["count"], 0)
+        expected_products = expected["results"]
+        self.assertEqual(len(expected_products), 0)
 
 
 # TODO test_with_media
