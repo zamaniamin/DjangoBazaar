@@ -6,6 +6,9 @@ from apps.shop.models import Product
 class ProductFilter(FilterSet):
     class Meta:
         model = Product
-        fields = [
-            "status",
-        ]
+        fields = {
+            "status": ["exact"],
+            "updated_at": "",
+            "variants__price": ["gt", "lt"],
+            "variants__stock": ["gt", "lt"],
+        }
