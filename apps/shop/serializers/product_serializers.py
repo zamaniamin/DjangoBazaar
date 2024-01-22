@@ -17,9 +17,7 @@ class ProductOptionItemSerializer(serializers.ModelSerializer):
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
-    items = serializers.ListSerializer(
-        child=serializers.CharField(), source="productoptionitem_set", required=False
-    )
+    items = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
     class Meta:
         model = ProductOption
@@ -79,7 +77,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductCreateSerializer(serializers.ModelSerializer):
     status = serializers.CharField(
-        max_length=10, allow_blank=True, required=False, default="draft"
+        max_length=10, allow_blank=True, required=False, default=Product.STATUS_DRAFT
     )
     stock = serializers.IntegerField(default=0, validators=[MinValueValidator(0)])
     price = serializers.DecimalField(
@@ -92,9 +90,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         ],
     )
     options = ProductOptionSerializer(many=True, required=False, default=None)
-    variants = ProductVariantSerializer(
-        many=True, source="productvariant_set", read_only=True
-    )
+    variants = ProductVariantSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -129,9 +125,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         # Iterate through each option in the list
         for option in options:
             option_name = option.get("option_name")
-            items = option.get("productoptionitem_set")
+            items = option.get("items")
 
-            # Raise an error if 'productoptionitem_set' is missing
+            # Raise an error if 'items' is missing
             if items is None:
                 raise serializers.ValidationError(
                     "Each option in 'options' must have a 'items'."
@@ -168,7 +164,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
         valid_statuses = [status[0] for status in Product.STATUS_CHOICES]
         if value not in valid_statuses:
-            return "draft"
+            return Product.STATUS_DRAFT
         return value
 
 
@@ -178,15 +174,9 @@ class ProductSerializer(serializers.ModelSerializer):
     published_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
     )
-    options = ProductOptionSerializer(
-        many=True, source="productoption_set", read_only=True
-    )
-    variants = ProductVariantSerializer(
-        many=True, source="productvariant_set", read_only=True
-    )
-    images = ProductImageSerializer(
-        many=True, source="productmedia_set", read_only=True
-    )
+    options = ProductOptionSerializer(many=True, read_only=True)
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, source="media", read_only=True)
 
     class Meta:
         model = Product

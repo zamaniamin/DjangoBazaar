@@ -1,11 +1,15 @@
 from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
+from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.models import Product, ProductVariant
+from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import product_serializers as s
 from apps.shop.services.product_service import ProductService
 
@@ -22,9 +26,21 @@ from apps.shop.services.product_service import ProductService
     ),
 )
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
+    # TODO add test case for search, filter, ordering and pagination
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
+    search_fields = ["product_name", "description"]
+    filterset_class = ProductFilter
+    ordering_fields = [
+        "product_name",
+        "created_at",
+        "update_at",
+        "published_at",
+        "variants__stock",
+        "variants__price",
+    ]
+    pagination_class = DefaultPagination
 
     ACTION_SERIALIZERS = {
         "create": s.ProductCreateSerializer,
@@ -43,22 +59,24 @@ class ProductViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
+        # TODO move queryset to product manager
         queryset = Product.objects.select_related().prefetch_related(
-            "productoption_set__productoptionitem_set",
+            "options__items",
             Prefetch(
-                "productvariant_set",
+                "variants",
                 queryset=ProductVariant.objects.select_related(
                     "option1", "option2", "option3"
-                ),
+                ).order_by("id"),
             ),
-            "productmedia_set",
+            "media",
         )
 
         user = self.request.user
         if not user.is_staff:
-            queryset = queryset.exclude(status="draft")
+            # TODO move queryset to product manager
+            queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
-        return queryset
+        return queryset.order_by("id")
 
     def create(self, request, *args, **kwargs):
         # Validate
@@ -84,7 +102,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         """Retrieve and return a list of variants associated with a specific product."""
 
         product = self.get_object()
-        variants = product.productvariant_set.all()
+        variants = product.variants.all()
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
 

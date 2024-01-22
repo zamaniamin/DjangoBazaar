@@ -44,7 +44,8 @@ class ProductService:
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
 
-        if data["status"] == "active":
+        # TODO add test case for test published_at is set if status is active
+        if data["status"] == Product.STATUS_ACTIVE:
             data["published_at"] = timezone.now()
 
         # Create product
@@ -87,12 +88,12 @@ class ProductService:
         )
 
         prefetch_variants = Prefetch(
-            "productvariant_set", queryset=select_related_variant_options
+            "variants", queryset=select_related_variant_options
         )
 
         prefetch_related_product_data = Product.objects.prefetch_related(
-            "productoption_set__productoptionitem_set", prefetch_variants
-        ).prefetch_related("productmedia_set")
+            "options__items", prefetch_variants
+        ).prefetch_related("media")
 
         return prefetch_related_product_data.get(pk=product_id)
 
@@ -236,12 +237,12 @@ class ProductService:
         # Fetch ProductOption and related ProductOptionItem objects in a single query
         options = (
             ProductOption.objects.select_related("product")
-            .prefetch_related("productoptionitem_set")
+            .prefetch_related("items")
             .filter(product=product_id)
         )
 
         for option in options:
-            items = option.productoptionitem_set.all()
+            items = option.items.all()
 
             product_options.append(
                 {

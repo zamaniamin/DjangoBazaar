@@ -63,3 +63,5 @@ class CreateImageTest(ProductBaseTestCase):
 
 
 # TODO test access permissions
+# TODO test update image
+# TODO test delete image

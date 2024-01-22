@@ -58,35 +58,35 @@ class ProductImageViewSet(viewsets.ModelViewSet):
 
 
 # TODO add image to draft products
-    # @action(
-    #     detail=True,
-    #     methods=["post", "get"],
-    #     url_path="images",
-    #     parser_classes=[MultiPartParser, FormParser],
-    # )
-    # def images(self, request, *args, **kwargs):
-    #     """Upload images for a specific product."""
-    #     if request.method == "POST":
-    #         serializer = self.get_serializer(data=request.data)
-    #         serializer.is_valid(raise_exception=True)
-    #         payload = serializer.validated_data
-    #         product = self.get_object()
-    #         ProductService.create_product_images(product.id, **payload)
-    #
-    #         updated_images = ProductMedia.objects.filter(product=product)
-    #         serializer = s.ProductImageSerializer(updated_images, many=True)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     elif request.method == "GET":
-    #         product = self.get_object()
-    #         images = product.productmedia_set.all()
-    #         serializer = s.ProductImageSerializer(images, many=True)
-    #         return Response(serializer.data)
+# @action(
+#     detail=True,
+#     methods=["post", "get"],
+#     url_path="images",
+#     parser_classes=[MultiPartParser, FormParser],
+# )
+# def images(self, request, *args, **kwargs):
+#     """Upload images for a specific product."""
+#     if request.method == "POST":
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         payload = serializer.validated_data
+#         product = self.get_object()
+#         ProductService.create_product_images(product.id, **payload)
+#
+#         updated_images = ProductMedia.objects.filter(product=product)
+#         serializer = s.ProductImageSerializer(updated_images, many=True)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     elif request.method == "GET":
+#         product = self.get_object()
+#         images = product.productmedia_set.all()
+#         serializer = s.ProductImageSerializer(images, many=True)
+#         return Response(serializer.data)
 
-    # @action(detail=True, methods=["get"], url_path="images")
-    # def cc_cc(self, request, pk=None):
-    #     """Retrieve and return a list of images associated with a specific product."""
-    #
-    #     product = self.get_object()
-    #     images = product.productmedia_set.all()
-    #     serializer = s.ProductImageSerializer(images, many=True)
-    #     return Response(serializer.data)
+# @action(detail=True, methods=["get"], url_path="images")
+# def cc_cc(self, request, pk=None):
+#     """Retrieve and return a list of images associated with a specific product."""
+#
+#     product = self.get_object()
+#     images = product.productmedia_set.all()
+#     serializer = s.ProductImageSerializer(images, many=True)
+#     return Response(serializer.data)

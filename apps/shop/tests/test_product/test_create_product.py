@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.utils import json
 
+from apps.shop.models import Product
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -52,7 +53,7 @@ class CreateProductTest(ProductBaseTestCase):
         payload = {
             "product_name": "test product",
             "description": "test description",
-            "status": "active",
+            "status": Product.STATUS_ACTIVE,
             "price": 11,
             "stock": 11,
             "options": [],
@@ -97,7 +98,7 @@ class CreateProductTest(ProductBaseTestCase):
         payload = {
             "product_name": "test product",
             "description": "test description",
-            "status": "active",
+            "status": Product.STATUS_ACTIVE,
             "price": 11,
             "stock": 11,
             "options": [
@@ -168,7 +169,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsInstance(expected["id"], int)
         self.assertEqual(expected["product_name"], payload["product_name"])
         self.assertIsNone(expected["description"])
-        self.assertEqual(expected["status"], "draft")
+        self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
         # --- expected product date and time ---
         self.assertExpectedDatetimeFormat(expected, published_at=None)
@@ -230,9 +231,9 @@ class CreateProductTest(ProductBaseTestCase):
         Test case for handling valid 'status' values when creating a product.
         """
         invalid_payloads = [
-            {"product_name": "Test", "status": "active"},
-            {"product_name": "Test", "status": "archived"},
-            {"product_name": "Test", "status": "draft"},
+            {"product_name": "Test", "status": Product.STATUS_ACTIVE},
+            {"product_name": "Test", "status": Product.STATUS_ARCHIVED},
+            {"product_name": "Test", "status": Product.STATUS_DRAFT},
             {"product_name": "Test", "status": ""},
             {"product_name": "Test", "status": " "},
             {"product_name": "Test", "status": "1"},
@@ -248,14 +249,14 @@ class CreateProductTest(ProductBaseTestCase):
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
             match payload["status"]:
-                case "active":
-                    self.assertEqual(response.data["status"], "active")
-                case "archived":
-                    self.assertEqual(response.data["status"], "archived")
-                case "draft":
-                    self.assertEqual(response.data["status"], "draft")
+                case Product.STATUS_ACTIVE:
+                    self.assertEqual(response.data["status"], Product.STATUS_ACTIVE)
+                case Product.STATUS_ARCHIVED:
+                    self.assertEqual(response.data["status"], Product.STATUS_ARCHIVED)
+                case Product.STATUS_DRAFT:
+                    self.assertEqual(response.data["status"], Product.STATUS_DRAFT)
                 case _:
-                    self.assertEqual(response.data["status"], "draft")
+                    self.assertEqual(response.data["status"], Product.STATUS_DRAFT)
 
     def test_invalid_status(self):
         """
@@ -295,7 +296,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsInstance(expected["id"], int)
         self.assertEqual(expected["product_name"], payload["product_name"])
         self.assertIsNone(expected["description"])
-        self.assertEqual(expected["status"], "draft")
+        self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
         # --- expected product date and time ---
         self.assertExpectedDatetimeFormat(expected, published_at=None)
@@ -364,7 +365,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsInstance(expected["id"], int)
         self.assertEqual(expected["product_name"], payload["product_name"])
         self.assertIsNone(expected["description"])
-        self.assertEqual(expected["status"], "draft")
+        self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
         # --- expected product date and time ---
         self.assertExpectedDatetimeFormat(expected, published_at=None)
