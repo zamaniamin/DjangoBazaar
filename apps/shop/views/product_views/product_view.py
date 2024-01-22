@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
@@ -27,8 +28,18 @@ from apps.shop.services.product_service import ProductService
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = s.ProductSerializer
     permission_classes = [IsAdminUser]
-    filter_backends = [DjangoFilterBackend]
+    # TODO add test case for search, filter, ordering and pagination
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
+    search_fields = ["product_name", "description"]
     filterset_class = ProductFilter
+    ordering_fields = [
+        "product_name",
+        "created_at",
+        "update_at",
+        "published_at",
+        "variants__stock",
+        "variants__price",
+    ]
     pagination_class = DefaultPagination
 
     ACTION_SERIALIZERS = {
@@ -96,10 +107,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-# TODO filter products by status, IDs, names, options, price, stock, date,
-# TODO order by price
-# TODO order by stock
-# TODO order by date
 # TODO add new variant to product and update the product options base on new items in the variant
 # @action(detail=True, methods=["post"], url_path="variants")
 # def create_variant(self, request, pk=None):
