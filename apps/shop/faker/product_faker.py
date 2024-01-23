@@ -181,8 +181,12 @@ class VariableProductFaker(BaseProductFaker):
     # --------------
 
     @classmethod
-    def populate_active_variable_product(cls, get_payload: bool = False):
-        product_data = cls().get_payload(is_variable=True, random_options=True)
+    def populate_active_variable_product(
+        cls, get_payload: bool = False, random_options: bool = True
+    ):
+        product_data = cls().get_payload(
+            is_variable=True, random_options=random_options
+        )
         product = ProductService.create_product(**product_data)
         if get_payload:
             return product_data.copy(), product
@@ -190,10 +194,10 @@ class VariableProductFaker(BaseProductFaker):
 
     @classmethod
     def populate_active_variable_product_with_image(
-        cls, get_images_object: bool = False
+        cls, get_images_object: bool = False, random_options: bool = True
     ):
         product = ProductService.create_product(
-            **cls().get_payload(is_variable=True, random_options=True)
+            **cls().get_payload(is_variable=True, random_options=random_options)
         )
         images = ProductImageFaker.populate_images(product_id=product.id)
         product_images = ProductService.create_product_images(product.id, **images)
@@ -205,9 +209,13 @@ class VariableProductFaker(BaseProductFaker):
     # --- archived ---
     # ----------------
     @classmethod
-    def populate_archived_variable_product(cls, get_payload: bool = False):
+    def populate_archived_variable_product(
+        cls, get_payload: bool = False, random_options: bool = True
+    ):
         product_data = cls().get_payload(
-            status=Product.STATUS_ARCHIVED, is_variable=True, random_options=True
+            status=Product.STATUS_ARCHIVED,
+            is_variable=True,
+            random_options=random_options,
         )
         product = ProductService.create_product(**product_data)
         if get_payload:
@@ -216,11 +224,13 @@ class VariableProductFaker(BaseProductFaker):
 
     @classmethod
     def populate_archived_variable_product_with_image(
-        cls, get_images_object: bool = False
+        cls, get_images_object: bool = False, random_options: bool = True
     ):
         product = ProductService.create_product(
             **cls().get_payload(
-                status=Product.STATUS_ARCHIVED, is_variable=True, random_options=True
+                status=Product.STATUS_ARCHIVED,
+                is_variable=True,
+                random_options=random_options,
             )
         )
         images = ProductImageFaker.populate_images(product_id=product.id)
@@ -233,9 +243,11 @@ class VariableProductFaker(BaseProductFaker):
     # --- draft ---
     # -------------
     @classmethod
-    def populate_draft_variable_product(cls, get_payload: bool = False):
+    def populate_draft_variable_product(
+        cls, get_payload: bool = False, random_options: bool = True
+    ):
         product_data = cls().get_payload(
-            status=Product.STATUS_DRAFT, is_variable=True, random_options=True
+            status=Product.STATUS_DRAFT, is_variable=True, random_options=random_options
         )
         product = ProductService.create_product(**product_data)
         if get_payload:
@@ -244,11 +256,13 @@ class VariableProductFaker(BaseProductFaker):
 
     @classmethod
     def populate_draft_variable_product_with_image(
-        cls, get_images_object: bool = False
+        cls, get_images_object: bool = False, random_options: bool = True
     ):
         product = ProductService.create_product(
             **cls().get_payload(
-                status=Product.STATUS_DRAFT, is_variable=True, random_options=True
+                status=Product.STATUS_DRAFT,
+                is_variable=True,
+                random_options=random_options,
             )
         )
         images = ProductImageFaker.populate_images(product_id=product.id)
