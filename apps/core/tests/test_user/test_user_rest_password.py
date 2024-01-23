@@ -4,7 +4,7 @@ from django.core import mail
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.core.faker.user_faker import FakeUser
+from apps.core.demo.factory.user_factory import UserFactory
 from apps.core.services.token_service import TokenService
 
 
@@ -12,10 +12,8 @@ class UserResetPasswordViewTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/me/"  # TODO use reverse()
 
-        self.member = FakeUser.populate_user()
+        self.member = UserFactory.create()
         self.member_access_token = TokenService.jwt_get_access_token(self.member)
-
-        self.inactive_user = FakeUser.populate_inactive_user()
 
     def test_user_reset_password(self):
         """
@@ -37,8 +35,8 @@ class UserResetPasswordViewTest(APITestCase):
 
         # --- expected email is sent ---
         expected_mail = mail.outbox
-        self.assertEqual(len(expected_mail), 3)
-        self.assertEqual(expected_mail[2].to, [payload["email"]])
+        self.assertEqual(len(expected_mail), 2)
+        self.assertEqual(expected_mail[1].to, [payload["email"]])
 
     def test_user_reset_password_conformation(self):
         """
@@ -49,7 +47,7 @@ class UserResetPasswordViewTest(APITestCase):
         payload = {
             "email": self.member.email,
             "otp": TokenService.create_otp_token(self.member.email),
-            "new_password": FakeUser.password + "test",
+            "new_password": UserFactory.demo_password() + "test",
         }
         response = self.client.post(
             self.base_url + "reset-password/conformation/",
@@ -70,11 +68,12 @@ class UserResetPasswordViewTest(APITestCase):
         """
 
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
-        cc = self.member.check_password(FakeUser.password)
+        demo_password = UserFactory.demo_password()
+        cc = self.member.check_password(demo_password)
         # --- request ---
         payload = {
-            "current_password": FakeUser.password,
-            "new_password": FakeUser.password + "test2",
+            "current_password": demo_password,
+            "new_password": demo_password + "test2",
         }
         response = self.client.post(
             self.base_url + "change-password/",

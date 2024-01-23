@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.core.faker.user_faker import FakeUser
+from apps.core.demo.factory.user_factory import UserFactory
 from apps.core.models import UserVerification
 from apps.core.services.token_service import TokenService
 
@@ -14,14 +14,8 @@ class UserChangeEmailViewTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/me/change-email/"  # TODO use reverse()
 
-        self.member = FakeUser.populate_user()
+        self.member = UserFactory.create()
         self.member_access_token = TokenService.jwt_get_access_token(self.member)
-
-        self.inactive_user = FakeUser.populate_inactive_user()
-
-    # ----------------------
-    # -- test activation ---
-    # ----------------------
 
     def test_user_change_email(self):
         """
@@ -30,8 +24,7 @@ class UserChangeEmailViewTest(APITestCase):
 
         # --- init ---
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
-        new_email = FakeUser.random_email()
-
+        new_email = UserFactory.random_email()
         # --- request ---
         payload = {
             "new_email": new_email,
@@ -47,8 +40,8 @@ class UserChangeEmailViewTest(APITestCase):
 
         # --- expected email is sent ---
         expected_mail = mail.outbox
-        self.assertEqual(len(expected_mail), 3)
-        self.assertEqual(expected_mail[2].to, [new_email])
+        self.assertEqual(len(expected_mail), 2)
+        self.assertEqual(expected_mail[1].to, [new_email])
 
         # --- expected new-email is saved in UserVerification ---
         user = UserVerification.objects.get(user_id=self.member.id)
@@ -61,7 +54,7 @@ class UserChangeEmailViewTest(APITestCase):
 
         # --- init --
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
-        new_email = FakeUser.random_email()
+        new_email = UserFactory.random_email()
         UserVerification.objects.update_or_create(user=self.member, new_email=new_email)
 
         # --- request ---
