@@ -91,7 +91,7 @@ class BaseProductFaker:
             options = []
 
         return {
-            "product_name": self.__generate_name(),
+            "name": self.__generate_name(),
             "description": self.__generate_description(),
             "status": status,
             "price": self.__get_random_price(),

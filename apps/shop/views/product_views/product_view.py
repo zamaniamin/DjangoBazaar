@@ -30,10 +30,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     # TODO add test case for search, filter, ordering and pagination
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
-    search_fields = ["product_name", "description"]
+    search_fields = ["name", "description"]
     filterset_class = ProductFilter
     ordering_fields = [
-        "product_name",
+        "name",
         "created_at",
         "update_at",
         "published_at",

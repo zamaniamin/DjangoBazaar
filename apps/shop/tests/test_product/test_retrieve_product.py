@@ -53,9 +53,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(
-            expected["product_name"], self.simple_product_payload["product_name"]
-        )
+        self.assertEqual(expected["name"], self.simple_product_payload["name"])
         self.assertEqual(
             expected["description"], self.simple_product_payload["description"]
         )
@@ -95,9 +93,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(
-            expected["product_name"], self.variable_product_payload["product_name"]
-        )
+        self.assertEqual(expected["name"], self.variable_product_payload["name"])
         self.assertEqual(
             expected["description"], self.variable_product_payload["description"]
         )
@@ -295,7 +291,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for product in expected_products:
             self.assertEqual(len(product), 10)
             self.assertIn("id", product)
-            self.assertIn("product_name", product)
+            self.assertIn("name", product)
             self.assertIn("description", product)
             self.assertIn("status", product)
             self.assertIn("options", product)

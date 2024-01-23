@@ -51,7 +51,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         # --- request ---
         payload = {
-            "product_name": "test product",
+            "name": "test product",
             "description": "test description",
             "status": Product.STATUS_ACTIVE,
             "price": 11,
@@ -68,7 +68,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
@@ -96,7 +96,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         # --- request ---
         payload = {
-            "product_name": "test product",
+            "name": "test product",
             "description": "test description",
             "status": Product.STATUS_ACTIVE,
             "price": 11,
@@ -117,7 +117,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
@@ -155,7 +155,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         # --- request ---
         payload = {
-            "product_name": "test product",
+            "name": "test product",
         }
         response = self.client.post(
             reverse("product-list"),
@@ -167,7 +167,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["name"], payload["name"])
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
@@ -183,26 +183,26 @@ class CreateProductTest(ProductBaseTestCase):
 
     def test_invalid_required_fields(self):
         """
-        Test various scenarios with invalid 'product_name' in the payload during product creation.
+        Test various scenarios with invalid 'name' in the payload during product creation.
         """
         invalid_payloads = [
-            {"product_name": ""},
-            {"product_name": " "},
-            # {"product_name": 1},
-            {"product_name": []},
-            {"product_name": ["d"]},
-            {"product_name": ["d", "l"]},
-            {"product_name": [{"": 0}]},
-            {"product_name": None},
-            {"product_name": True},
-            {"product_name": False},
-            {"product_name": {}},
-            {"product_name": ()},
-            {"product_name": ("d",)},
-            # {"product_name": 0},
-            # {"product_name": 0.0},
-            # {"product_name": 0j},
-            {"product_name": "1" * 256},
+            {"name": ""},
+            {"name": " "},
+            # {"name": 1},
+            {"name": []},
+            {"name": ["d"]},
+            {"name": ["d", "l"]},
+            {"name": [{"": 0}]},
+            {"name": None},
+            {"name": True},
+            {"name": False},
+            {"name": {}},
+            {"name": ()},
+            {"name": ("d",)},
+            # {"name": 0},
+            # {"name": 0.0},
+            # {"name": 0j},
+            {"name": "1" * 256},
         ]
         for payload in invalid_payloads:
             response = self.client.post(
@@ -231,14 +231,14 @@ class CreateProductTest(ProductBaseTestCase):
         Test case for handling valid 'status' values when creating a product.
         """
         invalid_payloads = [
-            {"product_name": "Test", "status": Product.STATUS_ACTIVE},
-            {"product_name": "Test", "status": Product.STATUS_ARCHIVED},
-            {"product_name": "Test", "status": Product.STATUS_DRAFT},
-            {"product_name": "Test", "status": ""},
-            {"product_name": "Test", "status": " "},
-            {"product_name": "Test", "status": "1"},
-            {"product_name": "Test", "status": "blob"},
-            {"product_name": "Test", "status": 1},
+            {"name": "Test", "status": Product.STATUS_ACTIVE},
+            {"name": "Test", "status": Product.STATUS_ARCHIVED},
+            {"name": "Test", "status": Product.STATUS_DRAFT},
+            {"name": "Test", "status": ""},
+            {"name": "Test", "status": " "},
+            {"name": "Test", "status": "1"},
+            {"name": "Test", "status": "blob"},
+            {"name": "Test", "status": 1},
         ]
         for payload in invalid_payloads:
             response = self.client.post(
@@ -263,10 +263,10 @@ class CreateProductTest(ProductBaseTestCase):
         Test case for handling invalid 'status' values when creating a product.
         """
         invalid_payloads = [
-            {"product_name": "Test", "status": None},
-            {"product_name": "Test", "status": False},
-            {"product_name": "Test", "status": True},
-            {"product_name": "Test", "status": []},
+            {"name": "Test", "status": None},
+            {"name": "Test", "status": False},
+            {"name": "Test", "status": True},
+            {"name": "Test", "status": []},
         ]
 
         for payload in invalid_payloads:
@@ -280,7 +280,7 @@ class CreateProductTest(ProductBaseTestCase):
     def test_with_required_options(self):
         # --- request ---
         payload = {
-            "product_name": "Test Product",
+            "name": "Test Product",
             "options": [{"option_name": "color", "items": ["red"]}],
         }
         response = self.client.post(
@@ -294,7 +294,7 @@ class CreateProductTest(ProductBaseTestCase):
         expected = response.json()
 
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["name"], payload["name"])
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
@@ -321,7 +321,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"option_name": "material", "items": ["Cotton", "Nylon"]},
         ]
         payload = {
-            "product_name": "test",
+            "name": "test",
             "options": options + [{"option_name": "color", "items": ["black"]}],
         }
         response = self.client.post(
@@ -346,7 +346,7 @@ class CreateProductTest(ProductBaseTestCase):
     def test_duplicate_items_in_options(self):
         # --- request ---
         payload = {
-            "product_name": "blob",
+            "name": "blob",
             "options": [
                 {"option_name": "color", "items": ["red", "blue", "red"]},
                 {"option_name": "size", "items": ["S", "L"]},
@@ -363,7 +363,7 @@ class CreateProductTest(ProductBaseTestCase):
         expected = response.json()
 
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["product_name"], payload["product_name"])
+        self.assertEqual(expected["name"], payload["name"])
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
@@ -384,7 +384,7 @@ class CreateProductTest(ProductBaseTestCase):
         """
 
         payload = {
-            "product_name": "string33",
+            "name": "string33",
             "options": [
                 {"option_name": "color", "items": ["c"]},
                 {"option_name": "material", "items": ["m"]},
@@ -408,33 +408,33 @@ class CreateProductTest(ProductBaseTestCase):
         """
 
         invalid_options = [
-            {"product_name": "test", "options": ""},
-            {"product_name": "test", "options": [""]},
-            {"product_name": "test", "options": ["blob"]},
-            {"product_name": "test", "options": [{}]},
-            {"product_name": "test", "options": [{"option_name": []}]},
-            {"product_name": "test", "options": [{"option_name": ""}]},
-            {"product_name": "test", "options": [{"option_name": "", "items": []}]},
-            {"product_name": "test", "options": [{"option_name": "", "items": ["a"]}]},
-            {"product_name": "test", "options": [{"option_name": "blob", "items": ""}]},
+            {"name": "test", "options": ""},
+            {"name": "test", "options": [""]},
+            {"name": "test", "options": ["blob"]},
+            {"name": "test", "options": [{}]},
+            {"name": "test", "options": [{"option_name": []}]},
+            {"name": "test", "options": [{"option_name": ""}]},
+            {"name": "test", "options": [{"option_name": "", "items": []}]},
+            {"name": "test", "options": [{"option_name": "", "items": ["a"]}]},
+            {"name": "test", "options": [{"option_name": "blob", "items": ""}]},
             # {
-            #     "product_name": "test",
+            #     "name": "test",
             #     "options": [{"option_name": "blob", "items": [1]}],
             # },
             {
-                "product_name": "test",
+                "name": "test",
                 "options": [{"option_name": "blob", "items_blob": ["a"]}],
             },
             {
-                "product_name": "test",
+                "name": "test",
                 "options": [{"option_blob": "blob", "items": ["a"]}],
             },
             {
-                "product_name": "test",
+                "name": "test",
                 "options": [{"items": ["a"], "option_blob": "blob"}],
             },
             {
-                "product_name": "test",
+                "name": "test",
                 "options": [{"option_name": "blob", "items": [["a", "b"]]}],
             },
         ]
@@ -451,9 +451,9 @@ class CreateProductTest(ProductBaseTestCase):
         Test create a product with invalid price.
         """
         invalid_options = [
-            {"product_name": "test", "price": -10},
-            {"product_name": "test", "price": None},
-            {"product_name": "test", "price": ""},
+            {"name": "test", "price": -10},
+            {"name": "test", "price": None},
+            {"name": "test", "price": ""},
         ]
         for payload in invalid_options:
             response = self.client.post(
@@ -468,10 +468,10 @@ class CreateProductTest(ProductBaseTestCase):
         Test create a product with invalid stock.
         """
         invalid_options = [
-            {"product_name": "test", "stock": -10},
-            {"product_name": "test", "stock": None},
-            {"product_name": "test", "stock": ""},
-            {"product_name": "test", "stock": 1.2},
+            {"name": "test", "stock": -10},
+            {"name": "test", "stock": None},
+            {"name": "test", "stock": ""},
+            {"name": "test", "stock": 1.2},
         ]
         for payload in invalid_options:
             response = self.client.post(
@@ -486,7 +486,7 @@ class CreateProductTest(ProductBaseTestCase):
         Test create a product with more than three options.
         """
         payload = {
-            "product_name": "blob",
+            "name": "blob",
             "options": [
                 {"option_name": "color", "items": ["red"]},
                 {"option_name": "size", "items": ["small"]},

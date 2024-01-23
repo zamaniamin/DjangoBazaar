@@ -21,7 +21,7 @@ class Product(models.Model):
         (STATUS_DRAFT, "Draft"),
     ]
 
-    product_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
@@ -33,7 +33,7 @@ class Product(models.Model):
     # objects = models.Manager()
 
     def __str__(self):
-        return self.product_name
+        return self.name
 
 
 class ProductOption(models.Model):
