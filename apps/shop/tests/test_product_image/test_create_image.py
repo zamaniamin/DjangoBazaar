@@ -3,7 +3,7 @@ import os
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductMedia
 from apps.shop.serializers.product_serializers import ProductImageSerializer
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
@@ -16,7 +16,7 @@ class CreateImageTest(ProductBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.active_product = ProductFaker.populate_active_simple_product()
+        cls.active_product = ProductFactory.create_product()
         cls.files = cls.generate_list_photo_files()
         cls.file_count = len(cls.files)
 

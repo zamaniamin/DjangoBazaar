@@ -3,7 +3,7 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -14,7 +14,7 @@ class UpdateVariantTest(ProductBaseTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.product = ProductFaker.populate_unique_variable_product()
+        cls.product = ProductFactory.create_product(is_variable=True)
         cls.variant_id = cls.product.variants.first().id
 
     def test_update_variant(self):

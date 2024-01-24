@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.core.faker.user_faker import FakeUser
+from apps.core.demo.factory.user_factory import UserFactory
 
 
 class Command(BaseCommand):
@@ -20,6 +20,6 @@ class Command(BaseCommand):
         Args:
             *args: Additional command-line arguments.
             **options: Additional options.
-
         """
-        FakeUser.populate_demo_users()
+
+        UserFactory.populate_demo_users()

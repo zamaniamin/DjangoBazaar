@@ -3,7 +3,7 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
@@ -21,11 +21,11 @@ class UpdateProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFaker.populate_active_simple_product(get_payload=True)
+        ) = ProductFactory.create_product(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
+        ) = ProductFactory.create_product(is_variable=True, get_payload=True)
 
     def setUp(self):
         """
@@ -73,7 +73,7 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_required_fields(self):
         """Test updating required fields of a product."""
 
-        payload = {"product_name": "updated name"}
+        payload = {"name": "updated name"}
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}),
             data=json.dumps(payload),
@@ -81,7 +81,7 @@ class UpdateProductTest(ProductBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(expected["product_name"], "updated name")
+        self.assertEqual(expected["name"], "updated name")
 
     def test_update_without_required_fields(self):
         """Test updating a product without required fields (expects HTTP 400 Bad Request)."""
@@ -98,7 +98,7 @@ class UpdateProductTest(ProductBaseTestCase):
         """Test partial updates of a product."""
 
         payloads = [
-            {"product_name": "partial updated name"},
+            {"name": "partial updated name"},
             {"description": "partial updated description"},
             {"status": Product.STATUS_ARCHIVED},
         ]

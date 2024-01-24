@@ -4,7 +4,7 @@ from datetime import datetime
 from PIL import Image
 from rest_framework.test import APITestCase
 
-from apps.core.faker.user_faker import FakeUser
+from apps.core.demo.factory.user_factory import UserFactory
 from apps.core.services.time_service import DateTime
 from apps.core.services.token_service import TokenService
 
@@ -16,10 +16,10 @@ class BaseCoreTestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         # create users
-        cls.admin = FakeUser.populate_admin()
+        cls.admin = UserFactory.create(is_staff=True)
         cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
-        cls.regular_user = FakeUser.populate_user()
+        cls.regular_user = UserFactory.create()
         cls.user_access_token = TokenService.jwt_get_access_token(cls.regular_user)
 
     @staticmethod

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 
 
 class Command(BaseCommand):
@@ -22,4 +22,4 @@ class Command(BaseCommand):
             **options: Additional options.
 
         """
-        ProductFaker.populate_demo_products()
+        ProductFactory.populate_demo_products()

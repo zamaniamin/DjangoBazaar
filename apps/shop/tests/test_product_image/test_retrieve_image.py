@@ -3,7 +3,7 @@ import os
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductMedia
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 from config import settings
@@ -15,19 +15,9 @@ class RetrieveImageTest(ProductBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        (
-            cls.active_product,
-            cls.active_product_image,
-        ) = ProductFaker.populate_active_simple_product_with_image(
-            get_images_object=True
-        )
 
-        (
-            cls.active_product2,
-            cls.active_product2_image,
-        ) = ProductFaker.populate_active_simple_product_with_image(
-            get_images_object=True
-        )
+        cls.active_product = ProductFactory.create_product(has_images=True)
+        cls.active_product2 = ProductFactory.create_product(has_images=True)
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
