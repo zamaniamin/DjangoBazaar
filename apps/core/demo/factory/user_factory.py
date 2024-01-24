@@ -22,8 +22,10 @@ class UserFactory(DjangoModelFactory):
         cls.create(email="user2@test.test")
         cls.create(email="user3@test.test", is_active=False)
 
-        for regular in range(REGULAR_USERS_COUNT):
+        print(f"Adding {REGULAR_USERS_COUNT} users ... ", end="")
+        for regular in range(REGULAR_USERS_COUNT - 3):
             cls.create()
+        print("DONE")
 
     @classmethod
     def random_email(cls):
