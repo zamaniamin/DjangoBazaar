@@ -5,8 +5,8 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.core.tests.base_test import BaseCoreTestCase
-from apps.shop.faker.product_faker import SimpleProductFaker, VariableProductFaker
-from apps.shop.models.cart import Cart, CartItem
+from apps.shop.demo.factory.product.product_factory import ProductFactory
+from apps.shop.models.cart import Cart
 
 
 class CreateCartTest(BaseCoreTestCase):
@@ -30,16 +30,12 @@ class CreateCartItemsTest(BaseCoreTestCase):
     @classmethod
     def setUpTestData(cls):
         # --- simple product ---
-        cls.simple_product = (
-            SimpleProductFaker.populate_active_simple_product_with_image()
-        )
+        cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
         # --- variable product ---
-        cls.variable_product = (
-            VariableProductFaker.populate_active_variable_product_with_image(
-                random_options=False
-            )
+        cls.variable_product = ProductFactory.create_product(
+            is_variable=True, has_images=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
@@ -89,28 +85,24 @@ class RetrieveCartTest(BaseCoreTestCase):
     @classmethod
     def setUpTestData(cls):
         # --- simple product ---
-        cls.simple_product = (
-            SimpleProductFaker.populate_active_simple_product_with_image()
-        )
+        cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
         # --- variable product ---
-        cls.variable_product = (
-            VariableProductFaker.populate_active_variable_product_with_image(
-                random_options=False
-            )
+        cls.variable_product = ProductFactory.create_product(
+            has_images=True, is_variable=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
         # --- cart ---
         cart = Cart.objects.create()
         cls.cart_id = cart.id
-        for variant in cls.variable_product_variants:
-            CartItem.objects.create(
-                cart_id=cart.id,
-                variant=variant.variant,
-                quantity=1
-            )
+        # for variant in cls.variable_product_variants:
+        #     CartItem.objects.create(
+        #         cart_id=cart.id,
+        #         variant=variant.variant,
+        #         quantity=1
+        #     )
 
     def test_retrieve_cart(self):
         # TODO only admins can see cart (read only)

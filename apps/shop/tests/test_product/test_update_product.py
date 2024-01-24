@@ -3,7 +3,7 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.shop.faker.product_faker import ProductFaker
+from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
@@ -21,11 +21,11 @@ class UpdateProductTest(ProductBaseTestCase):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFaker.populate_active_simple_product(get_payload=True)
+        ) = ProductFactory.create_product(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFaker.populate_unique_variable_product(get_payload=True)
+        ) = ProductFactory.create_product(is_variable=True, get_payload=True)
 
     def setUp(self):
         """
