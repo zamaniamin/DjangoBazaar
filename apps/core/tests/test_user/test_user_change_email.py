@@ -10,7 +10,7 @@ from apps.core.models import UserVerification
 from apps.core.services.token_service import TokenService
 
 
-class UserChangeEmailViewTest(APITestCase):
+class UserChangeEmailTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/me/change-email/"  # TODO use reverse()
 

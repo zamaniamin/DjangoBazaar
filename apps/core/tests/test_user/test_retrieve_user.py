@@ -4,7 +4,7 @@ from rest_framework import status
 from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class RetrieveUserBaseTest(CoreBaseTestCase):
+class RetrieveUserTest(CoreBaseTestCase):
     def test_retrieve_user_by_admin(self):
         self.set_admin_user_authorization()
 

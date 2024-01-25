@@ -6,7 +6,7 @@ from rest_framework import status
 from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class DestroyUserBaseTest(CoreBaseTestCase):
+class DestroyUserTest(CoreBaseTestCase):
     def test_delete_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.delete(

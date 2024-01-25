@@ -8,7 +8,7 @@ from apps.core.demo.factory.user_factory import UserFactory
 from apps.core.services.token_service import TokenService
 
 
-class UserActivationViewTest(APITestCase):
+class UserActivationTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/"  # TODO use reverse()
 

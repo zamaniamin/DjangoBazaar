@@ -6,7 +6,7 @@ from rest_framework import status
 from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class UpdateUserBaseTest(CoreBaseTestCase):
+class UpdateUserTest(CoreBaseTestCase):
     # TODO separate update user to new file
     # -------------------
     # --- update user ---
