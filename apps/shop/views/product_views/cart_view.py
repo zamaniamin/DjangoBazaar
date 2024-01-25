@@ -1,4 +1,5 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
+from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ModelViewSet
 
 from apps.shop.models.cart import Cart, CartItem
@@ -52,8 +53,14 @@ class CartViewSet(ModelViewSet):
     queryset = Cart.objects.prefetch_related("items__variant").all()
     http_method_names = ["post", "get", "delete"]
 
+    ACTION_PERMISSIONS = {
+        "list": [IsAdminUser()],
+    }
 
-# TODO only admin can list carts and cant edit cart items
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+
 # TODO fix 500 error for UUID
 # TODO show product image
 # TODO mange inventory when adding product to cart and when on checkout
