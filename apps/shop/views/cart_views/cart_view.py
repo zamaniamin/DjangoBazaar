@@ -64,8 +64,8 @@ class CartViewSet(ModelViewSet):
 # TODO fix 500 error for UUID
 # TODO show product image
 # TODO mange inventory when adding product to cart and when on checkout
-# TODO deactivate PUT and PATCH for cart
 # TODO add cart factory
 # TODO write tests
 # TODO on delete a cart, delete all items from it too
 # TODO check the stock of items before save the order
+# TODO check cart queries
