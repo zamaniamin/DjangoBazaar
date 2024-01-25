@@ -7,4 +7,4 @@ class CoreConfig(AppConfig):
 
     def ready(self):
         # TODO refactor signals
-        pass
+        from apps.core import signals
