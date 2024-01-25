@@ -46,8 +46,5 @@ class RetrieveProfileTest(CoreBaseTestCase):
         )
 
     def test_retrieve_profile_by_anonymous_user(self):
-        # request
         response = self.client.get(reverse("user-me"))
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
