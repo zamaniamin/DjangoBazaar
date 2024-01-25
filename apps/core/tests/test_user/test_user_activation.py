@@ -18,11 +18,9 @@ class UserActivationViewTest(APITestCase):
         self.inactive_user = UserFactory.create(is_active=False)
 
     def test_user_activation(self):
-        """
-        Test activating the user after verifying the OTP code (verify email).
-        """
+        """Test activating the user after verifying the OTP code (verify email)."""
 
-        # --- request ---
+        # request
         payload = {
             "email": self.inactive_user.email,
             "otp": TokenService.create_otp_token(self.inactive_user.email),
@@ -33,10 +31,10 @@ class UserActivationViewTest(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # --- expected JWT token ---
+        # expected JWT token
         expected = response.json()
         self.assertIsInstance(expected["access"], str)
         self.assertIsInstance(expected["refresh"], str)
@@ -47,18 +45,16 @@ class UserActivationViewTest(APITestCase):
             "Your email address has been confirmed. Account activated successfully.",
         )
 
-        # --- expected user ---
+        # expected user
         self.inactive_user.refresh_from_db()
         self.assertTrue(self.inactive_user.is_active)
         self.assertFalse(self.inactive_user.is_staff)
         self.assertFalse(self.inactive_user.is_superuser)
 
     def test_resend_activation_token(self):
-        """
-        Test resending activation OTP code to email address.
-        """
+        """Test resending activation OTP code to email address."""
 
-        # --- request ---
+        # request
         payload = {"email": self.inactive_user.email}
         response = self.client.post(
             self.base_url + "resend-activation/",
@@ -66,10 +62,10 @@ class UserActivationViewTest(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # --- expected email ---
+        # expected email
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 3)
         self.assertEqual(expected_mail[2].to, [self.inactive_user.email])

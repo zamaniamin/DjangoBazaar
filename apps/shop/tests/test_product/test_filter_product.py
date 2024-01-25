@@ -11,7 +11,7 @@ class FilterProductTest(ProductBaseTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        # --- create product ---
+        # create product
         (
             cls.simple_product_payload,
             cls.simple_product,
@@ -21,7 +21,7 @@ class FilterProductTest(ProductBaseTestCase):
             cls.variable_product,
         ) = ProductFactory.create_product(is_variable=True, get_payload=True)
 
-        # --- products with different status ---
+        # products with different status
         cls.active_product = ProductFactory.create_product()
         cls.archived_product = ProductFactory.create_product(
             status=Product.STATUS_ARCHIVED
@@ -31,7 +31,7 @@ class FilterProductTest(ProductBaseTestCase):
     def test_filter_active_product(self):
         response = self.client.get(reverse("product-list"), data={"status": "active"})
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 4)

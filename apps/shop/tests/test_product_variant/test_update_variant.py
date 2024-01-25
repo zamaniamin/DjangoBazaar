@@ -20,7 +20,7 @@ class UpdateVariantTest(ProductBaseTestCase):
     def test_update_variant(self):
         self.set_admin_user_authorization()
 
-        # --- request ---
+        # request
         payload = {
             "price": 11,
             "stock": 111,
@@ -31,7 +31,7 @@ class UpdateVariantTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["price"], 11)

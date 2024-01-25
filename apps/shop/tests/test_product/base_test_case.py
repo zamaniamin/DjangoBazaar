@@ -74,23 +74,23 @@ class ProductBaseTestCase(CoreBaseTestCase):
             self.assertIsInstance(variant["id"], int)
             self.assertIsInstance(variant["product_id"], int)
 
-            # --- price ---
+            # price
             self.assertIsInstance(variant["price"], float)
             if expected_price is not None:
                 self.assertEqual(variant["price"], expected_price)
 
-            # --- stock ---
+            # stock
             self.assertIsInstance(variant["stock"], int)
             if expected_stock is not None:
                 self.assertEqual(variant["stock"], expected_stock)
 
-            # --- options ---
+            # options
             # TODO check the value base on items len
             self.assertIsInstance(variant["option1"], str | None)
             self.assertIsInstance(variant["option2"], str | None)
             self.assertIsInstance(variant["option3"], str | None)
 
-            # --- datetime ---
+            # datetime
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 

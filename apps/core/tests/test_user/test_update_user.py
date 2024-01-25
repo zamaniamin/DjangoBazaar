@@ -7,12 +7,13 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class UpdateUserBaseTest(CoreBaseTestCase):
+    # TODO separate update user to new file
     # -------------------
     # --- update user ---
     # -------------------
 
     def test_update_by_admin(self):
-        # --- request ---
+        # request
         self.set_admin_user_authorization()
         payload = {
             "email": self.regular_user.email,
@@ -26,7 +27,7 @@ class UpdateUserBaseTest(CoreBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)
@@ -59,7 +60,7 @@ class UpdateUserBaseTest(CoreBaseTestCase):
     # ---------------------------
 
     def test_partial_update_by_admin(self):
-        # --- request ---
+        # request
         self.set_admin_user_authorization()
         payload = {"first_name": "test F name"}
         response = self.client.patch(
@@ -68,7 +69,7 @@ class UpdateUserBaseTest(CoreBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)

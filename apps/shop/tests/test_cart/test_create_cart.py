@@ -29,22 +29,22 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # --- simple product ---
+        # simple product
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
-        # --- variable product ---
+        # variable product
         cls.variable_product = ProductFactory.create_product(
             is_variable=True, has_images=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
-        # --- cart ---
+        # cart
         cart = Cart.objects.create()
         cls.cart_id = cart.id
 
     def test_create_one_cart_item(self):
-        # --- request ---
+        # request
         payload = {"variant": self.simple_product_variant.id, "quantity": 1}
         response = self.client.post(
             reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
@@ -52,7 +52,7 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # TODO test items data
         # TODO test item_total value
@@ -60,7 +60,7 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
         # print(response.data)
 
     def test_create_cart_items(self):
-        # --- request ---
+        # request
         for variant in self.variable_product_variants:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
@@ -70,7 +70,7 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # --- expected ---
+        # expected
         # response = self.client.get(reverse("cart-list"))
         # self.assertEqual(response.status_code, status.HTTP_200_OK)
         # self.assertEqual(len())
@@ -85,17 +85,18 @@ class RetrieveCartBaseTest(CoreBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        # --- simple product ---
+
+        # simple product
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
-        # --- variable product ---
+        # variable product
         cls.variable_product = ProductFactory.create_product(
             has_images=True, is_variable=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
-        # --- cart ---
+        # cart
         cart = Cart.objects.create()
         cls.cart_id = cart.id
         # for variant in cls.variable_product_variants:

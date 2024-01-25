@@ -12,11 +12,9 @@ class JWTTests(APITestCase):
         self.user = UserFactory.create()
 
     def test_create_jwt(self):
-        """
-        Test creating access and refresh tokens.(login)
-        """
+        """Test creating access and refresh tokens.(login)"""
 
-        # --- request ---
+        # request
         payload = {"email": self.user.email, "password": UserFactory.demo_password()}
         response = self.client.post(
             self.base_url + "create/",
@@ -24,7 +22,7 @@ class JWTTests(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertTrue(expected["access"].strip())

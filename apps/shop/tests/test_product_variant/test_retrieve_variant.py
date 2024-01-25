@@ -16,41 +16,41 @@ class RetrieveVariantTest(ProductBaseTestCase):
         cls.variant_id = cls.product.variants.first().id
 
     def test_retrieve_product_variants(self):
-        # --- request ---
+        # request
         response = self.client.get(
             reverse("product-list-variants", kwargs={"pk": self.product.id})
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected, list)
         self.assertExpectedVariants(expected)
 
     def test_retrieve_product_variants_404(self):
-        # --- request ---
+        # request
         response = self.client.get(reverse("product-list-variants", kwargs={"pk": 11}))
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_variant(self):
-        # --- request ---
+        # request
         response = self.client.get(
             reverse("variant-detail", kwargs={"pk": self.variant_id})
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected, dict)
         self.assertExpectedVariants([expected])
 
     def test_retrieve_variant_404(self):
-        # --- request ---
+        # request
         response = self.client.get(reverse("variant-detail", kwargs={"pk": 1111}))
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # ------------------------------

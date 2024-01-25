@@ -17,7 +17,7 @@ class UpdateProductTest(ProductBaseTestCase):
 
         super().setUpTestData()
 
-        # --- create product ---
+        # create product
         (
             cls.simple_product_payload,
             cls.simple_product,

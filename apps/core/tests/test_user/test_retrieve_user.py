@@ -5,16 +5,17 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class RetrieveUserBaseTest(CoreBaseTestCase):
+    # TODO separate list to new test file
     # ------------------
     # --- list users ---
     # ------------------
 
     def test_list_users_by_admin(self):
-        # --- request ---
+        # request
         self.set_admin_user_authorization()
         response = self.client.get(reverse("user-list"))
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 2)
@@ -47,12 +48,12 @@ class RetrieveUserBaseTest(CoreBaseTestCase):
     def test_retrieve_user_by_admin(self):
         self.set_admin_user_authorization()
 
-        # --- request ---
+        # request
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)

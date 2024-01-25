@@ -203,17 +203,17 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- update user ---
+        # update user
         user.is_active = True
         user.save()
         update_last_login(None, user)
 
-        # --- Create JWT tokens ---
+        # Create JWT tokens
         access_token, refresh_token = TokenService.jwt_get_tokens(user)
         response_body = {
             "access": str(access_token),
@@ -237,12 +237,12 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- send email ---
+        # send email
         if not user.is_active:
             EmailService.send_activation_email(user.email)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -286,12 +286,12 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data
 
-        # --- save email nad send mail to new-email ---
+        # save email nad send mail to new-email
         UserVerification.objects.update_or_create(
             user=request.user, new_email=new_email
         )
@@ -316,15 +316,15 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data
 
-        # --- get current user verification ---
+        # get current user verification
         user_verification = UserVerification.objects.get(user=request.user)
         if user_verification.new_email == new_email:
-            # --- Update the user's email ---
+            # Update the user's email
             user = request.user
             user.email = new_email
             user.save()
@@ -343,11 +343,11 @@ class UserViewSet(ModelViewSet):
 
     @action(["post"], url_path="me/change-password", detail=False)
     def change_password(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # --- set new password ---
+        # set new password
         self.request.user.set_password(serializer.validated_data["new_password"])
         self.request.user.save()
 
@@ -356,12 +356,12 @@ class UserViewSet(ModelViewSet):
 
     @action(["post"], url_path="me/reset-password", detail=False)
     def reset_password(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- send email ---
+        # send email
         if user.is_active:
             EmailService.send_reset_password_email(user.email)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -371,12 +371,12 @@ class UserViewSet(ModelViewSet):
 
     @action(["post"], url_path="me/reset-password/conformation", detail=False)
     def reset_password_conformation(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, new_password = serializer.validated_data
 
-        # --- set new password ---
+        # set new password
         user.set_password(new_password)
         user.save()
 

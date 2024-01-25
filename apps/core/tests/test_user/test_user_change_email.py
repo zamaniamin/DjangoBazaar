@@ -18,14 +18,13 @@ class UserChangeEmailViewTest(APITestCase):
         self.member_access_token = TokenService.jwt_get_access_token(self.member)
 
     def test_user_change_email(self):
-        """
-        Test that the user can change their email.
-        """
+        """Test that the user can change their email."""
 
-        # --- init ---
+        # init
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
         new_email = UserFactory.random_email()
-        # --- request ---
+
+        # request
         payload = {
             "new_email": new_email,
         }
@@ -35,29 +34,27 @@ class UserChangeEmailViewTest(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # --- expected email is sent ---
+        # expected email is sent
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 2)
         self.assertEqual(expected_mail[1].to, [new_email])
 
-        # --- expected new-email is saved in UserVerification ---
+        # expected new-email is saved in UserVerification
         user = UserVerification.objects.get(user_id=self.member.id)
         self.assertEqual(user.new_email, new_email)
 
     def test_user_change_email_conformation(self):
-        """
-        Test user can change their email after conforming the OTP code that sent to their new email address.
-        """
+        """Test user can change their email after conforming the OTP code that sent to their new email address."""
 
-        # --- init --
+        # init
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
         new_email = UserFactory.random_email()
         UserVerification.objects.update_or_create(user=self.member, new_email=new_email)
 
-        # --- request ---
+        # request
         payload = {
             "new_email": new_email,
             "otp": TokenService.create_otp_token(new_email),
@@ -68,14 +65,14 @@ class UserChangeEmailViewTest(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # --- expected new email is set ---
+        # expected new email is set
         self.member.refresh_from_db()
         self.assertEqual(self.member.email, new_email)
 
-        # --- expected email is removed from UserVerification ---
+        # expected email is removed from UserVerification
         with self.assertRaises(ObjectDoesNotExist):
             UserVerification.objects.get(user_id=self.member.id)
 

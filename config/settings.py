@@ -41,12 +41,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    # --- External Packages ---
+    # External Packages
     "django_filters",
     "rest_framework",
     "drf_spectacular",
     "debug_toolbar",
-    # --- Made by me ---
+    # Made by me
     "apps.core",
     "apps.shop",
 ]
@@ -60,7 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # --- Site Framework ---
+    # Site Framework
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
 ]
 

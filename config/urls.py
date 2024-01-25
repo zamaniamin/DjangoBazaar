@@ -25,7 +25,7 @@ urlpatterns = [
     path("auth/", include("apps.core.urls")),
     path("shop/", include("apps.shop.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
-    # --- need to generate swagger-ui ---
+    # need to generate swagger-ui
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 ]
