@@ -84,6 +84,7 @@ class RetrieveCartTest(BaseCoreTestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         # --- simple product ---
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
@@ -104,8 +105,12 @@ class RetrieveCartTest(BaseCoreTestCase):
         #         quantity=1
         #     )
 
-    def test_retrieve_cart(self):
-        # TODO only admins can see cart (read only)
+    def test_list_carts(self):
+        response = self.client.get(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_carts_by_admin(self):
+        self.set_admin_authorization()
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
