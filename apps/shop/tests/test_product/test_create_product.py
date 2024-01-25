@@ -12,7 +12,7 @@ class CreateProductTest(ProductBaseTestCase):
         Set up data or conditions specific to each test method.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
     def test_create_access_as_member(self):
         """
@@ -20,7 +20,7 @@ class CreateProductTest(ProductBaseTestCase):
         - authenticated users.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
 
         # --- request ---
         response = self.client.post(reverse("product-list"), {})
@@ -35,7 +35,7 @@ class CreateProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
         response = self.client.post(reverse("product-list"), {})
 
         # --- expected ---

@@ -1,17 +1,17 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class RetrieveUserTest(BaseCoreTestCase):
+class RetrieveUserBaseTest(CoreBaseTestCase):
     # ------------------
     # --- list users ---
     # ------------------
 
     def test_list_users_by_admin(self):
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.get(reverse("user-list"))
 
         # --- expected ---
@@ -31,12 +31,12 @@ class RetrieveUserTest(BaseCoreTestCase):
                 or self.assertDatetimeFormat(user["last_login"])
             )
 
-    def test_list_users_by_member(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_list_users_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.get(reverse("user-list"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_list_users_by_guest(self):
+    def test_list_users_by_anonymous_user(self):
         response = self.client.get(reverse("user-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -45,7 +45,7 @@ class RetrieveUserTest(BaseCoreTestCase):
     # ---------------------
 
     def test_retrieve_user_by_admin(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
         # --- request ---
         response = self.client.get(
@@ -67,14 +67,14 @@ class RetrieveUserTest(BaseCoreTestCase):
             or self.assertDatetimeFormat(expected["last_login"])
         )
 
-    def test_retrieve_user_by_member(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_retrieve_user_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_retrieve_user_by_guest(self):
+    def test_retrieve_user_by_anonymous_user(self):
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )

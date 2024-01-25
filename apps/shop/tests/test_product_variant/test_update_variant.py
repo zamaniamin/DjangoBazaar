@@ -18,7 +18,7 @@ class UpdateVariantTest(ProductBaseTestCase):
         cls.variant_id = cls.product.variants.first().id
 
     def test_update_variant(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
         # --- request ---
         payload = {

@@ -3,12 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class DestroyUserTest(BaseCoreTestCase):
+class DestroyUserBaseTest(CoreBaseTestCase):
     def test_delete_by_admin(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.delete(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
@@ -16,14 +16,14 @@ class DestroyUserTest(BaseCoreTestCase):
         with self.assertRaises(ObjectDoesNotExist):
             get_user_model().objects.get(id=self.regular_user.id)
 
-    def test_delete_by_member(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_delete_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.delete(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_delete_by_guest(self):
+    def test_delete_by_anonymous_user(self):
         response = self.client.delete(
             reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )

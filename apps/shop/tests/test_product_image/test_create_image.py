@@ -21,7 +21,7 @@ class CreateImageTest(ProductBaseTestCase):
         cls.file_count = len(cls.files)
 
     def setUp(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
     def test_images_upload_success(self):
         # --- request ---

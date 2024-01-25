@@ -1,13 +1,13 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class RetrieveProfileTest(BaseCoreTestCase):
+class RetrieveProfileBaseTest(CoreBaseTestCase):
     def test_retrieve_profile_by_admin(self):
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.get(reverse("user-me"))
 
         # --- expected ---
@@ -25,9 +25,9 @@ class RetrieveProfileTest(BaseCoreTestCase):
             },
         )
 
-    def test_retrieve_profile_by_member(self):
+    def test_retrieve_profile_by_regular_user(self):
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
         response = self.client.get(reverse("user-me"))
 
         # --- expected ---
@@ -45,7 +45,7 @@ class RetrieveProfileTest(BaseCoreTestCase):
             },
         )
 
-    def test_retrieve_profile_by_guest(self):
+    def test_retrieve_profile_by_anonymous_user(self):
         # --- request ---
         response = self.client.get(reverse("user-me"))
 

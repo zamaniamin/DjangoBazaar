@@ -32,39 +32,39 @@ class UpdateProductTest(ProductBaseTestCase):
         Set up data or conditions specific to each test method.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
-    def test_update_by_user(self):
+    def test_update_by_regular_user(self):
         """Test updating a product by a user (expects HTTP 403 Forbidden)."""
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_partial_update_by_user(self):
+    def test_partial_update_by_regular_user(self):
         """Test partially updating a product by a user (expects HTTP 403 Forbidden)."""
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
         response = self.client.patch(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_by_guest(self):
+    def test_update_by_anonymous_user(self):
         """Test updating a product by a guest (expects HTTP 401 Unauthorized)."""
 
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
         response = self.client.put(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_partial_update_by_guest(self):
+    def test_partial_update_by_anonymous_user(self):
         """Test updating a product by a guest (expects HTTP 401 Unauthorized)."""
 
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
         response = self.client.patch(
             reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )

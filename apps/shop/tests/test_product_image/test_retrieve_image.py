@@ -20,7 +20,7 @@ class RetrieveImageTest(ProductBaseTestCase):
         cls.active_product2 = ProductFactory.create_product(has_images=True)
 
     def setUp(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
     def test_retrieve_with_one_image(self):
         # --- request ---

@@ -135,7 +135,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for each of the active, archived, and draft products. It asserts that the response status code
         is HTTP 200 OK for each request.
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -146,7 +146,7 @@ class RetrieveProductTest(ProductBaseTestCase):
             # --- expected
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_product_by_user(self):
+    def test_retrieve_product_by_regular_user(self):
         """
         Test case to retrieve product details by a regular user.
 
@@ -154,7 +154,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for each of the active, archived, and draft products. It asserts that the response status code is
         HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -168,7 +168,7 @@ class RetrieveProductTest(ProductBaseTestCase):
             elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_retrieve_product_by_guest(self):
+    def test_retrieve_product_by_anonymous_user(self):
         """
         Test case to retrieve product details by a guest user.
 
@@ -176,7 +176,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for product details for each of the active, archived, and draft products. It asserts that the
         response status code is HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # --- request ---
@@ -205,7 +205,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---
@@ -220,7 +220,7 @@ class RetrieveProductTest(ProductBaseTestCase):
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
             )
 
-    def test_list_product_by_user(self):
+    def test_list_product_by_regular_user(self):
         """
         Test case to list products by a regular user.
 
@@ -230,7 +230,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.set_regular_user_authorization()
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---
@@ -245,7 +245,7 @@ class RetrieveProductTest(ProductBaseTestCase):
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
             )
 
-    def test_list_product_by_guest(self):
+    def test_list_product_anonymous_user(self):
         """
         Test case to list products by a guest user.
 
@@ -256,7 +256,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---
@@ -281,7 +281,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         """
 
         # --- request ---
-        self.client.credentials()
+        self.set_anonymous_user_authorization()
         response = self.client.get(reverse("product-list"))
 
         # --- expected ---

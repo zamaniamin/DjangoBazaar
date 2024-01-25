@@ -3,17 +3,17 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class UpdateUserTest(BaseCoreTestCase):
+class UpdateUserBaseTest(CoreBaseTestCase):
     # -------------------
     # --- update user ---
     # -------------------
 
     def test_update_by_admin(self):
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         payload = {
             "email": self.regular_user.email,
             "first_name": "F name",
@@ -41,14 +41,14 @@ class UpdateUserTest(BaseCoreTestCase):
             or self.assertDatetimeFormat(expected["last_login"])
         )
 
-    def test_update_by_user(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_update_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.put(
             reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_by_guest(self):
+    def test_update_by_anonymous_user(self):
         response = self.client.put(
             reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
         )
@@ -60,7 +60,7 @@ class UpdateUserTest(BaseCoreTestCase):
 
     def test_partial_update_by_admin(self):
         # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         payload = {"first_name": "test F name"}
         response = self.client.patch(
             reverse("user-detail", kwargs={"pk": self.regular_user.id}),
@@ -83,14 +83,14 @@ class UpdateUserTest(BaseCoreTestCase):
             or self.assertDatetimeFormat(expected["last_login"])
         )
 
-    def test_partial_update_by_user(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_partial_update_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.patch(
             reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_partial_update_by_guest(self):
+    def test_partial_update_by_anonymous_user(self):
         response = self.client.patch(
             reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
         )

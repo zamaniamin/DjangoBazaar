@@ -9,7 +9,7 @@ from apps.core.services.time_service import DateTime
 from apps.core.services.token_service import TokenService
 
 
-class BaseCoreTestCase(APITestCase):
+class CoreBaseTestCase(APITestCase):
     regular_user = None
     admin = None
 
@@ -20,13 +20,17 @@ class BaseCoreTestCase(APITestCase):
         cls.admin_access_token = TokenService.jwt_get_access_token(cls.admin)
 
         cls.regular_user = UserFactory.create()
-        cls.user_access_token = TokenService.jwt_get_access_token(cls.regular_user)
+        cls.regular_user_access_token = TokenService.jwt_get_access_token(
+            cls.regular_user
+        )
 
-    def set_admin_authorization(self):
+    def set_admin_user_authorization(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
 
     def set_regular_user_authorization(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}"
+        )
 
     def set_anonymous_user_authorization(self):
         self.client.credentials()

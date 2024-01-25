@@ -4,12 +4,12 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models.cart import Cart
 
 
-class CreateCartTest(BaseCoreTestCase):
+class CreateCartBaseTest(CoreBaseTestCase):
     def test_create_cart(self):
         response = self.client.post(
             reverse("cart-list"), {}, content_type="application/json"
@@ -23,7 +23,7 @@ class CreateCartTest(BaseCoreTestCase):
         self.assertEqual(expected["total_price"], 0)
 
 
-class CreateCartItemsTest(BaseCoreTestCase):
+class CreateCartItemsBaseTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
 
@@ -77,7 +77,7 @@ class CreateCartItemsTest(BaseCoreTestCase):
         # print(response.json())
 
 
-class RetrieveCartTest(BaseCoreTestCase):
+class RetrieveCartBaseTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
     variable_product_variants = None
@@ -110,7 +110,7 @@ class RetrieveCartTest(BaseCoreTestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_carts_by_admin(self):
-        self.set_admin_authorization()
+        self.set_admin_user_authorization()
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

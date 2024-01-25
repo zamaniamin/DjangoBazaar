@@ -58,42 +58,42 @@ class RetrieveVariantTest(ProductBaseTestCase):
     # ------------------------------
 
     def test_retrieve_product_variant_by_admin(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.get(
             reverse("product-list-variants", kwargs={"pk": self.product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_product_variant_by_user(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_retrieve_product_variant_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.get(
             reverse("product-list-variants", kwargs={"pk": self.product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_product_variant_by_guest(self):
-        self.client.credentials()
+    def test_retrieve_product_variant_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
         response = self.client.get(
             reverse("product-list-variants", kwargs={"pk": self.product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_variant_by_admin(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
         response = self.client.get(
             reverse("variant-detail", kwargs={"pk": self.variant_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_variant_by_user(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_retrieve_variant_by_regular_user(self):
+        self.set_regular_user_authorization()
         response = self.client.get(
             reverse("variant-detail", kwargs={"pk": self.variant_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_variant_by_guest(self):
-        self.client.credentials()
+    def test_retrieve_variant_by_anonymous_user(self):
+        self.set_admin_user_authorization()
         response = self.client.get(
             reverse("variant-detail", kwargs={"pk": self.variant_id})
         )
