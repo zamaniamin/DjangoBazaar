@@ -1,4 +1,7 @@
 from django.apps import AppConfig
+from django.db.models.signals import post_save
+
+from config import settings
 
 
 class CoreConfig(AppConfig):
@@ -6,5 +9,6 @@ class CoreConfig(AppConfig):
     name = "apps.core"
 
     def ready(self):
-        # TODO refactor signals
-        from apps.core import signals
+        from apps.core.signals import send_activation_email
+
+        post_save.connect(send_activation_email, sender=settings.AUTH_USER_MODEL)
