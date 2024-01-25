@@ -22,6 +22,15 @@ class BaseCoreTestCase(APITestCase):
         cls.regular_user = UserFactory.create()
         cls.user_access_token = TokenService.jwt_get_access_token(cls.regular_user)
 
+    def set_admin_authorization(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+
+    def set_regular_user_authorization(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+
+    def set_anonymous_user_authorization(self):
+        self.client.credentials()
+
     @staticmethod
     def assertDatetimeFormat(date: str | datetime):
         if isinstance(date, datetime):
