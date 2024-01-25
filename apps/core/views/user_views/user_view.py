@@ -341,7 +341,7 @@ class UserViewSet(ModelViewSet):
     # --- change password ---
     # -----------------------
 
-    @action(["post"], url_path="me/change-password", detail=False)
+    @action(["post"], url_path="me/change-password", detail=False,name="change-password")
     def change_password(self, request, *args, **kwargs):
         # validate
         serializer = self.get_serializer(data=request.data)
@@ -354,7 +354,7 @@ class UserViewSet(ModelViewSet):
         # logout_user(self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(["post"], url_path="me/reset-password", detail=False)
+    @action(["post"], url_path="me/reset-password", detail=False, name="reset-password")
     def reset_password(self, request, *args, **kwargs):
         # validate
         serializer = self.get_serializer(data=request.data)
@@ -369,7 +369,12 @@ class UserViewSet(ModelViewSet):
             {"detail": "first activate you account"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(["post"], url_path="me/reset-password/conformation", detail=False)
+    @action(
+        ["post"],
+        url_path="me/reset-password/conformation",
+        detail=False,
+        name="reset-password-conformation",
+    )
     def reset_password_conformation(self, request, *args, **kwargs):
         # validate
         serializer = self.get_serializer(data=request.data)
