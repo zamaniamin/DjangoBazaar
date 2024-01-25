@@ -11,10 +11,6 @@ from apps.core.services.token_service import TokenService
 class UserActivationTest(APITestCase):
     def setUp(self):
         self.base_url = "/auth/users/"  # TODO use reverse()
-
-        self.member = UserFactory.create()
-        self.member_access_token = TokenService.jwt_get_access_token(self.member)
-
         self.inactive_user = UserFactory.create(is_active=False)
 
     def test_user_activation(self):
@@ -67,5 +63,5 @@ class UserActivationTest(APITestCase):
 
         # expected email
         expected_mail = mail.outbox
-        self.assertEqual(len(expected_mail), 3)
-        self.assertEqual(expected_mail[2].to, [self.inactive_user.email])
+        self.assertEqual(len(expected_mail), 2)
+        self.assertEqual(expected_mail[1].to, [self.inactive_user.email])
