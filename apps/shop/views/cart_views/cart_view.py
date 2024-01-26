@@ -61,11 +61,11 @@ class CartViewSet(ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
 
-# TODO fix 500 error for UUID
-# TODO show product image
-# TODO mange inventory when adding product to cart and when on checkout
-# TODO add cart factory
 # TODO write tests
-# TODO on delete a cart, delete all items from it too
-# TODO check the stock of items before save the order
+# TODO show product image
+# TODO add cart factory
 # TODO check cart queries
+# TODO on delete a cart, delete all items from it too
+# TODO mange inventory when adding product to cart and when on checkout
+# TODO fix 500 error for UUID
+# TODO check the stock of items before save the order
