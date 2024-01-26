@@ -9,6 +9,8 @@ class CoreConfig(AppConfig):
     name = "apps.core"
 
     def ready(self):
-        from apps.core.signals import send_activation_email
+        from apps.core import signals
 
-        post_save.connect(send_activation_email, sender=settings.AUTH_USER_MODEL)
+        post_save.connect(
+            signals.send_activation_email, sender=settings.AUTH_USER_MODEL
+        )
