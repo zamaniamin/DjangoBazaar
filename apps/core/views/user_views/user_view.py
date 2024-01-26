@@ -14,8 +14,6 @@ from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
 
-# TODO write swagger docs
-# TODO write all unittest
 @extend_schema_view(
     create=extend_schema(
         tags=["User Management"],
