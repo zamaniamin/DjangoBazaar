@@ -2,6 +2,7 @@ import json
 
 from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -12,8 +13,6 @@ from apps.core.services.token_service import TokenService
 
 class UserChangeEmailTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/me/change-email/"  # TODO use reverse()
-
         self.regular_user = UserFactory.create()
         self.regular_user_access_token = TokenService.jwt_get_access_token(
             self.regular_user
@@ -23,7 +22,9 @@ class UserChangeEmailTest(APITestCase):
         """Test that the user can change their email."""
 
         # init
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}")
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}"
+        )
         new_email = UserFactory.random_email()
 
         # request
@@ -31,7 +32,7 @@ class UserChangeEmailTest(APITestCase):
             "new_email": new_email,
         }
         response = self.client.post(
-            self.base_url,
+            reverse("user-change-email"),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -52,9 +53,13 @@ class UserChangeEmailTest(APITestCase):
         """Test user can change their email after conforming the OTP code that sent to their new email address."""
 
         # init
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}")
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}"
+        )
         new_email = UserFactory.random_email()
-        UserVerification.objects.update_or_create(user=self.regular_user, new_email=new_email)
+        UserVerification.objects.update_or_create(
+            user=self.regular_user, new_email=new_email
+        )
 
         # request
         payload = {
@@ -62,7 +67,7 @@ class UserChangeEmailTest(APITestCase):
             "otp": TokenService.create_otp_token(new_email),
         }
         response = self.client.post(
-            self.base_url + "conformation/",
+            reverse("user-change-email-conformation"),
             data=json.dumps(payload),
             content_type="application/json",
         )

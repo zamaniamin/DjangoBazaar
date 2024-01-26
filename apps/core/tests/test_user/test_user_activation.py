@@ -1,6 +1,7 @@
 import json
 
 from django.core import mail
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -10,7 +11,6 @@ from apps.core.services.token_service import TokenService
 
 class UserActivationTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/"  # TODO use reverse()
         self.inactive_user = UserFactory.create(is_active=False)
 
     def test_user_activation(self):
@@ -22,7 +22,7 @@ class UserActivationTest(APITestCase):
             "otp": TokenService.create_otp_token(self.inactive_user.email),
         }
         response = self.client.patch(
-            self.base_url + "activation/",
+            reverse("user-activation"),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -53,7 +53,7 @@ class UserActivationTest(APITestCase):
         # request
         payload = {"email": self.inactive_user.email}
         response = self.client.post(
-            self.base_url + "resend-activation/",
+            reverse("user-resend-activation"),
             data=json.dumps(payload),
             content_type="application/json",
         )

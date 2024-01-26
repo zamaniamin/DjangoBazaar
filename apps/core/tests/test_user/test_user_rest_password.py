@@ -58,7 +58,9 @@ class UserResetPasswordTest(APITestCase):
         self.assertTrue(self.regular_user.check_password(payload["new_password"]))
 
     def test_user_change_password(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}")
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}"
+        )
         demo_password = UserFactory.demo_password()
         cc = self.regular_user.check_password(demo_password)
 
