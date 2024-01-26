@@ -189,7 +189,7 @@ class UserViewSet(ModelViewSet):
     # --- activate user account ---
     # -----------------------------
 
-    @action(["patch"], detail=False)
+    @action(["patch"], detail=False, name="activation")
     def activation(self, request, *args, **kwargs):
         """
         Endpoint for activate the user's account after email verification and provide JWT tokens for authentication.
@@ -223,7 +223,9 @@ class UserViewSet(ModelViewSet):
 
         return Response(response_body, status=status.HTTP_200_OK)
 
-    @action(["post"], url_path="resend-activation", detail=False)
+    @action(
+        ["post"], url_path="resend-activation", detail=False, name="resend-activation"
+    )
     def resend_activation(self, request, *args, **kwargs):
         """
         Endpoint for resending the activation email to the user's email.
@@ -269,7 +271,7 @@ class UserViewSet(ModelViewSet):
     # --- change email ---
     # --------------------
 
-    @action(["post"], url_path="me/change-email", detail=False)
+    @action(["post"], url_path="me/change-email", detail=False, name="change-email")
     def change_email(self, request, *args, **kwargs):
         """
         Endpoint for initiating the process of changing the authenticated user's email.
@@ -298,7 +300,12 @@ class UserViewSet(ModelViewSet):
         EmailService.send_change_email(new_email)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(["post"], url_path="me/change-email/conformation", detail=False)
+    @action(
+        ["post"],
+        url_path="me/change-email/conformation",
+        detail=False,
+        name="change-email-conformation",
+    )
     def change_email_conformation(self, request, *args, **kwargs):
         """
         Endpoint for confirming the change of the authenticated user's email.
@@ -341,7 +348,9 @@ class UserViewSet(ModelViewSet):
     # --- change password ---
     # -----------------------
 
-    @action(["post"], url_path="me/change-password", detail=False,name="change-password")
+    @action(
+        ["post"], url_path="me/change-password", detail=False, name="change-password"
+    )
     def change_password(self, request, *args, **kwargs):
         # validate
         serializer = self.get_serializer(data=request.data)
