@@ -14,13 +14,7 @@ class CreateProductTest(ProductBaseTestCase):
 
         self.set_admin_user_authorization()
 
-    def test_create_access_as_member(self):
-        # TODO update method name
-        """
-        Test create a product, base on user role, current user is a member.
-        - authenticated users.
-        """
-
+    def test_create_product_by_regular_user(self):
         self.set_regular_user_authorization()
 
         # request
@@ -29,13 +23,7 @@ class CreateProductTest(ProductBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_create_access_as_guest(self):
-        # TODO update method name
-        """
-        Test create a product, base on user role, current user is a guest.
-        - non-authenticated users.
-        """
-
+    def test_create_product_by_anonymous_user(self):
         # request
         self.set_anonymous_user_authorization()
         response = self.client.post(reverse("product-list"), {})
