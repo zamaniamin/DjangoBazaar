@@ -1,6 +1,7 @@
 import json
 
 from django.core import mail
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -10,18 +11,18 @@ from apps.core.services.token_service import TokenService
 
 class UserResetPasswordTest(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/users/me/"  # TODO use reverse()
-
-        self.member = UserFactory.create()
-        self.member_access_token = TokenService.jwt_get_access_token(self.member)
+        self.regular_user = UserFactory.create()
+        self.regular_user_access_token = TokenService.jwt_get_access_token(
+            self.regular_user
+        )
 
     def test_user_reset_password(self):
         # request
         payload = {
-            "email": self.member.email,
+            "email": self.regular_user.email,
         }
         response = self.client.post(
-            self.base_url + "reset-password/",
+            reverse("user-reset-password"),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -39,12 +40,12 @@ class UserResetPasswordTest(APITestCase):
 
         # request
         payload = {
-            "email": self.member.email,
-            "otp": TokenService.create_otp_token(self.member.email),
+            "email": self.regular_user.email,
+            "otp": TokenService.create_otp_token(self.regular_user.email),
             "new_password": UserFactory.demo_password() + "test",
         }
         response = self.client.post(
-            self.base_url + "reset-password/conformation/",
+            reverse("user-reset-password-conformation"),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -53,13 +54,13 @@ class UserResetPasswordTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expected new password is set
-        self.member.refresh_from_db()
-        self.assertTrue(self.member.check_password(payload["new_password"]))
+        self.regular_user.refresh_from_db()
+        self.assertTrue(self.regular_user.check_password(payload["new_password"]))
 
     def test_user_change_password(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.member_access_token}")
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.regular_user_access_token}")
         demo_password = UserFactory.demo_password()
-        cc = self.member.check_password(demo_password)
+        cc = self.regular_user.check_password(demo_password)
 
         # request
         payload = {
@@ -67,7 +68,7 @@ class UserResetPasswordTest(APITestCase):
             "new_password": demo_password + "test2",
         }
         response = self.client.post(
-            self.base_url + "change-password/",
+            reverse("user-change-password"),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -76,8 +77,8 @@ class UserResetPasswordTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expected new password is set
-        self.member.refresh_from_db()
-        self.assertTrue(self.member.check_password(payload["new_password"]))
+        self.regular_user.refresh_from_db()
+        self.assertTrue(self.regular_user.check_password(payload["new_password"]))
 
 
 # TODO test logged in users cant reset password, they should use change password
