@@ -108,7 +108,3 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 # TODO add new variant to product and update the product options base on new items in the variant
-# @action(detail=True, methods=["post"], url_path="variants")
-# def create_variant(self, request, pk=None):
-#     """"Creates a new product variant""""
-#     ...

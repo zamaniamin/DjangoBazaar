@@ -4,12 +4,12 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models.cart import Cart
 
 
-class CreateCartTest(BaseCoreTestCase):
+class CreateCartBaseTest(CoreBaseTestCase):
     def test_create_cart(self):
         response = self.client.post(
             reverse("cart-list"), {}, content_type="application/json"
@@ -23,28 +23,28 @@ class CreateCartTest(BaseCoreTestCase):
         self.assertEqual(expected["total_price"], 0)
 
 
-class CreateCartItemsTest(BaseCoreTestCase):
+class CreateCartItemsBaseTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
 
     @classmethod
     def setUpTestData(cls):
-        # --- simple product ---
+        # simple product
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
-        # --- variable product ---
+        # variable product
         cls.variable_product = ProductFactory.create_product(
             is_variable=True, has_images=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
-        # --- cart ---
+        # cart
         cart = Cart.objects.create()
         cls.cart_id = cart.id
 
     def test_create_one_cart_item(self):
-        # --- request ---
+        # request
         payload = {"variant": self.simple_product_variant.id, "quantity": 1}
         response = self.client.post(
             reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
@@ -52,7 +52,7 @@ class CreateCartItemsTest(BaseCoreTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # TODO test items data
         # TODO test item_total value
@@ -60,7 +60,7 @@ class CreateCartItemsTest(BaseCoreTestCase):
         # print(response.data)
 
     def test_create_cart_items(self):
-        # --- request ---
+        # request
         for variant in self.variable_product_variants:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
@@ -70,31 +70,33 @@ class CreateCartItemsTest(BaseCoreTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # --- expected ---
+        # expected
         # response = self.client.get(reverse("cart-list"))
         # self.assertEqual(response.status_code, status.HTTP_200_OK)
         # self.assertEqual(len())
         # print(response.json())
 
 
-class RetrieveCartTest(BaseCoreTestCase):
+class RetrieveCartBaseTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
     variable_product_variants = None
 
     @classmethod
     def setUpTestData(cls):
-        # --- simple product ---
+        super().setUpTestData()
+
+        # simple product
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
-        # --- variable product ---
+        # variable product
         cls.variable_product = ProductFactory.create_product(
             has_images=True, is_variable=True
         )
         cls.variable_product_variants = list(cls.variable_product.variants.all())
 
-        # --- cart ---
+        # cart
         cart = Cart.objects.create()
         cls.cart_id = cart.id
         # for variant in cls.variable_product_variants:
@@ -104,8 +106,12 @@ class RetrieveCartTest(BaseCoreTestCase):
         #         quantity=1
         #     )
 
-    def test_retrieve_cart(self):
-        # TODO only admins can see cart (read only)
+    def test_list_carts(self):
+        response = self.client.get(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_carts_by_admin(self):
+        self.set_admin_user_authorization()
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

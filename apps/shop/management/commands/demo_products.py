@@ -4,22 +4,5 @@ from apps.shop.demo.factory.product.product_factory import ProductFactory
 
 
 class Command(BaseCommand):
-    """
-    Custom management command to populate the database with initial data.
-
-    Usage:
-        python manage.py demo_products
-    """
-
-    help = "Populates the database with initial products data"
-
     def handle(self, *args, **options):
-        """
-        Handle method to execute the population of demo products.
-
-        Args:
-            *args: Additional command-line arguments.
-            **options: Additional options.
-
-        """
         ProductFactory.populate_demo_products()

@@ -9,11 +9,9 @@ from rest_framework.test import APITestCase
 
 class CreateUserTest(APITestCase):
     def test_create_user_or_register(self):
-        """
-        Test that we can create a new user. (register a new user with email and password)
-        """
+        """Test that we can create a new user. (register a new user with email and password)"""
 
-        # --- request ---
+        # request
         payload = {
             "email": "user_test@example.com",
             "password": "Test_1234",
@@ -25,7 +23,7 @@ class CreateUserTest(APITestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertFalse("password" in response.data)
         self.assertFalse("password_confirm" in response.data)
@@ -37,7 +35,7 @@ class CreateUserTest(APITestCase):
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
-        # --- expected email ---
+        # expected email
         expected_mail = mail.outbox
         self.assertEqual(len(expected_mail), 1)
         self.assertEqual(expected_mail[0].to, [payload["email"]])

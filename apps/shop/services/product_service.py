@@ -3,7 +3,6 @@ from itertools import product as options_combination
 from django.db.models import Prefetch
 from django.utils import timezone
 
-from apps.core.services.time_service import DateTime
 from apps.shop.models.product import (
     Product,
     ProductOption,
@@ -26,12 +25,6 @@ class ProductService:
     def create_product(cls, **data):
         """
         Create a new product with options and return the product object.
-
-        Args:
-            **data: Keyword arguments containing product data, including 'price', 'stock', and 'options'.
-
-        Returns:
-            Product: The created product object.
 
         Note:
             This method creates a new product instance, generates options, and optimizes queries
@@ -76,7 +69,7 @@ class ProductService:
             product_id (int): The ID of the product to retrieve.
 
         Returns:
-            Product: The product object with related options and variants.
+            Product: The product object with related options and variants ad media.
 
         Note:
             This method retrieves a specific product along with its associated options and variants,
@@ -223,70 +216,3 @@ class ProductService:
         item_ids_by_option.extend(item_ids_dict.values())
 
         return item_ids_by_option
-
-    @staticmethod
-    def retrieve_options(product_id):
-        # TODO remove this method after add endpoint for options
-        """
-        Get all options of a product
-        """
-        # TODO return an object not list
-
-        product_options = []
-
-        # Fetch ProductOption and related ProductOptionItem objects in a single query
-        options = (
-            ProductOption.objects.select_related("product")
-            .prefetch_related("items")
-            .filter(product=product_id)
-        )
-
-        for option in options:
-            items = option.items.all()
-
-            product_options.append(
-                {
-                    "option_id": option.id,
-                    "option_name": option.option_name,
-                    "items": [
-                        {"item_id": item.id, "item_name": item.item_name}
-                        for item in items
-                    ],
-                }
-            )
-
-        if product_options:
-            return product_options
-        else:
-            return None
-
-    @classmethod
-    def retrieve_variants(cls, product_id):
-        # TODO remove this method after add endpoint for variants
-        """
-        Get all variants of a product
-        """
-        # TODO return an object not list
-
-        product_variants = []
-        variants: list[ProductVariant] = ProductVariant.objects.filter(
-            product=product_id
-        ).select_related("option1", "option2", "option3")
-        for variant in variants:
-            product_variants.append(
-                {
-                    "variant_id": variant.id,
-                    "product_id": variant.product_id,
-                    "price": variant.price,
-                    "stock": variant.stock,
-                    "option1": variant.option1.item_name if variant.option1 else None,
-                    "option2": variant.option2.item_name if variant.option2 else None,
-                    "option3": variant.option3.item_name if variant.option3 else None,
-                    "created_at": DateTime.string(variant.created_at),
-                    "updated_at": DateTime.string(variant.updated_at),
-                }
-            )
-
-        if product_variants:
-            return product_variants
-        return None

@@ -20,17 +20,17 @@ class RetrieveImageTest(ProductBaseTestCase):
         cls.active_product2 = ProductFactory.create_product(has_images=True)
 
     def setUp(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
     def test_retrieve_with_one_image(self):
-        # --- request ---
+        # request
         response = self.client.get(
             reverse(
                 "product-images-list", kwargs={"product_pk": self.active_product.id}
             ),
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         image = expected[0]
@@ -55,14 +55,14 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.assertEqual(product_media.count(), 1)
 
     def test_retrieve_with_multi_images(self):
-        # --- request ---
+        # request
         response = self.client.get(
             reverse(
                 "product-images-list", kwargs={"product_pk": self.active_product2.id}
             ),
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected, list)

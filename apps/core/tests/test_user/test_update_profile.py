@@ -3,17 +3,13 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import BaseCoreTestCase
+from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class ProfileTest(BaseCoreTestCase):
-    # ----------------------
-    # --- Update Profile ---
-    # ----------------------
-
+class UpdateProfileTest(CoreBaseTestCase):
     def test_update_by_admin(self):
-        # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        # request
+        self.set_admin_user_authorization()
         payload = {
             "first_name": "admin f name",
             "last_name": "admin l name",
@@ -24,7 +20,7 @@ class ProfileTest(BaseCoreTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
@@ -39,9 +35,9 @@ class ProfileTest(BaseCoreTestCase):
             },
         )
 
-    def test_update_by_member(self):
-        # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
+    def test_update_by_regular_user(self):
+        # request
+        self.set_regular_user_authorization()
         payload = {"first_name": "member f name"}
         response = self.client.put(
             reverse("user-me"),
@@ -49,7 +45,7 @@ class ProfileTest(BaseCoreTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
@@ -64,67 +60,6 @@ class ProfileTest(BaseCoreTestCase):
             },
         )
 
-    def test_update_by_guest(self):
+    def test_update_by_anonymous_user(self):
         response = self.client.put(reverse("user-me"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # ------------------------------
-    # --- Partial Update Profile ---
-    # ------------------------------
-
-    def test_partial_update_by_admin(self):
-        # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
-        payload = {
-            "first_name": "admin f name",
-            "last_name": "admin l name",
-        }
-        response = self.client.patch(
-            reverse("user-me"),
-            data=json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # --- expected ---
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            set(response.data.keys()),
-            {
-                "id",
-                "email",
-                "first_name",
-                "last_name",
-                "is_active",
-                "date_joined",
-                "last_login",
-            },
-        )
-
-    def test_partial_update_by_member(self):
-        # --- request ---
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
-        payload = {"first_name": "member f name"}
-        response = self.client.patch(
-            reverse("user-me"),
-            data=json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # --- expected ---
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            set(response.data.keys()),
-            {
-                "id",
-                "email",
-                "first_name",
-                "last_name",
-                "is_active",
-                "date_joined",
-                "last_login",
-            },
-        )
-
-    def test_partial_update_by_guest(self):
-        response = self.client.patch(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

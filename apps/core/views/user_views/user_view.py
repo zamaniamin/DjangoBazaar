@@ -14,8 +14,6 @@ from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
 
-# TODO write swagger docs
-# TODO write all unittest
 @extend_schema_view(
     create=extend_schema(
         tags=["User Management"],
@@ -189,7 +187,7 @@ class UserViewSet(ModelViewSet):
     # --- activate user account ---
     # -----------------------------
 
-    @action(["patch"], detail=False)
+    @action(["patch"], detail=False, name="activation")
     def activation(self, request, *args, **kwargs):
         """
         Endpoint for activate the user's account after email verification and provide JWT tokens for authentication.
@@ -203,17 +201,17 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- update user ---
+        # update user
         user.is_active = True
         user.save()
         update_last_login(None, user)
 
-        # --- Create JWT tokens ---
+        # Create JWT tokens
         access_token, refresh_token = TokenService.jwt_get_tokens(user)
         response_body = {
             "access": str(access_token),
@@ -223,7 +221,9 @@ class UserViewSet(ModelViewSet):
 
         return Response(response_body, status=status.HTTP_200_OK)
 
-    @action(["post"], url_path="resend-activation", detail=False)
+    @action(
+        ["post"], url_path="resend-activation", detail=False, name="resend-activation"
+    )
     def resend_activation(self, request, *args, **kwargs):
         """
         Endpoint for resending the activation email to the user's email.
@@ -237,12 +237,12 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- send email ---
+        # send email
         if not user.is_active:
             EmailService.send_activation_email(user.email)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -269,7 +269,7 @@ class UserViewSet(ModelViewSet):
     # --- change email ---
     # --------------------
 
-    @action(["post"], url_path="me/change-email", detail=False)
+    @action(["post"], url_path="me/change-email", detail=False, name="change-email")
     def change_email(self, request, *args, **kwargs):
         """
         Endpoint for initiating the process of changing the authenticated user's email.
@@ -286,19 +286,24 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data
 
-        # --- save email nad send mail to new-email ---
+        # save email nad send mail to new-email
         UserVerification.objects.update_or_create(
             user=request.user, new_email=new_email
         )
         EmailService.send_change_email(new_email)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(["post"], url_path="me/change-email/conformation", detail=False)
+    @action(
+        ["post"],
+        url_path="me/change-email/conformation",
+        detail=False,
+        name="change-email-conformation",
+    )
     def change_email_conformation(self, request, *args, **kwargs):
         """
         Endpoint for confirming the change of the authenticated user's email.
@@ -316,15 +321,15 @@ class UserViewSet(ModelViewSet):
 
         """
 
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data
 
-        # --- get current user verification ---
+        # get current user verification
         user_verification = UserVerification.objects.get(user=request.user)
         if user_verification.new_email == new_email:
-            # --- Update the user's email ---
+            # Update the user's email
             user = request.user
             user.email = new_email
             user.save()
@@ -341,27 +346,29 @@ class UserViewSet(ModelViewSet):
     # --- change password ---
     # -----------------------
 
-    @action(["post"], url_path="me/change-password", detail=False)
+    @action(
+        ["post"], url_path="me/change-password", detail=False, name="change-password"
+    )
     def change_password(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # --- set new password ---
+        # set new password
         self.request.user.set_password(serializer.validated_data["new_password"])
         self.request.user.save()
 
         # logout_user(self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(["post"], url_path="me/reset-password", detail=False)
+    @action(["post"], url_path="me/reset-password", detail=False, name="reset-password")
     def reset_password(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
-        # --- send email ---
+        # send email
         if user.is_active:
             EmailService.send_reset_password_email(user.email)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -369,14 +376,19 @@ class UserViewSet(ModelViewSet):
             {"detail": "first activate you account"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(["post"], url_path="me/reset-password/conformation", detail=False)
+    @action(
+        ["post"],
+        url_path="me/reset-password/conformation",
+        detail=False,
+        name="reset-password-conformation",
+    )
     def reset_password_conformation(self, request, *args, **kwargs):
-        # --- validate ---
+        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, new_password = serializer.validated_data
 
-        # --- set new password ---
+        # set new password
         user.set_password(new_password)
         user.save()
 

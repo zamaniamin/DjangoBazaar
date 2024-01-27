@@ -12,33 +12,23 @@ class CreateProductTest(ProductBaseTestCase):
         Set up data or conditions specific to each test method.
         """
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
+        self.set_admin_user_authorization()
 
-    def test_create_access_as_member(self):
-        """
-        Test create a product, base on user role, current user is a member.
-        - authenticated users.
-        """
+    def test_create_product_by_regular_user(self):
+        self.set_regular_user_authorization()
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.user_access_token}")
-
-        # --- request ---
+        # request
         response = self.client.post(reverse("product-list"), {})
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_create_access_as_guest(self):
-        """
-        Test create a product, base on user role, current user is a guest.
-        - non-authenticated users.
-        """
-
-        # --- request ---
-        self.client.credentials()
+    def test_create_product_by_anonymous_user(self):
+        # request
+        self.set_anonymous_user_authorization()
         response = self.client.post(reverse("product-list"), {})
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_product(self):
@@ -49,7 +39,7 @@ class CreateProductTest(ProductBaseTestCase):
           attached to it.
         """
 
-        # --- request ---
+        # request
         payload = {
             "name": "test product",
             "description": "test description",
@@ -64,7 +54,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected product ---
+        # expected product
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
@@ -72,13 +62,13 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
-        # --- expected product date and time ---
+        # expected product date and time
         self.assertExpectedDatetimeFormat(expected)
 
-        # --- expected product options ---
+        # expected product options
         self.assertIsNone(expected["options"])
 
-        # --- expected product variants ---
+        # expected product variants
         self.assertEqual(len(expected["variants"]), 1)
         self.assertExpectedVariants(
             expected["variants"],
@@ -86,7 +76,7 @@ class CreateProductTest(ProductBaseTestCase):
             expected_stock=payload["stock"],
         )
 
-        # --- expected product media ---
+        # expected product media
         self.assertIsNone(expected["images"])
 
     def test_create_product_with_options(self):
@@ -94,7 +84,7 @@ class CreateProductTest(ProductBaseTestCase):
         Test create a product with options.
         """
 
-        # --- request ---
+        # request
         payload = {
             "name": "test product",
             "description": "test description",
@@ -113,7 +103,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected product ---
+        # expected product
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
@@ -121,21 +111,21 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
 
-        # --- expected product date and time ---
+        # expected product date and time
         self.assertExpectedDatetimeFormat(expected)
 
-        # --- expected product options ---
+        # expected product options
         self.assertIsNotNone(expected["options"])
         self.assertEqual(len(expected["options"]), 3)
         self.assertExpectedOptions(expected["options"], payload["options"])
 
-        # --- expected product variants ---
+        # expected product variants
         self.assertTrue(len(expected["variants"]) == 8)
         self.assertExpectedVariants(
             expected["variants"], payload["price"], payload["stock"]
         )
 
-        # --- expected product media ---
+        # expected product media
         self.assertIsNone(expected["images"])
 
     # ---------------------
@@ -153,7 +143,7 @@ class CreateProductTest(ProductBaseTestCase):
         Test create a product with required fields.
         """
 
-        # --- request ---
+        # request
         payload = {
             "name": "test product",
         }
@@ -163,7 +153,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected product ---
+        # expected product
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
@@ -171,13 +161,13 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
-        # --- expected product date and time ---
+        # expected product date and time
         self.assertExpectedDatetimeFormat(expected, published_at=None)
 
-        # --- expected product options ---
+        # expected product options
         self.assertIsNone(expected["options"])
 
-        # --- expected product variants ---
+        # expected product variants
         self.assertEqual(len(expected["variants"]), 1)
         self.assertExpectedVariants(expected["variants"])
 
@@ -278,7 +268,7 @@ class CreateProductTest(ProductBaseTestCase):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_with_required_options(self):
-        # --- request ---
+        # request
         payload = {
             "name": "Test Product",
             "options": [{"option_name": "color", "items": ["red"]}],
@@ -289,7 +279,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
 
@@ -298,14 +288,14 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
-        # --- expected product date and time ---
+        # expected product date and time
         self.assertExpectedDatetimeFormat(expected, published_at=None)
 
-        # --- expected product options ---
+        # expected product options
         self.assertEqual(len(expected["options"]), 1)
         self.assertExpectedOptions(expected["options"], payload["options"])
 
-        # --- expected product variants ---
+        # expected product variants
         self.assertTrue(len(expected["variants"]) == 1)
         self.assertExpectedVariants(expected["variants"])
 
@@ -314,7 +304,7 @@ class CreateProductTest(ProductBaseTestCase):
         Test case for handling duplicate options when creating a product.
         """
 
-        # --- request ---
+        # request
         options = [
             {"option_name": "color", "items": ["red", "green"]},
             {"option_name": "size", "items": ["S", "M"]},
@@ -330,7 +320,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertEqual(len(expected["options"]), 3)
@@ -344,7 +334,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertExpectedVariants(expected["variants"])
 
     def test_duplicate_items_in_options(self):
-        # --- request ---
+        # request
         payload = {
             "name": "blob",
             "options": [
@@ -358,7 +348,7 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
 
-        # --- expected ---
+        # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
 
@@ -367,14 +357,14 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
-        # --- expected product date and time ---
+        # expected product date and time
         self.assertExpectedDatetimeFormat(expected, published_at=None)
 
-        # --- expected product options ---
+        # expected product options
         self.assertEqual(len(expected["options"]), 2)
         self.assertExpectedOptions(expected["options"], payload["options"])
 
-        # --- expected product variants ---
+        # expected product variants
         self.assertTrue(len(expected["variants"]) == 4)
         self.assertExpectedVariants(expected["variants"])
 
