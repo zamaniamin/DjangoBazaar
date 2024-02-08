@@ -61,3 +61,7 @@ jobs:
             cd ${{ secrets.PROJECT_PATH }}
             git remote add ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
             git pull ${{ secrets.REMOTE_NAME }} main
+            python manage.py makemigrations
+            python manage.py migrate
+            python manage.py collectstatic
+            touch config/wsgi.py
