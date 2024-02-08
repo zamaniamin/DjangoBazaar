@@ -2,7 +2,7 @@ name: Django CICD
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
 jobs:
   build:
