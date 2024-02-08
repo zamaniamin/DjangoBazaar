@@ -60,4 +60,4 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
             git remote add ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
-            git pull --merge ${{ secrets.REMOTE_NAME }} main
+            git pull ${{ secrets.REMOTE_NAME }} main
