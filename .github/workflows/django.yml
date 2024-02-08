@@ -1,9 +1,7 @@
-name: Django CI
+name: Django CICD
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -13,10 +11,25 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [ 3.11 ]
+        python-version: [ 3.11, 3.12 ]
 
     steps:
       - uses: actions/checkout@v3
+      - name: Add environment variables to .env
+        run: |
+          echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+          echo DEBUG=False >> .env
+          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          echo JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} >> .env
+          echo ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }} >> .env
+          echo OTP_SECRET_KEY=${{ secrets.OTP_SECRET_KEY }} >> .env
+          echo OTP_EXPIRE_SECONDS=${{ secrets.OTP_EXPIRE_SECONDS }} >> .env
+          echo EMAIL_HOST=${{ secrets.EMAIL_HOST }} >> .env
+          echo EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }} >> .env
+          echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
+          echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> .env
+          echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
+          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
@@ -27,4 +40,24 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
+          python manage.py makemigrations
+          python manage.py migrate
           python manage.py test
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.PROJECT_PATH }}
+            git remote set-url ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
+            git pull origin main
