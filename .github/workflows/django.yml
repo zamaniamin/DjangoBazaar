@@ -60,4 +60,4 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
             git remote set-url ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
-            git pull origin main
+            git pull ${{ secrets.REMOTE_NAME }} main
