@@ -59,5 +59,10 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.PROJECT_PATH }}
+            echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
             git remote set-url ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
             git pull ${{ secrets.REMOTE_NAME }} main
+            python manage.py makemigrations
+            python manage.py migrate
+            python manage.py collectstatic
+            touch config/wsgi.py
