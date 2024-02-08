@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: executing remote ssh commands using password
+      - name: executing remote ssh commands
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -58,10 +58,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            echo "Host: ${{ secrets.SSH_HOST }}"
-            echo "Username: ${{ secrets.SSH_USERNAME }}"
-            echo "Port: ${{ secrets.SSH_PORT }}"
-            echo "Private Key: ${{ secrets.SSH_PRIVATE_KEY }}"
             cd ${{ secrets.PROJECT_PATH }}
             git remote add ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
             git pull --merge ${{ secrets.REMOTE_NAME }} main
