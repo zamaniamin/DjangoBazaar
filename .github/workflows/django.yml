@@ -61,7 +61,7 @@ jobs:
             echo "Host: ${{ secrets.SSH_HOST }}"
             echo "Username: ${{ secrets.SSH_USERNAME }}"
             echo "Port: ${{ secrets.SSH_PORT }}"
-            echo "Private Key: ${{ secrets.SSH_PRIVATE_KEY | replace('\\n', $'\n') }}"
+            echo "Private Key: ${{ secrets.SSH_PRIVATE_KEY }}"
             cd ${{ secrets.PROJECT_PATH }}
             git remote add ${{ secrets.REMOTE_NAME }} ${{ secrets.REPOSITORY_URL}} 
             git pull --merge ${{ secrets.REMOTE_NAME }} main
