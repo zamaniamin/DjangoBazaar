@@ -30,6 +30,7 @@ jobs:
           echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> .env
           echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
           echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env
+          echo CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }} >> .env
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
