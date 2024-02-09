@@ -253,4 +253,4 @@ ASGI_APPLICATION = "config.asgi.application"
 # --- CORS ---
 # ------------
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
