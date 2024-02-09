@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "debug_toolbar",
+    "corsheaders",
     # Made by me
     "apps.core",
     "apps.shop",
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -246,3 +248,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ------------
 
 ASGI_APPLICATION = "config.asgi.application"
+
+# ------------
+# --- CORS ---
+# ------------
+
+CORS_ORIGIN_ALLOW_ALL = True
