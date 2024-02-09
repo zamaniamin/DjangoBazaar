@@ -1,4 +1,5 @@
 asgiref==3.7.2
+async-timeout==4.0.3
 attrs==23.1.0
 autobahn==23.6.2
 Automat==22.10.0
@@ -10,6 +11,7 @@ constantly==23.10.4
 cryptography==42.0.1
 daphne==4.0.0
 Django==5.0
+django-cors-headers==4.3.1
 django-debug-toolbar==4.2.0
 django-filter==23.5
 djangorestframework==3.14.0
