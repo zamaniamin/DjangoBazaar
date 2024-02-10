@@ -61,10 +61,8 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
         # self.assertEqual(len())
         # print(response.json())
 
-# TODO test remove cart
 # TODO test remove cart item
 # TODO test update cart item quantity
-# TODO test cart total price
 # TODO test item total price
 # TODO test access permissions
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
