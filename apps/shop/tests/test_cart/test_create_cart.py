@@ -19,6 +19,21 @@ class CreateCartBaseTest(CoreBaseTestCase):
         self.assertEqual(len(expected["items"]), 0)
         self.assertEqual(expected["total_price"], 0)
 
+    def test_create_carts_by_admin(self):
+        self.set_admin_user_authorization()
+        response = self.client.post(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_carts_by_regular_user(self):
+        self.set_regular_user_authorization()
+        response = self.client.post(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_carts_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        response = self.client.post(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 # TODO test remove cart
 # TODO test cart total price
 # TODO test access permissions
