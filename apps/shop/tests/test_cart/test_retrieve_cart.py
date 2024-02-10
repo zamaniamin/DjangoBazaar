@@ -6,7 +6,7 @@ from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models.cart import Cart
 
 
-class RetrieveCartBaseTest(CoreBaseTestCase):
+class ListCartTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
     variable_product_variants = None
@@ -35,14 +35,20 @@ class RetrieveCartBaseTest(CoreBaseTestCase):
         #         quantity=1
         #     )
 
-    def test_list_carts(self):
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_list_carts_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_carts_by_regular_user(self):
+        self.set_regular_user_authorization()
+        response = self.client.get(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_carts_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        response = self.client.get(reverse("cart-list"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # def test_retrieve
 
