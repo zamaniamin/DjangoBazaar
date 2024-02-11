@@ -6,7 +6,7 @@ from rest_framework import status
 from apps.core.tests.base_test import CoreBaseTestCase
 
 
-class CreateCartBaseTest(CoreBaseTestCase):
+class CreateCartTest(CoreBaseTestCase):
     def test_create_cart(self):
         response = self.client.post(
             reverse("cart-list"), {}, content_type="application/json"
@@ -36,6 +36,5 @@ class CreateCartBaseTest(CoreBaseTestCase):
 
 # TODO test remove cart
 # TODO test cart total price
-# TODO test access permissions
-# TODO add cart to faker
+
 # print(response.data)
