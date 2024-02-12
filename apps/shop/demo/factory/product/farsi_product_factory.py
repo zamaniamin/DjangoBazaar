@@ -11,16 +11,16 @@ from apps.shop.services.product_service import ProductService
 
 
 class FarsiProductFactory:
-    faker = Faker('fa_IR')
+    faker = Faker("fa_IR")
 
     @classmethod
     def create_product(
-            cls,
-            status: str = Product.STATUS_ACTIVE,
-            is_variable: bool = False,
-            random_options: bool = False,
-            get_payload: bool = False,
-            has_images: bool = False,
+        cls,
+        status: str = Product.STATUS_ACTIVE,
+        is_variable: bool = False,
+        random_options: bool = False,
+        get_payload: bool = False,
+        has_images: bool = False,
     ):
         helper = FarsiProductFactoryHelper()
 
