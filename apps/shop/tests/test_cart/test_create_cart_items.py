@@ -8,7 +8,7 @@ from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models.cart import Cart
 
 
-class CreateCartItemsBaseTest(CoreBaseTestCase):
+class CreateCartItemsTest(CoreBaseTestCase):
     simple_product = None
     variable_product = None
 
@@ -39,6 +39,24 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["variant"], self.simple_product_variant.id)
+        self.assertEqual(expected["quantity"], 1)
+        # {
+        #   "id": 1,
+        #   "variant": {
+        #     "id": 63,
+        #     "product_id": 14,
+        #     "price": 760,
+        #     "stock": 85,
+        #     "option1": null,
+        #     "option2": null,
+        #     "option3": null
+        #   },
+        #   "quantity": 3,
+        #   "item_total": 2280
+        # }
         # TODO test items data
         # TODO test item_total value
         # TODO test total_price value
@@ -60,6 +78,7 @@ class CreateCartItemsBaseTest(CoreBaseTestCase):
         # self.assertEqual(response.status_code, status.HTTP_200_OK)
         # self.assertEqual(len())
         # print(response.json())
+
 
 # TODO test remove cart item
 # TODO test update cart item quantity
