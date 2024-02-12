@@ -13,23 +13,25 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Take environment variables from .env file
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -156,11 +158,11 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = os.getenv("EMAIL_HOST")
-    EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL")
-    EMAIL_PORT = os.getenv("EMAIL_PORT")
-    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+    EMAIL_HOST = env.str("EMAIL_HOST")
+    EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL")
+    EMAIL_PORT = env.int("EMAIL_PORT")
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
 
 # -------------------------
 # --- REST-API Settings ---
@@ -203,8 +205,8 @@ SIMPLE_JWT = {
 # --- OTP Settings ---
 # --------------------
 
-OTP_SECRET_KEY = os.getenv("OTP_SECRET_KEY")
-OTP_EXPIRE_SECONDS = os.getenv("OTP_EXPIRE_SECONDS")
+OTP_SECRET_KEY = env.str("OTP_SECRET_KEY")
+OTP_EXPIRE_SECONDS = env.int("OTP_EXPIRE_SECONDS")
 
 # ----------------------
 # --- Django Testing ---
@@ -232,7 +234,7 @@ if DEBUG:
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/"),
+        "LOCATION": env.str("REDIS_URL", "redis://localhost:6379/"),
         "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
         # "TIMEOUT": None,  # cache keys never expire, the default value is 5 minutes (300 seconds)
         # "TIMEOUT": 0,  # expire the cache immediately (don’t cache)
@@ -263,4 +265,4 @@ ASGI_APPLICATION = "config.asgi.application"
 # --- CORS ---
 # ------------
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
