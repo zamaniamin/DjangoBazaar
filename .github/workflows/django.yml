@@ -20,6 +20,7 @@ jobs:
           echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
           echo DEBUG=False >> .env
           echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          echo STATIC_ROOT=${{ secrets.STATIC_ROOT }} >> .env
           echo JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} >> .env
           echo ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }} >> .env
           echo OTP_SECRET_KEY=${{ secrets.OTP_SECRET_KEY }} >> .env
