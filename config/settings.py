@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "django.contrib.sites",
     # External Packages
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -131,8 +133,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(env.str("STATIC_ROOT"), "static")
+STATIC_URL = env.str("STATIC_URL", default="static/")
+STATIC_ROOT = os.path.join(env.str("STATIC_ROOT", default=BASE_DIR), "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -246,8 +248,8 @@ CACHES = {
 # --- Media ---
 # -------------
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(env.str("STATIC_ROOT"), "media")
+MEDIA_URL = env.str("MEDIA_URL", default="media/")
+MEDIA_ROOT = os.path.join(env.str("MEDIA_ROOT", default=BASE_DIR), "media")
 
 # ------------
 # --- ASGI ---
