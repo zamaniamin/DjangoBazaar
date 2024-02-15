@@ -18,21 +18,7 @@ jobs:
       - name: Add environment variables to .env
         run: |
           echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
-          echo DEBUG=False >> .env
-          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-          echo STATIC_ROOT=${{ secrets.STATIC_ROOT }} >> .env
-          echo JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} >> .env
-          echo ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }} >> .env
           echo OTP_SECRET_KEY=${{ secrets.OTP_SECRET_KEY }} >> .env
-          echo OTP_EXPIRE_SECONDS=${{ secrets.OTP_EXPIRE_SECONDS }} >> .env
-          echo EMAIL_HOST=${{ secrets.EMAIL_HOST }} >> .env
-          echo EMAIL_USE_SSL=${{ secrets.EMAIL_USE_SSL }} >> .env
-          echo EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }} >> .env
-          echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
-          echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> .env
-          echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
-          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env
-          echo CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }} >> .env
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
