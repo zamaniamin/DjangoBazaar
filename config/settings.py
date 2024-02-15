@@ -29,9 +29,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", True)
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 # Application definition
 
@@ -159,11 +159,11 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = env.str("EMAIL_HOST")
-    EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL")
-    EMAIL_PORT = env.int("EMAIL_PORT")
-    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+    EMAIL_HOST = env.str("EMAIL_HOST", "smtp.example.com")
+    EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", True)
+    EMAIL_PORT = env.int("EMAIL_PORT", 0)
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", "no-reply@example.com")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", "<password>")
 
 # -------------------------
 # --- REST-API Settings ---
@@ -207,7 +207,7 @@ SIMPLE_JWT = {
 # --------------------
 
 OTP_SECRET_KEY = env.str("OTP_SECRET_KEY")
-OTP_EXPIRE_SECONDS = env.int("OTP_EXPIRE_SECONDS")
+OTP_EXPIRE_SECONDS = env.int("OTP_EXPIRE_SECONDS", 360)
 
 # ----------------------
 # --- Django Testing ---
@@ -259,4 +259,4 @@ ASGI_APPLICATION = "config.asgi.application"
 # --- CORS ---
 # ------------
 
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:3000", ])
