@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
 env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -29,9 +29,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool("DEBUG", True)
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 # Application definition
 
@@ -131,7 +131,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = env.str("STATIC_URL", default="static/")
+STATIC_ROOT = os.path.join(env.str("STATIC_ROOT", default=BASE_DIR), "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -158,11 +159,11 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = env.str("EMAIL_HOST")
-    EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL")
-    EMAIL_PORT = env.int("EMAIL_PORT")
-    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+    EMAIL_HOST = env.str("EMAIL_HOST", "smtp.example.com")
+    EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", True)
+    EMAIL_PORT = env.int("EMAIL_PORT", 0)
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", "no-reply@example.com")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", "<password>")
 
 # -------------------------
 # --- REST-API Settings ---
@@ -185,7 +186,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Django Bazaar",
     "DESCRIPTION": """An open-source e-commerce platform, offering a versatile and scalable solution for creating 
     online marketplaces. """,
-    "VERSION": "0.1.2",
+    "VERSION": "0.3.64",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,  # file upload representation in Swagger UI
     # UPLOADED_FILES_USE_URL
@@ -206,7 +207,7 @@ SIMPLE_JWT = {
 # --------------------
 
 OTP_SECRET_KEY = env.str("OTP_SECRET_KEY")
-OTP_EXPIRE_SECONDS = env.int("OTP_EXPIRE_SECONDS")
+OTP_EXPIRE_SECONDS = env.int("OTP_EXPIRE_SECONDS", 360)
 
 # ----------------------
 # --- Django Testing ---
@@ -241,19 +242,12 @@ CACHES = {
     }
 }
 
-# --------------
-# --- Static ---
-# --------------
-
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
-
 # -------------
 # --- Media ---
 # -------------
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = env.str("MEDIA_URL", default="media/")
+MEDIA_ROOT = os.path.join(env.str("MEDIA_ROOT", default=BASE_DIR), "media")
 
 # ------------
 # --- ASGI ---
@@ -265,4 +259,9 @@ ASGI_APPLICATION = "config.asgi.application"
 # --- CORS ---
 # ------------
 
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost:3000",
+    ],
+)

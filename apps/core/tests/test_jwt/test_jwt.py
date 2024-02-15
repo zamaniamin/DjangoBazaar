@@ -8,7 +8,7 @@ from apps.core.demo.factory.user_factory import UserFactory
 
 class JWTTests(APITestCase):
     def setUp(self):
-        self.base_url = "/auth/jwt/"
+        self.base_url = "/auth/"
         self.user = UserFactory.create()
 
     def test_create_jwt(self):
