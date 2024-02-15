@@ -186,7 +186,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Django Bazaar",
     "DESCRIPTION": """An open-source e-commerce platform, offering a versatile and scalable solution for creating 
     online marketplaces. """,
-    "VERSION": "0.1.2",
+    "VERSION": "0.3.64",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,  # file upload representation in Swagger UI
     # UPLOADED_FILES_USE_URL
