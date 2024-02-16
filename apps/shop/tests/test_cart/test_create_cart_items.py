@@ -48,17 +48,21 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertIsInstance(variant, dict)
         self.assertEqual(len(variant), 7)
         self.assertEqual(variant["id"], self.simple_product_variant.id)
-
         self.assertEqual(variant["product_id"], self.simple_product.id)
-        self.assertEqual(variant["price"], self.simple_product_variant.price)
+        self.assertEqual(variant["price"], float(self.simple_product_variant.price))
         self.assertEqual(variant["stock"], self.simple_product_variant.stock)
         self.assertEqual(variant["option1"], self.simple_product_variant.option1)
         self.assertEqual(variant["option2"], self.simple_product_variant.option2)
         self.assertEqual(variant["option3"], self.simple_product_variant.option3)
 
+        # expected image
+        self.assertIsInstance(expected["image"], str)
+
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], 1)
-        self.assertEqual(expected["item_total"], self.simple_product_variant.price)
+        self.assertEqual(
+            expected["item_total"], float(self.simple_product_variant.price)
+        )
 
     def test_create_one_cart_item_with_two_quantity(self):
         # request
@@ -94,6 +98,9 @@ class CreateCartItemsTest(CoreBaseTestCase):
             variant["option3"], str(self.variable_product_variants.option3)
         )
 
+        # expected image
+        self.assertIsInstance(expected["image"], str)
+
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], quantity)
         self.assertEqual(
@@ -101,7 +108,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
             float(self.variable_product_variants.price) * quantity,
         )
 
-    def test_create_cart_with_multi_items(self):
+    def test_cart_total_price(self):
         # request
         total_price = 0
         for variant in self.variable_product_variants_list:
@@ -120,7 +127,6 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["total_price"], float(total_price))
-
 
 # TODO test remove cart item
 # TODO test update cart item quantity
