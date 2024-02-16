@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema_view, extend_schema
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -26,6 +26,12 @@ from apps.shop.serializers.cart_serializers import (
     ),
     destroy=extend_schema(tags=["Cart Item"], summary="Deletes an item from the cart"),
 )
+@extend_schema(
+    parameters=[
+        OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+        OpenApiParameter("id", str, OpenApiParameter.PATH),
+    ]
+)
 class CartItemViewSet(ModelViewSet):
     http_method_names = ["post", "get", "patch", "delete"]
 
@@ -39,9 +45,6 @@ class CartItemViewSet(ModelViewSet):
         elif self.request.method == "PATCH":
             return UpdateCartItemSerializer
         return CartItemSerializer
-
-    def get_serializer_context(self):
-        return {"cart_pk": self.kwargs["cart_pk"]}
 
     def create(self, request, *args, **kwargs):
         # Validate
