@@ -22,7 +22,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
         cls.variable_product = ProductFactory.create_product(
             is_variable=True, has_images=True
         )
-        cls.variable_product_variants = list(cls.variable_product.variants.all())
+        cls.variable_product_variants = cls.variable_product.variants.first()
+        cls.variable_product_variants_list = list(cls.variable_product.variants.all())
 
         # cart
         cart = Cart.objects.create()
@@ -41,30 +42,60 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["variant"], self.simple_product_variant.id)
-        self.assertEqual(expected["quantity"], 1)
-        # {
-        #   "id": 1,
-        #   "variant": {
-        #     "id": 63,
-        #     "product_id": 14,
-        #     "price": 760,
-        #     "stock": 85,
-        #     "option1": null,
-        #     "option2": null,
-        #     "option3": null
-        #   },
-        #   "quantity": 3,
-        #   "item_total": 2280
-        # }
-        # TODO test items data
-        # TODO test item_total value
-        # TODO test total_price value
-        # print(response.data)
 
-    def test_create_cart_items(self):
+        # expected variant
+        variant = expected["variant"]
+        self.assertIsInstance(variant, dict)
+        self.assertEqual(len(variant), 7)
+        self.assertEqual(variant["id"], self.simple_product_variant.id)
+
+        self.assertEqual(variant["product_id"], self.simple_product.id)
+        self.assertEqual(variant["price"], self.simple_product_variant.price)
+        self.assertEqual(variant["stock"], self.simple_product_variant.stock)
+        self.assertEqual(variant["option1"], self.simple_product_variant.option1)
+        self.assertEqual(variant["option2"], self.simple_product_variant.option2)
+        self.assertEqual(variant["option3"], self.simple_product_variant.option3)
+
+        # expected quantity and item_total
+        self.assertEqual(expected["quantity"], 1)
+        self.assertEqual(expected["item_total"], self.simple_product_variant.price)
+
+    def test_create_one_cart_item_with_two_quantity(self):
         # request
-        for variant in self.variable_product_variants:
+        quantity = 2
+        payload = {"variant": self.variable_product_variants.id, "quantity": quantity}
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(payload),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+
+        # expected variant
+        variant = expected["variant"]
+        self.assertIsInstance(variant, dict)
+        self.assertEqual(len(variant), 7)
+        self.assertEqual(variant["id"], self.variable_product_variants.id)
+
+        self.assertEqual(variant["product_id"], self.variable_product.id)
+        self.assertEqual(variant["price"], float(self.variable_product_variants.price))
+        self.assertEqual(variant["stock"], self.variable_product_variants.stock)
+        self.assertEqual(variant["option1"], str(self.variable_product_variants.option1))
+        self.assertEqual(variant["option2"], str(self.variable_product_variants.option2))
+        self.assertEqual(variant["option3"], str(self.variable_product_variants.option3))
+
+        # expected quantity and item_total
+        self.assertEqual(expected["quantity"], quantity)
+        self.assertEqual(expected["item_total"], float(self.variable_product_variants.price) * quantity)
+
+    def test_create_cart_with_multi_items(self):
+        # request
+        total_price = 0
+        for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
                 reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
@@ -72,13 +103,14 @@ class CreateCartItemsTest(CoreBaseTestCase):
                 content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            expected = response.json()
+            total_price += float(expected["item_total"])
 
         # expected
-        # response = self.client.get(reverse("cart-list"))
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(len())
-        # print(response.json())
-
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(expected["total_price"], float(total_price))
 
 # TODO test remove cart item
 # TODO test update cart item quantity
