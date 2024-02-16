@@ -63,6 +63,7 @@ class FarsiProductFactory:
         for simple_product in range(4):
             cls.create_product(has_images=True)
         for variable_product in range(5):
+            # TODO generate random option
             cls.create_product(is_variable=True, has_images=True)
 
         # archived
