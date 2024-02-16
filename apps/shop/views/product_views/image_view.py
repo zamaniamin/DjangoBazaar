@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
@@ -24,6 +24,12 @@ from apps.shop.services.product_service import ProductService
     destroy=extend_schema(
         tags=["Product Image"], summary="Remove an existing Product Image"
     ),
+)
+@extend_schema(
+    parameters=[
+        OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+        OpenApiParameter("id", str, OpenApiParameter.PATH),
+    ]
 )
 class ProductImageViewSet(viewsets.ModelViewSet):
     serializer_class = s.ProductImageSerializer
