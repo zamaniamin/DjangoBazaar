@@ -1,5 +1,7 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
+from rest_framework import status
 from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.shop.models.cart import Cart, CartItem
@@ -41,6 +43,28 @@ class CartItemViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {"cart_pk": self.kwargs["cart_pk"]}
 
+    def create(self, request, *args, **kwargs):
+
+        # Validate
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+
+        cart_id = kwargs["cart_pk"]
+        variant = payload["variant"]
+        quantity = payload["quantity"]
+
+        try:
+            # TODO dont add product with 0 stock
+            cart_item = CartItem.objects.get(cart_id=cart_id, variant_id=variant.id)
+            cart_item.quantity += quantity
+            cart_item.save()
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(cart_id=cart_id, **payload)
+
+        response_serializer = CartItemSerializer(cart_item)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
 
 @extend_schema_view(
     create=extend_schema(tags=["Cart"], summary="Create a new cart"),
@@ -59,7 +83,6 @@ class CartViewSet(ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
-
 
 # TODO write tests
 # TODO show product image

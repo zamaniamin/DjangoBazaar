@@ -6,6 +6,15 @@ from apps.shop.models.cart import CartItem, Cart
 
 class CartVariantSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(source="product.id")
+    option1 = serializers.CharField(
+        source="option1.item_name", required=False, default=None, read_only=True
+    )
+    option2 = serializers.CharField(
+        source="option2.item_name", required=False, default=None, read_only=True
+    )
+    option3 = serializers.CharField(
+        source="option3.item_name", required=False, default=None, read_only=True
+    )
 
     class Meta:
         model = ProductVariant
@@ -22,22 +31,6 @@ class AddCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["id", "variant", "quantity"]
-
-    def create(self, validated_data):
-        cart_id = self.context["cart_pk"]
-
-        variant = validated_data.get("variant")
-        quantity = validated_data.get("quantity")
-
-        try:
-            cart_item = CartItem.objects.get(cart_id=cart_id, variant_id=variant.id)
-            cart_item.quantity += quantity
-            cart_item.save()
-        except CartItem.DoesNotExist:
-            cart_item = CartItem.objects.create(cart_id=cart_id, **validated_data)
-
-        self.instance = cart_item
-        return cart_item
 
 
 class CartItemSerializer(serializers.ModelSerializer):
