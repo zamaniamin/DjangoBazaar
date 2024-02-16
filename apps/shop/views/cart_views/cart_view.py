@@ -44,7 +44,6 @@ class CartItemViewSet(ModelViewSet):
         return {"cart_pk": self.kwargs["cart_pk"]}
 
     def create(self, request, *args, **kwargs):
-
         # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -83,6 +82,7 @@ class CartViewSet(ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
 
 # TODO write tests
 # TODO show product image

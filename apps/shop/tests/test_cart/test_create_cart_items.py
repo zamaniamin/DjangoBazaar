@@ -84,13 +84,22 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(variant["product_id"], self.variable_product.id)
         self.assertEqual(variant["price"], float(self.variable_product_variants.price))
         self.assertEqual(variant["stock"], self.variable_product_variants.stock)
-        self.assertEqual(variant["option1"], str(self.variable_product_variants.option1))
-        self.assertEqual(variant["option2"], str(self.variable_product_variants.option2))
-        self.assertEqual(variant["option3"], str(self.variable_product_variants.option3))
+        self.assertEqual(
+            variant["option1"], str(self.variable_product_variants.option1)
+        )
+        self.assertEqual(
+            variant["option2"], str(self.variable_product_variants.option2)
+        )
+        self.assertEqual(
+            variant["option3"], str(self.variable_product_variants.option3)
+        )
 
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], quantity)
-        self.assertEqual(expected["item_total"], float(self.variable_product_variants.price) * quantity)
+        self.assertEqual(
+            expected["item_total"],
+            float(self.variable_product_variants.price) * quantity,
+        )
 
     def test_create_cart_with_multi_items(self):
         # request
@@ -111,6 +120,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["total_price"], float(total_price))
+
 
 # TODO test remove cart item
 # TODO test update cart item quantity
