@@ -35,13 +35,20 @@ class AddCartItemSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     variant = CartVariantSerializer()
+    image = serializers.SerializerMethodField()
     item_total = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ["id", "variant", "quantity", "item_total"]
+        fields = ["id", "variant", "image", "quantity", "item_total"]
 
-    def get_item_total(self, cart_item):
+    @staticmethod
+    def get_image(cart_item):
+        first_media = cart_item.variant.product.media.first()
+        return first_media.src.url if first_media else None
+
+    @staticmethod
+    def get_item_total(cart_item):
         return cart_item.quantity * cart_item.variant.price
 
 
@@ -56,5 +63,6 @@ class CartSerializer(serializers.ModelSerializer):
             "id",
         ]
 
-    def get_total_price(self, cart):
+    @staticmethod
+    def get_total_price(cart):
         return sum([item.quantity * item.variant.price for item in cart.items.all()])
