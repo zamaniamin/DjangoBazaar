@@ -45,11 +45,12 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
         # expected variant
         variant = expected["variant"]
+        price = float(self.simple_product_variant.price)
         self.assertIsInstance(variant, dict)
         self.assertEqual(len(variant), 7)
         self.assertEqual(variant["id"], self.simple_product_variant.id)
         self.assertEqual(variant["product_id"], self.simple_product.id)
-        self.assertEqual(variant["price"], float(self.simple_product_variant.price))
+        self.assertEqual(variant["price"], price)
         self.assertEqual(variant["stock"], self.simple_product_variant.stock)
         self.assertEqual(variant["option1"], self.simple_product_variant.option1)
         self.assertEqual(variant["option2"], self.simple_product_variant.option2)
@@ -60,9 +61,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], 1)
-        self.assertEqual(
-            expected["item_total"], float(self.simple_product_variant.price)
-        )
+        self.assertAlmostEqual(expected["item_total"], round(price, 2), places=2)
 
     def test_create_one_cart_item_with_two_quantity(self):
         # request
@@ -80,13 +79,14 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertIsInstance(expected["id"], int)
 
         # expected variant
+        price = float(self.variable_product_variants.price)
         variant = expected["variant"]
         self.assertIsInstance(variant, dict)
         self.assertEqual(len(variant), 7)
         self.assertEqual(variant["id"], self.variable_product_variants.id)
 
         self.assertEqual(variant["product_id"], self.variable_product.id)
-        self.assertEqual(variant["price"], float(self.variable_product_variants.price))
+        self.assertEqual(variant["price"], price)
         self.assertEqual(variant["stock"], self.variable_product_variants.stock)
         self.assertEqual(
             variant["option1"], str(self.variable_product_variants.option1)
@@ -103,14 +103,12 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], quantity)
-        self.assertEqual(
-            expected["item_total"],
-            float(self.variable_product_variants.price) * quantity,
-        )
+        item_total = price * quantity
+        self.assertAlmostEqual(expected["item_total"], round(item_total, 2), places=2)
 
     def test_cart_total_price(self):
         # request
-        total_price = 0
+        total_price: float = 0
         for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
@@ -120,13 +118,14 @@ class CreateCartItemsTest(CoreBaseTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             expected = response.json()
-            total_price += float(expected["item_total"])
+            total_price += expected["item_total"]
 
         # expected
         response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
-        self.assertEqual(expected["total_price"], float(total_price))
+        self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
+
 
 # TODO test remove cart item
 # TODO test update cart item quantity
