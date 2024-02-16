@@ -55,6 +55,7 @@ class CartItemViewSet(ModelViewSet):
 
         try:
             # TODO dont add product with 0 stock
+            # TODO dont add product status != active
             cart_item = CartItem.objects.get(cart_id=cart_id, variant_id=variant.id)
             cart_item.quantity += quantity
             cart_item.save()
@@ -84,12 +85,12 @@ class CartViewSet(ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
 
-# TODO write tests
 # TODO show product image
+# TODO write tests
 # TODO add cart factory
+# TODO add cart to faker
 # TODO check cart queries
 # TODO on delete a cart, delete all items from it too
 # TODO mange inventory when adding product to cart and when on checkout
 # TODO fix 500 error for UUID
 # TODO check the stock of items before save the order
-# TODO add cart to faker
