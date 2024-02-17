@@ -10,26 +10,48 @@ from apps.shop.services.product_service import ProductService
 
 
 @extend_schema_view(
-    create=extend_schema(tags=["Product Image"], summary="Create multi product image"),
-    retrieve=extend_schema(
-        tags=["Product Image"], summary="Get a single product image"
+    create=extend_schema(
+        tags=["Product Image"],
+        summary="Create multi product image",
+        parameters=[OpenApiParameter("product_pk", str, OpenApiParameter.PATH)],
     ),
-    list=extend_schema(tags=["Product Image"], summary="Get all product images"),
+    retrieve=extend_schema(
+        tags=["Product Image"],
+        summary="Get a single product image",
+        parameters=[
+            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
+    ),
+    list=extend_schema(
+        tags=["Product Image"],
+        summary="Get all product images",
+        parameters=[OpenApiParameter("product_pk", str, OpenApiParameter.PATH)],
+    ),
     update=extend_schema(
-        tags=["Product Image"], summary="Modify an existing product image"
+        tags=["Product Image"],
+        summary="Modify an existing product image",
+        parameters=[
+            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
     ),
     partial_update=extend_schema(
-        tags=["Product Image"], summary="Partial update an existing product image"
+        tags=["Product Image"],
+        summary="Partial update an existing product image",
+        parameters=[
+            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
     ),
     destroy=extend_schema(
-        tags=["Product Image"], summary="Remove an existing Product Image"
+        tags=["Product Image"],
+        summary="Remove an existing Product Image",
+        parameters=[
+            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
     ),
-)
-@extend_schema(
-    parameters=[
-        OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
-        OpenApiParameter("id", str, OpenApiParameter.PATH),
-    ]
 )
 class ProductImageViewSet(viewsets.ModelViewSet):
     serializer_class = s.ProductImageSerializer
