@@ -14,23 +14,40 @@ from apps.shop.serializers.cart_serializers import (
 
 
 @extend_schema_view(
-    create=extend_schema(tags=["Cart Item"], summary="Add one variant to cart"),
+    create=extend_schema(
+        tags=["Cart Item"],
+        summary="Add one variant to cart",
+        parameters=[OpenApiParameter("cart_pk", str, OpenApiParameter.PATH)],
+    ),
     retrieve=extend_schema(
-        tags=["Cart Item"], summary="Retrieve an item from the cart"
+        tags=["Cart Item"],
+        summary="Retrieve an item from the cart",
+        parameters=[
+            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
     ),
     list=extend_schema(
-        tags=["Cart Item"], summary="Retrieve a list of items from the cart"
+        tags=["Cart Item"],
+        summary="Retrieve a list of items from the cart",
+        parameters=[OpenApiParameter("cart_pk", str, OpenApiParameter.PATH)],
     ),
     partial_update=extend_schema(
-        tags=["Cart Item"], summary="Update an item from the cart"
+        tags=["Cart Item"],
+        summary="Update an item from the cart",
+        parameters=[
+            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
     ),
-    destroy=extend_schema(tags=["Cart Item"], summary="Deletes an item from the cart"),
-)
-@extend_schema(
-    parameters=[
-        OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
-        OpenApiParameter("id", str, OpenApiParameter.PATH),
-    ]
+    destroy=extend_schema(
+        tags=["Cart Item"],
+        summary="Deletes an item from the cart",
+        parameters=[
+            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
+    ),
 )
 class CartItemViewSet(ModelViewSet):
     http_method_names = ["post", "get", "patch", "delete"]
