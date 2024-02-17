@@ -103,8 +103,9 @@ def generate_upload_path(instance, filename):
 
     # Add "test_" prefix to unique_id if running in test mode
     if "test" in sys.argv:
-        unique_id = f"test_{unique_id}"
-    return f"products/{instance.product.id}/{unique_id}{ext}"
+        return f"test/products/{instance.product.id}/{unique_id}{ext}"
+    else:
+        return f"products/{instance.product.id}/{unique_id}{ext}"
 
 
 class ProductMedia(models.Model):
