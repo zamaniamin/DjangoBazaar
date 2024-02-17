@@ -53,6 +53,12 @@ from apps.shop.services.product_service import ProductService
         ],
     ),
 )
+@extend_schema(
+    parameters=[
+        OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+        OpenApiParameter("id", str, OpenApiParameter.PATH),
+    ]
+)
 class ProductImageViewSet(viewsets.ModelViewSet):
     serializer_class = s.ProductImageSerializer
     permission_classes = [IsAdminUser]

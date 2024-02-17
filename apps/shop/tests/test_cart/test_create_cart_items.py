@@ -126,7 +126,6 @@ class CreateCartItemsTest(CoreBaseTestCase):
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
-
 # TODO test remove cart item
 # TODO test update cart item quantity
 # TODO test access permissions

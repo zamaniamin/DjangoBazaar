@@ -49,6 +49,12 @@ from apps.shop.serializers.cart_serializers import (
         ],
     ),
 )
+@extend_schema(
+    parameters=[
+        OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+        OpenApiParameter("id", str, OpenApiParameter.PATH),
+    ]
+)
 class CartItemViewSet(ModelViewSet):
     http_method_names = ["post", "get", "patch", "delete"]
 
