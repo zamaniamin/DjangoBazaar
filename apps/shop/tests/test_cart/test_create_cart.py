@@ -34,8 +34,4 @@ class CreateCartTest(CoreBaseTestCase):
         response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-
 # TODO test remove cart
-# TODO test cart total price
-
-# print(response.data)
