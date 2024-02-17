@@ -33,5 +33,3 @@ class CreateCartTest(CoreBaseTestCase):
         self.set_anonymous_user_authorization()
         response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-# TODO test remove cart
