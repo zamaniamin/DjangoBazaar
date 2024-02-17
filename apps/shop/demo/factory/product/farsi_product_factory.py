@@ -63,11 +63,9 @@ class FarsiProductFactory:
         for simple_product in range(4):
             cls.create_product(has_images=True)
         for variable_product in range(5):
-            # TODO generate random option
-            cls.create_product(is_variable=True, has_images=True)
+            cls.create_product(is_variable=True, has_images=True, random_options=True)
 
         # archived
-
         cls.create_product(status=Product.STATUS_ARCHIVED, has_images=True)
         cls.create_product(
             status=Product.STATUS_ARCHIVED, is_variable=True, has_images=True
@@ -84,27 +82,27 @@ class FarsiProductFactory:
         # --- populate products without images ---
         # ----------------------------------------
 
-        print(
-            f"Adding {PRODUCTS_COUNT - 13}/{PRODUCTS_COUNT} products ... ",
-            end="",
-        )
-
-        # archived
-        cls.create_product(status=Product.STATUS_ARCHIVED)
-        cls.create_product(status=Product.STATUS_ARCHIVED, is_variable=True)
-
-        # draft
-        cls.create_product(status=Product.STATUS_DRAFT)
-        cls.create_product(status=Product.STATUS_DRAFT, is_variable=True)
-
-        # active
-        for _ in range(PRODUCTS_COUNT - 17):
-            cls.create_product(
-                is_variable=random.choice([True, False]),
-                random_options=random.choice([True, False]),
-            )
-
-        print("DONE")
+        # print(
+        #     f"Adding {PRODUCTS_COUNT - 13}/{PRODUCTS_COUNT} products ... ",
+        #     end="",
+        # )
+        #
+        # # archived
+        # cls.create_product(status=Product.STATUS_ARCHIVED)
+        # cls.create_product(status=Product.STATUS_ARCHIVED, is_variable=True)
+        #
+        # # draft
+        # cls.create_product(status=Product.STATUS_DRAFT)
+        # cls.create_product(status=Product.STATUS_DRAFT, is_variable=True)
+        #
+        # # active
+        # for _ in range(PRODUCTS_COUNT - 17):
+        #     cls.create_product(
+        #         is_variable=random.choice([True, False]),
+        #         random_options=random.choice([True, False]),
+        #     )
+        #
+        # print("DONE")
 
 
 class FarsiProductFactoryHelper:
