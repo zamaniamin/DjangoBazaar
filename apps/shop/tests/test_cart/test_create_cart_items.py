@@ -127,9 +127,6 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
 
-# TODO test remove cart item
-# TODO test update cart item quantity
 # TODO test access permissions
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
 # TODO fix error 500 on create cart items if uuid dos not exist [FOREIGN KEY constraint failed], should return 404
-# TODO add cart to faker

@@ -55,3 +55,4 @@ class ListCartTest(CoreBaseTestCase):
 
 # TODO test retrieve cart
 # TODO test retrieve cart item
+# TODO test access permissions
