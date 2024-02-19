@@ -4,8 +4,8 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.core.tests.base_test import CoreBaseTestCase
+from apps.shop.demo.factory.cart.cart_factory import CartFactory
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models.cart import Cart
 
 
 class CreateCartItemsTest(CoreBaseTestCase):
@@ -28,8 +28,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
         cls.variable_product_variants_list = list(cls.variable_product.variants.all())
 
         # cart
-        cart = Cart.objects.create()
-        cls.cart_id = cart.id
+        cls.cart_id = CartFactory.create_cart()
 
     def setUp(self):
         self.payload = {"variant": self.simple_product_variant.id, "quantity": 1}
@@ -164,6 +163,34 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
+
+    # -----------------------
+    # --- Invalid cart_pk ---
+    # -----------------------
+
+    def test_create_cart_item_with_invalid_cart_pk(self):
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": 7}),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_cart_item_if_uuid_not_exist(self):
+        response = self.client.post(
+            reverse(
+                "cart-items-list",
+                kwargs={"cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750"},
+            ),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
 # TODO fix error 500 on create cart items if uuid dos not exist [FOREIGN KEY constraint failed], should return 404

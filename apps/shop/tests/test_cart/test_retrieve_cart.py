@@ -161,3 +161,10 @@ class RetrieveCartTest(CoreBaseTestCase):
             self.assertIn("quantity", item)
             self.assertIn("item_total", item)
         self.assertIn("total_price", expected)
+
+    def test_retrieve_cart_with_invalid_pk(self):
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": "11"}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": 11}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

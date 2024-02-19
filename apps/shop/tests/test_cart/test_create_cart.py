@@ -7,7 +7,6 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class CreateCartTest(CoreBaseTestCase):
-
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------
@@ -30,7 +29,7 @@ class CreateCartTest(CoreBaseTestCase):
     # --------------------------
     # --- Test Create a Cart ---
     # --------------------------
-    
+
     def test_create_cart(self):
         response = self.client.post(
             reverse("cart-list"), {}, content_type="application/json"
