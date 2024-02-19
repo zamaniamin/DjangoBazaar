@@ -14,6 +14,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         # simple product
         cls.simple_product = ProductFactory.create_product(has_images=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
@@ -29,12 +31,49 @@ class CreateCartItemsTest(CoreBaseTestCase):
         cart = Cart.objects.create()
         cls.cart_id = cart.id
 
-    def test_create_one_cart_item(self):
-        # request
-        payload = {"variant": self.simple_product_variant.id, "quantity": 1}
+    def setUp(self):
+        self.payload = {"variant": self.simple_product_variant.id, "quantity": 1}
+
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_create_cart_item_by_admin(self):
+        self.set_admin_user_authorization()
         response = self.client.post(
             reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(payload),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_cart_item_by_regular_user(self):
+        self.set_regular_user_authorization()
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_cart_item_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    # ---------------------
+    # --- Test Retrieve ---
+    # ---------------------
+
+    def test_create_one_cart_item(self):
+        # request
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -126,7 +165,5 @@ class CreateCartItemsTest(CoreBaseTestCase):
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
-
-# TODO test access permissions
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
 # TODO fix error 500 on create cart items if uuid dos not exist [FOREIGN KEY constraint failed], should return 404
