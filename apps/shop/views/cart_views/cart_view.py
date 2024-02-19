@@ -1,5 +1,8 @@
+import uuid
+
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -73,6 +76,23 @@ class CartItemViewSet(ModelViewSet):
         variant = payload["variant"]
         quantity = payload["quantity"]
 
+        # --- validate `cart_pk` ---
+        try:
+            uuid.UUID(cart_id, version=4)
+        except ValueError:
+            raise ValidationError("Invalid cart_pk. It must be a valid UUID4.")
+        try:
+            cart = Cart.objects.get(id=cart_id)
+        except Cart.DoesNotExist:
+            raise ValidationError(f"Cart with ID '{cart_id}' does not exist.")
+
+        # Ensure payload doesn't contain product with 0 stock or inactive status
+        # if payload.get('stock') > 0 and payload.get('status') == 'active':
+        #     cart_item, created = CartItem.objects.get_or_create(cart_id=cart_id, variant_id=variant.id,
+        #                                                         defaults={'quantity': quantity})
+        #     if not created:
+        #         cart_item.quantity += quantity
+        #         cart_item.save()
         try:
             # TODO dont add product with 0 stock
             # TODO dont add product status != active
