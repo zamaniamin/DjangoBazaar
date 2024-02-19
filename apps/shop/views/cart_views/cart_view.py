@@ -1,5 +1,6 @@
 import uuid
 
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -7,6 +8,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from apps.shop.models import Product
 from apps.shop.models.cart import Cart, CartItem
 from apps.shop.serializers.cart_serializers import (
     CartSerializer,
@@ -76,31 +78,30 @@ class CartItemViewSet(ModelViewSet):
         variant = payload["variant"]
         quantity = payload["quantity"]
 
-        # --- validate `cart_pk` ---
+        # validate `cart_pk`
         try:
             uuid.UUID(cart_id, version=4)
         except ValueError:
             raise ValidationError("Invalid cart_pk. It must be a valid UUID4.")
-        try:
-            cart = Cart.objects.get(id=cart_id)
-        except Cart.DoesNotExist:
-            raise ValidationError(f"Cart with ID '{cart_id}' does not exist.")
 
-        # Ensure payload doesn't contain product with 0 stock or inactive status
-        # if payload.get('stock') > 0 and payload.get('status') == 'active':
-        #     cart_item, created = CartItem.objects.get_or_create(cart_id=cart_id, variant_id=variant.id,
-        #                                                         defaults={'quantity': quantity})
-        #     if not created:
-        #         cart_item.quantity += quantity
-        #         cart_item.save()
-        try:
-            # TODO dont add product with 0 stock
-            # TODO dont add product status != active
-            cart_item = CartItem.objects.get(cart_id=cart_id, variant_id=variant.id)
+        get_object_or_404(Cart, pk=cart_id)
+
+        # save cart item
+        product = Product.objects.get(id=variant.product_id)
+        if product.status != Product.STATUS_ACTIVE:
+            raise ValidationError(
+                "Inactive products cannot be added to the cart. Please choose an active product."
+            )
+
+        # TODO check the variant stock is not 0
+        # TODO dont add variant with 0 stock
+
+        cart_item, created = CartItem.objects.get_or_create(
+            cart_id=cart_id, variant_id=variant.id, defaults={"quantity": quantity}
+        )
+        if not created:
             cart_item.quantity += quantity
             cart_item.save()
-        except CartItem.DoesNotExist:
-            cart_item = CartItem.objects.create(cart_id=cart_id, **payload)
 
         response_serializer = CartItemSerializer(cart_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
@@ -123,7 +124,6 @@ class CartViewSet(ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
-
 
 # TODO show product image
 # TODO write tests
