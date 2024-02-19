@@ -65,9 +65,9 @@ class CreateCartItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # ---------------------
-    # --- Test Retrieve ---
-    # ---------------------
+    # ------------------------------
+    # --- Test Create Cart Items ---
+    # ------------------------------
 
     def test_create_one_cart_item(self):
         # request

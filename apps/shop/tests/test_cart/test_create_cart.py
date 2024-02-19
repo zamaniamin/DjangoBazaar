@@ -7,6 +7,11 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class CreateCartTest(CoreBaseTestCase):
+
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
     def test_create_carts_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.post(reverse("cart-list"))
@@ -22,6 +27,10 @@ class CreateCartTest(CoreBaseTestCase):
         response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    # --------------------------
+    # --- Test Create a Cart ---
+    # --------------------------
+    
     def test_create_cart(self):
         response = self.client.post(
             reverse("cart-list"), {}, content_type="application/json"

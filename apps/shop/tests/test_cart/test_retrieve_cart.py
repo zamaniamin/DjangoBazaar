@@ -11,6 +11,10 @@ class ListCartTest(CoreBaseTestCase):
     def setUp(self):
         self.set_admin_user_authorization()
 
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
     def test_list_carts_by_admin(self):
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -24,6 +28,10 @@ class ListCartTest(CoreBaseTestCase):
         self.set_anonymous_user_authorization()
         response = self.client.get(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # -----------------------
+    # --- Test List Carts ---
+    # -----------------------
 
     def test_empty_list(self):
         response = self.client.get(reverse("cart-list"))
@@ -85,6 +93,10 @@ class RetrieveCartTest(CoreBaseTestCase):
         super().setUpTestData()
         cls.cart_id = CartFactory.add_multiple_items()
 
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
     def test_retrieve_cart_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
@@ -99,6 +111,10 @@ class RetrieveCartTest(CoreBaseTestCase):
         self.set_anonymous_user_authorization()
         response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # ----------------------------
+    # --- Test Retrieve a Cart ---
+    # ----------------------------
 
     def test_retrieve_cart_with_one_item(self):
         cart_id = CartFactory.add_one_item()
