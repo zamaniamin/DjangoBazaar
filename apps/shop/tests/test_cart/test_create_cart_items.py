@@ -6,6 +6,7 @@ from rest_framework import status
 from apps.core.tests.base_test import CoreBaseTestCase
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 from apps.shop.demo.factory.product.product_factory import ProductFactory
+from apps.shop.models import Product
 
 
 class CreateCartItemsTest(CoreBaseTestCase):
@@ -191,12 +192,12 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # ---------------------------
-    # --- Test Product Status ---
-    # ---------------------------
+    # --------------------------------------------
+    # --- Test if product status is not active ---
+    # --------------------------------------------
 
     def test_create_cart_item_with_draft_product(self):
-        product = ProductFactory.create_product(status="draft", has_images=True)
+        product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
         product_variant = product.variants.first()
         response = self.client.post(
             reverse(
@@ -211,9 +212,53 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_cart_item_with_archived_product(self):
-        archived_product = ProductFactory.create_product(
-            status="archived", has_images=True
+        product = ProductFactory.create_product(status=Product.STATUS_ARCHIVED)
+        product_variant = product.variants.first()
+        response = self.client.post(
+            reverse(
+                "cart-items-list",
+                kwargs={"cart_pk": self.cart_id},
+            ),
+            json.dumps({"variant": product_variant.id, "quantity": 1}),
+            content_type="application/json",
         )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ---------------------------------------------
+    # --- Test if variant stock is out of stock ---
+    # ---------------------------------------------
+
+    def test_create_cart_item_if_variant_not_in_stock(self):
+        product = ProductFactory.create_product(stock=0)
+        product_variant = product.variants.first()
+        response = self.client.post(
+            reverse(
+                "cart-items-list",
+                kwargs={"cart_pk": self.cart_id},
+            ),
+            json.dumps({"variant": product_variant.id, "quantity": 1}),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_cart_item_quantity_bigger_than_stock(self):
+        product = ProductFactory.create_product(stock=3)
+        product_variant = product.variants.first()
+        response = self.client.post(
+            reverse(
+                "cart-items-list",
+                kwargs={"cart_pk": self.cart_id},
+            ),
+            json.dumps({"variant": product_variant.id, "quantity": 4}),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # -----------------------
     # --- Invalid Payload ---
@@ -232,9 +277,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # TODO test if variant does not exist
     # TODO test if variant id is invalid type
-    # TODO test if quantity is bigger than stock value
     # TODO test if quantity is invalid type
 
 
