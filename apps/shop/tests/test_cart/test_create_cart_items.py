@@ -297,5 +297,3 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
 
 # TODO test increase item quantity If it is already in the card
-# TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
-# TODO fix error 500 on create cart items if uuid dos not exist [FOREIGN KEY constraint failed], should return 404
