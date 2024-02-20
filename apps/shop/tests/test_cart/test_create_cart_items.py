@@ -165,6 +165,32 @@ class CreateCartItemsTest(CoreBaseTestCase):
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
+    def test_increase_item_quantity_in_cart(self):
+        cart_id, cart_item = CartFactory.add_one_item(get_item=True)
+        variant = cart_item.variant
+        response = self.client.post(
+            reverse("cart-items-list", kwargs={"cart_pk": cart_id}),
+            json.dumps({"variant": variant.id, "quantity": 1}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        price = float(variant.price)
+        expected_variant = expected["variant"]
+        self.assertIsInstance(expected_variant, dict)
+        self.assertEqual(len(expected_variant), 7)
+        self.assertEqual(expected_variant["id"], variant.id)
+        self.assertEqual(expected_variant["product_id"], variant.product_id)
+        self.assertEqual(expected_variant["price"], price)
+        self.assertEqual(expected_variant["stock"], variant.stock)
+        self.assertEqual(expected_variant["option1"], variant.option1)
+        self.assertEqual(expected_variant["option2"], variant.option2)
+        self.assertEqual(expected_variant["option3"], variant.option3)
+
+        self.assertEqual(expected["quantity"], 2)
+        item_total = price * 2
+        self.assertAlmostEqual(expected["item_total"], round(item_total, 2), places=2)
+
     # -----------------------
     # --- Invalid cart_pk ---
     # -----------------------
@@ -294,6 +320,3 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
     # TODO test if variant id is invalid type
     # TODO test if quantity is invalid type
-
-
-# TODO test increase item quantity If it is already in the card
