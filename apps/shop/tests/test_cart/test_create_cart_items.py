@@ -28,10 +28,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
         cls.variable_product_variants = cls.variable_product.variants.first()
         cls.variable_product_variants_list = list(cls.variable_product.variants.all())
 
-        # cart
-        cls.cart_id = CartFactory.create_cart()
-
     def setUp(self):
+        self.cart_id = CartFactory.create_cart()
         self.payload = {"variant": self.simple_product_variant.id, "quantity": 1}
 
     # ------------------------------
@@ -318,5 +316,49 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # TODO test if variant id is invalid type
-    # TODO test if quantity is invalid type
+    def test_create_cart_item_invalid_variant_id(self):
+        invalid_payloads = [
+            {"variant": -1, "quantity": 1},
+            {"variant": 0, "quantity": 1},
+            {"variant": "0", "quantity": 1},
+            {"variant": "11", "quantity": 1},
+            {"variant": None, "quantity": 1},
+            {"variant": True, "quantity": 1},
+            {"variant": [], "quantity": 1},
+            {"variant": "", "quantity": 1},
+            {"quantity": 1},
+            {},
+        ]
+        for invalid_payload in invalid_payloads:
+            response = self.client.post(
+                reverse(
+                    "cart-items-list",
+                    kwargs={"cart_pk": self.cart_id},
+                ),
+                json.dumps(invalid_payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_cart_item_invalid_quantity(self):
+        invalid_payloads = [
+            {"quantity": -1, "variant": 1},
+            {"quantity": 0, "variant": 1},
+            {"quantity": "0", "variant": 1},
+            {"quantity": None, "variant": 1},
+            {"quantity": True, "variant": 1},
+            {"quantity": [], "variant": 1},
+            {"quantity": "", "variant": 1},
+            {"variant": 1},
+            {},
+        ]
+        for invalid_payload in invalid_payloads:
+            response = self.client.post(
+                reverse(
+                    "cart-items-list",
+                    kwargs={"cart_pk": self.cart_id},
+                ),
+                json.dumps(invalid_payload),
+                content_type="application/json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
