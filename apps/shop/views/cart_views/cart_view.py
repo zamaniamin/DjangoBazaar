@@ -94,15 +94,11 @@ class CartItemViewSet(ModelViewSet):
             )
 
         if not variant.stock:
-            raise ValidationError(
-                "This product is currently not in stock."
-            )
+            raise ValidationError("This product is currently not in stock.")
 
         if quantity > variant.stock:
-            raise ValidationError(
-                "Quantity exceeds available stock!"
-            )
-        
+            raise ValidationError("Quantity exceeds available stock!")
+
         cart_item, created = CartItem.objects.get_or_create(
             cart_id=cart_id, variant_id=variant.id, defaults={"quantity": quantity}
         )
@@ -131,6 +127,7 @@ class CartViewSet(ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
 
 # TODO write tests
 # TODO add cart factory
