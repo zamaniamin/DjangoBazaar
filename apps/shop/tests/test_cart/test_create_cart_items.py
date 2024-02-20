@@ -277,11 +277,24 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_cart_item_without_image(self):
+        product = ProductFactory.create_product()
+        product_variant = product.variants.first()
+        response = self.client.post(
+            reverse(
+                "cart-items-list",
+                kwargs={"cart_pk": self.cart_id},
+            ),
+            json.dumps({"variant": product_variant.id, "quantity": 1}),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
     # TODO test if variant id is invalid type
     # TODO test if quantity is invalid type
 
-
-# TODO test add item if not have image
 # TODO test increase item quantity If it is already in the card
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
 # TODO fix error 500 on create cart items if uuid dos not exist [FOREIGN KEY constraint failed], should return 404
