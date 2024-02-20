@@ -291,9 +291,10 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        
+
     # TODO test if variant id is invalid type
     # TODO test if quantity is invalid type
+
 
 # TODO test increase item quantity If it is already in the card
 # TODO fix error 500 on create cart items ['“7” is not a valid UUID.']
