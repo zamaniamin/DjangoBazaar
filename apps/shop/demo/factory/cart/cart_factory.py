@@ -25,12 +25,18 @@ class CartFactory:
         return cart_id
 
     @classmethod
-    def add_multiple_items(cls):
+    def add_multiple_items(cls, get_items: bool = False):
         cart_id = cls.create_cart()
         product = ProductFactory.create_product(has_images=True, is_variable=True)
         variants_list = list(product.variants.all())
 
-        for variant in variants_list:
-            CartItem.objects.create(cart_id=cart_id, variant_id=variant.id, quantity=1)
+        cart_items = CartItem.objects.bulk_create(
+            [
+                CartItem(cart_id=cart_id, variant_id=variant.id, quantity=1)
+                for variant in variants_list
+            ]
+        )
 
+        if get_items:
+            return cart_id, cart_items
         return cart_id
