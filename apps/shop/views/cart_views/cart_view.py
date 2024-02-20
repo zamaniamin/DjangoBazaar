@@ -93,9 +93,16 @@ class CartItemViewSet(ModelViewSet):
                 "Inactive products cannot be added to the cart. Please choose an active product."
             )
 
-        # TODO check the variant stock is not 0
-        # TODO dont add variant with 0 stock
+        if not variant.stock:
+            raise ValidationError(
+                "This product is currently not in stock."
+            )
 
+        if quantity > variant.stock:
+            raise ValidationError(
+                "Quantity exceeds available stock!"
+            )
+        
         cart_item, created = CartItem.objects.get_or_create(
             cart_id=cart_id, variant_id=variant.id, defaults={"quantity": quantity}
         )
@@ -125,12 +132,10 @@ class CartViewSet(ModelViewSet):
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
-# TODO show product image
 # TODO write tests
 # TODO add cart factory
 # TODO add cart to faker
 # TODO check cart queries
 # TODO on delete a cart, delete all items from it too
-# TODO mange inventory when adding product to cart and when on checkout
-# TODO fix 500 error for UUID
+# TODO mange inventory when adding product to checkout
 # TODO check the stock of items before save the order
