@@ -1,14 +1,9 @@
-import uuid
-
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from apps.shop.models import Product
 from apps.shop.models.cart import Cart, CartItem
 from apps.shop.serializers.cart_serializers import (
     CartSerializer,
@@ -69,36 +64,19 @@ class CartItemViewSet(ModelViewSet):
         return CartItemSerializer
 
     def create(self, request, *args, **kwargs):
-        # Validate
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        payload = serializer.validated_data
-
+        # validate data
         cart_id = kwargs["cart_pk"]
+        serializer = self.get_serializer(
+            data=request.data, context={"cart_pk": cart_id}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        # get validated data
+        payload = serializer.validated_data
         variant = payload["variant"]
         quantity = payload["quantity"]
 
-        # validate `cart_pk`
-        try:
-            uuid.UUID(cart_id, version=4)
-        except ValueError:
-            raise ValidationError("Invalid cart_pk. It must be a valid UUID4.")
-
-        get_object_or_404(Cart, pk=cart_id)
-
-        # save cart item
-        product = Product.objects.get(id=variant.product_id)
-        if product.status != Product.STATUS_ACTIVE:
-            raise ValidationError(
-                "Inactive products cannot be added to the cart. Please choose an active product."
-            )
-
-        if not variant.stock:
-            raise ValidationError("This product is currently not in stock.")
-
-        if quantity > variant.stock:
-            raise ValidationError("Quantity exceeds available stock!")
-
+        # save item
         cart_item, created = CartItem.objects.get_or_create(
             cart_id=cart_id, variant_id=variant.id, defaults={"quantity": quantity}
         )
@@ -106,6 +84,7 @@ class CartItemViewSet(ModelViewSet):
             cart_item.quantity += quantity
             cart_item.save()
 
+        # return response
         response_serializer = CartItemSerializer(cart_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
@@ -129,6 +108,7 @@ class CartViewSet(ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
 
+# todo on update cart item if quantity is 0 then remove item from cart
 # TODO write tests
 # TODO add cart factory
 # TODO add cart to faker

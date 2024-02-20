@@ -1,6 +1,9 @@
+import uuid
+
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from apps.shop.models import ProductVariant
+from apps.shop.models import ProductVariant, Product
 from apps.shop.models.cart import CartItem, Cart
 
 
@@ -31,6 +34,43 @@ class AddCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["id", "variant", "quantity"]
+
+    def validate(self, data):
+        cart_id = self.context.get("cart_pk")
+        variant = data["variant"]
+        quantity = data["quantity"]
+
+        # validate cart id
+        try:
+            uuid.UUID(cart_id, version=4)
+        except ValueError:
+            raise serializers.ValidationError(
+                "Invalid cart_pk. It must be a valid UUID4."
+            )
+
+        # validate quantity
+        if not quantity:
+            raise serializers.ValidationError(
+                "Quantity should be a positive number greater than 0."
+            )
+        if quantity > variant.stock:
+            raise serializers.ValidationError("Quantity exceeds available stock!")
+
+        # validate variant
+        if not variant.stock:
+            raise serializers.ValidationError("This product is currently not in stock.")
+
+        # check cart exist
+        get_object_or_404(Cart, pk=cart_id)
+
+        # validate product status
+        product = Product.objects.get(id=variant.product_id)
+        if product.status != Product.STATUS_ACTIVE:
+            raise serializers.ValidationError(
+                "Inactive products cannot be added to the cart. Please choose an active product."
+            )
+
+        return data
 
 
 class CartItemSerializer(serializers.ModelSerializer):
