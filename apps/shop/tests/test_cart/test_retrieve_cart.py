@@ -228,3 +228,67 @@ class ListCartItemsTest(CoreBaseTestCase):
             reverse("cart-items-list", kwargs={"cart_pk": cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class RetrieveCartItemTest(CoreBaseTestCase):
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.cart_id, cls.cart_item = CartFactory.add_one_item(get_item=True)
+
+    def test_retrieve_cart_item_by_admin(self):
+        self.set_admin_user_authorization()
+        response = self.client.get(
+            reverse(
+                "cart-items-detail",
+                kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_cart_item_by_regular_user(self):
+        self.set_regular_user_authorization()
+        response = self.client.get(
+            reverse(
+                "cart-items-detail",
+                kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_cart_item_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        response = self.client.get(
+            reverse(
+                "cart-items-detail",
+                kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_cart_item(self):
+        cart_id, cart_item = CartFactory.add_one_item(get_item=True)
+        response = self.client.get(
+            reverse(
+                "cart-items-detail", kwargs={"cart_pk": cart_id, "pk": cart_item.id}
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_cart_item = response.json()
+        self.assertIn("id", expected_cart_item)
+        self.assertIn("variant", expected_cart_item)
+        variant = expected_cart_item["variant"]
+        self.assertIn("id", variant)
+        self.assertIn("product_id", variant)
+        self.assertIn("price", variant)
+        self.assertIn("stock", variant)
+        self.assertIn("option1", variant)
+        self.assertIn("option1", variant)
+        self.assertIn("option3", variant)
+        self.assertIn("image", expected_cart_item)
+        self.assertIn("quantity", expected_cart_item)
+        self.assertIn("item_total", expected_cart_item)
