@@ -13,12 +13,16 @@ class CartFactory:
         return str(cart.id)
 
     @classmethod
-    def add_one_item(cls):
+    def add_one_item(cls, get_item: bool = False, quantity: int = 1):
         cart_id = cls.create_cart()
         product = ProductFactory.create_product(has_images=True)
         variant = product.variants.first()
-        CartItem.objects.create(cart_id=cart_id, variant_id=variant.id, quantity=1)
-        return str(cart_id)
+        cart_item = CartItem.objects.create(
+            cart_id=cart_id, variant_id=variant.id, quantity=quantity
+        )
+        if get_item:
+            return cart_id, cart_item
+        return cart_id
 
     @classmethod
     def add_multiple_items(cls):
@@ -29,4 +33,4 @@ class CartFactory:
         for variant in variants_list:
             CartItem.objects.create(cart_id=cart_id, variant_id=variant.id, quantity=1)
 
-        return str(cart_id)
+        return cart_id
