@@ -168,3 +168,63 @@ class RetrieveCartTest(CoreBaseTestCase):
 
         response = self.client.get(reverse("cart-detail", kwargs={"pk": 11}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class ListCartItemsTest(CoreBaseTestCase):
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    def setUp(self):
+        self.cart_id, self.cart_items = CartFactory.add_multiple_items(get_items=True)
+
+    def test_list_cart_items_by_admin(self):
+        self.set_admin_user_authorization()
+        response = self.client.get(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_cart_items_by_regular_user(self):
+        self.set_regular_user_authorization()
+        response = self.client.get(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_cart_items_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        response = self.client.get(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_cart_items(self):
+        response = self.client.get(
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_cart_items = response.json()
+        self.assertEqual(len(expected_cart_items), len(self.cart_items))
+
+        for item in expected_cart_items:
+            self.assertIn("id", item)
+            self.assertIn("variant", item)
+            variant = item["variant"]
+            self.assertIn("id", variant)
+            self.assertIn("product_id", variant)
+            self.assertIn("price", variant)
+            self.assertIn("stock", variant)
+            self.assertIn("option1", variant)
+            self.assertIn("option1", variant)
+            self.assertIn("option3", variant)
+            self.assertIn("image", item)
+            self.assertIn("quantity", item)
+            self.assertIn("item_total", item)
+
+    def test_list_empty_cart_items(self):
+        cart_id = CartFactory.create_cart()
+        response = self.client.get(
+            reverse("cart-items-list", kwargs={"cart_pk": cart_id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
