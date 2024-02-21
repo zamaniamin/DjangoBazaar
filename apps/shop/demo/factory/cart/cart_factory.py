@@ -13,9 +13,9 @@ class CartFactory:
         return str(cart.id)
 
     @classmethod
-    def add_one_item(cls, get_item: bool = False, quantity: int = 1):
+    def add_one_item(cls, get_item: bool = False, quantity: int = 1, stock: int = 5):
         cart_id = cls.create_cart()
-        product = ProductFactory.create_product(has_images=True)
+        product = ProductFactory.create_product(has_images=True, stock=stock)
         variant = product.variants.first()
         cart_item = CartItem.objects.create(
             cart_id=cart_id, variant_id=variant.id, quantity=quantity
