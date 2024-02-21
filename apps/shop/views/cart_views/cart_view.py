@@ -1,8 +1,7 @@
 import uuid
 
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework import status, serializers
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -57,14 +56,6 @@ class CartItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         cart_pk = self.kwargs["cart_pk"]
-
-        try:
-            uuid.UUID(cart_pk, version=4)
-        except ValueError:
-            raise ValidationError(
-                {"cart_pk": "Invalid cart_pk. It must be a valid UUID4."}
-            )
-
         return CartItem.objects.select_related("variant").filter(cart_id=cart_pk).all()
 
     def get_serializer_class(self):
@@ -99,6 +90,16 @@ class CartItemViewSet(ModelViewSet):
         response_serializer = CartItemSerializer(cart_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+    def partial_update(self, request, *args, **kwargs):
+        cart_pk = self.kwargs["cart_pk"]
+        try:
+            uuid.UUID(cart_pk, version=4)
+        except ValueError:
+            raise serializers.ValidationError(
+                {"cart_pk": "Invalid cart_pk. It must be a valid UUID4."}
+            )
+        return super().partial_update(request, *args, **kwargs)
+
 
 @extend_schema_view(
     create=extend_schema(tags=["Cart"], summary="Create a new cart"),
@@ -117,7 +118,6 @@ class CartViewSet(ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
-
 
 # todo on update cart item if quantity is 0 then remove item from cart
 # TODO write tests
