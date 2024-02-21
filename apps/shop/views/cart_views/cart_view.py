@@ -1,5 +1,8 @@
+import uuid
+
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -54,6 +57,14 @@ class CartItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         cart_pk = self.kwargs["cart_pk"]
+
+        try:
+            uuid.UUID(cart_pk, version=4)
+        except ValueError:
+            raise ValidationError(
+                {"cart_pk": "Invalid cart_pk. It must be a valid UUID4."}
+            )
+
         return CartItem.objects.select_related("variant").filter(cart_id=cart_pk).all()
 
     def get_serializer_class(self):

@@ -27,7 +27,27 @@ class CartVariantSerializer(serializers.ModelSerializer):
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ["quantity"]
+        fields = ["id", "quantity"]
+
+    def to_representation(self, instance):
+        cart_item_serializer = CartItemSerializer(instance)
+        return cart_item_serializer.data
+
+    def validate(self, data):
+        variant = self.instance.variant
+        quantity = data["quantity"]
+
+        # validate quantity and stock
+        if not quantity:
+            raise serializers.ValidationError(
+                "Quantity should be a positive number greater than 0."
+            )
+        if not variant.stock:
+            raise serializers.ValidationError("This product is currently not in stock.")
+
+        if quantity > variant.stock:
+            raise serializers.ValidationError("Quantity exceeds available stock!")
+        return data
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
