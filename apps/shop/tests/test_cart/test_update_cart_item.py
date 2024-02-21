@@ -157,4 +157,5 @@ class UpdateCartItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+
 # TODO test update with invalid payload
