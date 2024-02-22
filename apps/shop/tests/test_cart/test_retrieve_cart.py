@@ -229,6 +229,10 @@ class ListCartItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_list_cart_items_with_invalid_cart_id(self):
+        response = self.client.get(reverse("cart-items-list", kwargs={"cart_pk": 11}))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class RetrieveCartItemTest(CoreBaseTestCase):
     # -------------------------------
@@ -292,3 +296,10 @@ class RetrieveCartItemTest(CoreBaseTestCase):
         self.assertIn("image", expected_cart_item)
         self.assertIn("quantity", expected_cart_item)
         self.assertIn("item_total", expected_cart_item)
+
+    def test_retrieve_cart_with_invalid_cart_id(self):
+        cart_id, cart_item = CartFactory.add_one_item(get_item=True)
+        response = self.client.get(
+            reverse("cart-items-detail", kwargs={"cart_pk": 11, "pk": cart_item.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
