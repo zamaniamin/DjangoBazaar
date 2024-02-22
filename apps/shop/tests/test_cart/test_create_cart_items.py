@@ -100,48 +100,14 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(expected["quantity"], 1)
         self.assertAlmostEqual(expected["item_total"], round(price, 2), places=2)
 
-    def test_create_one_cart_item_with_two_quantity(self):
-        # request
-        quantity = 2
-        payload = {"variant": self.variable_product_variants.id, "quantity": quantity}
+    def test_create_one_cart_item_if_already_exist(self):
+        cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(payload),
+            reverse("cart-items-list", kwargs={"cart_pk": cart_id}),
+            json.dumps({"variant": cart_item.variant_id, "quantity": 1}),
             content_type="application/json",
         )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
-
-        # expected variant
-        price = float(self.variable_product_variants.price)
-        variant = expected["variant"]
-        self.assertIsInstance(variant, dict)
-        self.assertEqual(len(variant), 7)
-        self.assertEqual(variant["id"], self.variable_product_variants.id)
-
-        self.assertEqual(variant["product_id"], self.variable_product.id)
-        self.assertEqual(variant["price"], price)
-        self.assertEqual(variant["stock"], self.variable_product_variants.stock)
-        self.assertEqual(
-            variant["option1"], str(self.variable_product_variants.option1)
-        )
-        self.assertEqual(
-            variant["option2"], str(self.variable_product_variants.option2)
-        )
-        self.assertEqual(
-            variant["option3"], str(self.variable_product_variants.option3)
-        )
-
-        # expected image
-        self.assertIsInstance(expected["image"], str)
-
-        # expected quantity and item_total
-        self.assertEqual(expected["quantity"], quantity)
-        item_total = price * quantity
-        self.assertAlmostEqual(expected["item_total"], round(item_total, 2), places=2)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_cart_total_price(self):
         # request
@@ -162,32 +128,6 @@ class CreateCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
-
-    def test_increase_item_quantity_in_cart(self):
-        cart_id, cart_item = CartFactory.add_one_item(get_item=True)
-        variant = cart_item.variant
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": cart_id}),
-            json.dumps({"variant": variant.id, "quantity": 1}),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        expected = response.json()
-        price = float(variant.price)
-        expected_variant = expected["variant"]
-        self.assertIsInstance(expected_variant, dict)
-        self.assertEqual(len(expected_variant), 7)
-        self.assertEqual(expected_variant["id"], variant.id)
-        self.assertEqual(expected_variant["product_id"], variant.product_id)
-        self.assertEqual(expected_variant["price"], price)
-        self.assertEqual(expected_variant["stock"], variant.stock)
-        self.assertEqual(expected_variant["option1"], variant.option1)
-        self.assertEqual(expected_variant["option2"], variant.option2)
-        self.assertEqual(expected_variant["option3"], variant.option3)
-
-        self.assertEqual(expected["quantity"], 2)
-        item_total = price * 2
-        self.assertAlmostEqual(expected["item_total"], round(item_total, 2), places=2)
 
     # -----------------------
     # --- Invalid cart_pk ---
