@@ -102,6 +102,10 @@ class CartItemViewSet(ModelViewSet):
         self.check_cart_pk(self.kwargs["cart_pk"])
         return super().partial_update(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        self.check_cart_pk(self.kwargs["cart_pk"])
+        return super().destroy(request, *args, **kwargs)
+
     @staticmethod
     def check_cart_pk(cart_pk):
         try:
@@ -132,7 +136,6 @@ class CartViewSet(ModelViewSet):
 
 
 # TODO if variant is in the cart, then return message that the variant already exist in the cart
-# todo on update cart item if quantity is 0 then remove item from cart
 # TODO write tests
 # TODO add cart factory
 # TODO add cart to faker
