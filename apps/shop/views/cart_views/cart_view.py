@@ -90,15 +90,26 @@ class CartItemViewSet(ModelViewSet):
         response_serializer = CartItemSerializer(cart_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+    def retrieve(self, request, *args, **kwargs):
+        self.check_cart_pk(self.kwargs["cart_pk"])
+        return super().retrieve(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        self.check_cart_pk(self.kwargs["cart_pk"])
+        return super().list(request, *args, **kwargs)
+
     def partial_update(self, request, *args, **kwargs):
-        cart_pk = self.kwargs["cart_pk"]
+        self.check_cart_pk(self.kwargs["cart_pk"])
+        return super().partial_update(request, *args, **kwargs)
+
+    @staticmethod
+    def check_cart_pk(cart_pk):
         try:
             uuid.UUID(cart_pk, version=4)
         except ValueError:
             raise serializers.ValidationError(
                 {"cart_pk": "Invalid cart_pk. It must be a valid UUID4."}
             )
-        return super().partial_update(request, *args, **kwargs)
 
 
 @extend_schema_view(
