@@ -138,11 +138,7 @@ class CartViewSet(ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
 
-# TODO if variant is in the cart, then return message that the variant already exist in the cart
-# TODO write tests
 # TODO add cart factory
 # TODO add cart to faker
 # TODO check cart queries
-# TODO on delete a cart, delete all items from it too
-# TODO mange inventory when adding product to checkout
 # TODO check the stock of items before save the order
