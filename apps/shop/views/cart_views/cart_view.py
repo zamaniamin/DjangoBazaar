@@ -1,5 +1,6 @@
 import uuid
 
+from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import status, serializers
 from rest_framework.permissions import IsAdminUser
@@ -78,13 +79,15 @@ class CartItemViewSet(ModelViewSet):
         variant = payload["variant"]
         quantity = payload["quantity"]
 
-        # save item
-        cart_item, created = CartItem.objects.get_or_create(
-            cart_id=cart_id, variant_id=variant.id, defaults={"quantity": quantity}
-        )
-        if not created:
-            cart_item.quantity += quantity
-            cart_item.save()
+        try:
+            cart_item = CartItem.objects.create(
+                cart_id=cart_id, variant_id=variant.id, quantity=quantity
+            )
+        except IntegrityError:
+            return Response(
+                {"detail": "This variant already exist in the cart."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # return response
         response_serializer = CartItemSerializer(cart_item)
