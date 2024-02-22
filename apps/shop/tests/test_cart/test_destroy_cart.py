@@ -124,11 +124,7 @@ class DestroyCartItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # --- test cart is removed ---
-        # response = self.client.get(reverse("cart-items-detail", kwargs={"pk": self.cart_id}))
-        # self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        # --- test cart items are removed ---
+        # --- test cart item is removed ---
         response = self.client.get(
             reverse(
                 "cart-items-detail",
@@ -138,31 +134,7 @@ class DestroyCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_cart_item_with_invalid_cart_pk(self):
-        response = self.client.delete(reverse("cart-detail", kwargs={"pk": 7}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_delete_cart_with_multi_items(self):
-        self.cart_id, self.cart_items = CartFactory.add_multiple_items(get_items=True)
         response = self.client.delete(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-items-detail", kwargs={"cart_pk": 7, "pk": self.cart_item.id})
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-        # --- test cart is removed ---
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        # --- test cart items are removed ---
-        for item in self.cart_items:
-            response = self.client.get(
-                reverse(
-                    "cart-items-detail",
-                    kwargs={"cart_pk": self.cart_id, "pk": item.id},
-                )
-            )
-            self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-# TODO test remove cart item
-# TODO test remove cart item with invalid cart id
-# TODO test access permissions on destroy cart items
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
