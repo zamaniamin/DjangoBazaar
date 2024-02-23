@@ -16,18 +16,70 @@ class RetrieveImageTest(ProductBaseTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.active_product = ProductFactory.create_product(has_images=True)
-        cls.active_product2 = ProductFactory.create_product(has_images=True)
+        cls.product = ProductFactory.create_product(has_images=True)
 
     def setUp(self):
         self.set_admin_user_authorization()
 
-    def test_retrieve_with_one_image(self):
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    def test_list_images_by_regular_user(self):
+        self.set_regular_user_authorization()
+
+        # request
+        response = self.client.get(
+            reverse("product-images-list", kwargs={"product_pk": self.product.id})
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_images_by_anonymous_user(self):
+        # request
+        self.set_anonymous_user_authorization()
+        response = self.client.get(
+            reverse("product-images-list", kwargs={"product_pk": self.product.id})
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_image_by_regular_user(self):
+        self.set_regular_user_authorization()
+        media_id = self.product.media.first().id
+
         # request
         response = self.client.get(
             reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
+                "product-images-detail",
+                kwargs={"product_pk": self.product.id, "pk": media_id},
+            )
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_image_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        media_id = self.product.media.first().id
+
+        # request
+        response = self.client.get(
+            reverse(
+                "product-images-detail",
+                kwargs={"product_pk": self.product.id, "pk": media_id},
+            )
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_with_one_image(self):
+        # request
+        response = self.client.get(
+            reverse("product-images-list", kwargs={"product_pk": self.product.id}),
         )
 
         # expected
@@ -38,7 +90,7 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.assertEqual(len(expected), 1)
 
         self.assertIsInstance(image["id"], int)
-        self.assertEqual(image["product_id"], self.active_product.id)
+        self.assertEqual(image["product_id"], self.product.id)
         self.assertTrue(image["src"].strip())
         self.assertIsNone(image["alt"])
         self.assertDatetimeFormat(image["created_at"])
@@ -51,15 +103,14 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.assertTrue(os.path.exists(file_path))
 
         # Check if the images have been added to the product
-        product_media = ProductMedia.objects.filter(product=self.active_product)
+        product_media = ProductMedia.objects.filter(product=self.product)
         self.assertEqual(product_media.count(), 1)
 
     def test_retrieve_with_multi_images(self):
         # request
+        active_product = ProductFactory.create_product(has_images=True)
         response = self.client.get(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product2.id}
-            ),
+            reverse("product-images-list", kwargs={"product_pk": active_product.id}),
         )
 
         # expected
@@ -70,7 +121,7 @@ class RetrieveImageTest(ProductBaseTestCase):
 
         for image in expected:
             self.assertIsInstance(image["id"], int)
-            self.assertEqual(image["product_id"], self.active_product2.id)
+            self.assertEqual(image["product_id"], active_product.id)
             self.assertTrue(image["src"].strip())
             self.assertIsNone(image["alt"])
             self.assertDatetimeFormat(image["created_at"])
@@ -81,6 +132,3 @@ class RetrieveImageTest(ProductBaseTestCase):
                 str(settings.MEDIA_ROOT) + image["src"].split("media")[1]
             )
             self.assertTrue(os.path.exists(file_path))
-
-
-# TODO test access permissions
