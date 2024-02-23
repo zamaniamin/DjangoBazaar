@@ -37,10 +37,6 @@ class ProductService:
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
 
-        # TODO add test case for test published_at is set if status is active
-        if data["status"] == Product.STATUS_ACTIVE:
-            data["published_at"] = timezone.now()
-
         # Create product
         cls.product = Product.objects.create(**data)
 

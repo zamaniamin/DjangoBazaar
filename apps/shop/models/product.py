@@ -3,6 +3,7 @@ import sys
 import uuid
 
 from django.db import models
+from django.utils import timezone
 
 
 # TODO add product manager
@@ -34,6 +35,12 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.status == Product.STATUS_ACTIVE:
+            self.published_at = timezone.now()
+
+        super().save(*args, **kwargs)
 
 
 class ProductOption(models.Model):
