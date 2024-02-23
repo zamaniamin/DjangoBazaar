@@ -138,7 +138,4 @@ class CartViewSet(ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
 
-# TODO add cart factory
-# TODO add cart to faker
-# TODO check cart queries
 # TODO check the stock of items before save the order
