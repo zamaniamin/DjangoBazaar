@@ -13,6 +13,11 @@ class CartFactory:
         return str(cart.id)
 
     @classmethod
+    def populate_demo_carts(cls):
+        cls.add_one_item()
+        cls.add_multiple_items()
+
+    @classmethod
     def add_one_item(cls, get_item: bool = False, quantity: int = 1, stock: int = 5):
         cart_id = cls.create_cart()
         product = ProductFactory.create_product(has_images=True, stock=stock)
