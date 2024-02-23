@@ -88,6 +88,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = ProductService.create_product(**payload)
 
         # Serialize the created product for the response
+        # TODO use serializer to_representation
         response_serializer = s.ProductSerializer(product)
 
         # Return the serialized response
@@ -105,6 +106,5 @@ class ProductViewSet(viewsets.ModelViewSet):
         variants = product.variants.all()
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
-
 
 # TODO add new variant to product and update the product options base on new items in the variant
