@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.utils import json
 
 from apps.shop.models import Product
+from apps.shop.services.product_service import ProductService
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
@@ -491,3 +492,26 @@ class CreateProductTest(ProductBaseTestCase):
             content_type="application/json",
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # -------------------------
+    # --- Test published_at ---
+    # -------------------------
+
+    def test_create_product_published_at(self):
+        product_data = {
+            "name": "test product",
+            "status": Product.STATUS_ACTIVE,
+            "price": 11,
+            "stock": 11,
+            "options": [],
+        }
+        product = ProductService.create_product(**product_data)
+        self.assertIsNotNone(product.published_at)
+
+        product_data["status"] = Product.STATUS_DRAFT
+        product = ProductService.create_product(**product_data)
+        self.assertIsNone(product.published_at)
+
+        product_data["status"] = Product.STATUS_ARCHIVED
+        product = ProductService.create_product(**product_data)
+        self.assertIsNone(product.published_at)

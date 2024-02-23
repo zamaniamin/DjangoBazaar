@@ -125,3 +125,18 @@ class UpdateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["description"], "updated description")
+
+    def test_update_published_after_update_status_to_active(self):
+        # create with status draft
+        product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
+
+        # update status to active
+        payload = {"status": Product.STATUS_ACTIVE}
+        response = self.client.patch(
+            reverse("product-detail", kwargs={"pk": product.id}),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertDatetimeFormat(expected["published_at"])
