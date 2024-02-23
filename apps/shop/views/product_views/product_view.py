@@ -107,4 +107,5 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = s.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
 
+
 # TODO add new variant to product and update the product options base on new items in the variant
