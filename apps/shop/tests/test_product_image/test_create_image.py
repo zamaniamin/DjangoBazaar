@@ -23,6 +23,35 @@ class CreateImageTest(ProductBaseTestCase):
     def setUp(self):
         self.set_admin_user_authorization()
 
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    def test_images_upload_by_regular_user(self):
+        self.set_regular_user_authorization()
+
+        # request
+        response = self.client.post(
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
+            )
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_images_upload_by_anonymous_user(self):
+        # request
+        self.set_anonymous_user_authorization()
+        response = self.client.post(
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
+            )
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_images_upload_success(self):
         # request
         payload = {"images": self.files}
@@ -62,6 +91,5 @@ class CreateImageTest(ProductBaseTestCase):
         self.assertEqual(actual_data, expected_data)
 
 
-# TODO test access permissions
 # TODO test update image
 # TODO test delete image
