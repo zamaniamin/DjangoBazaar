@@ -1,4 +1,3 @@
-from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
@@ -8,7 +7,6 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from apps.shop.filters.product_filter import ProductFilter
-from apps.shop.models import Product, ProductVariant
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import product_serializers
 from apps.shop.services.product_service import ProductService
@@ -59,24 +57,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
-        # TODO move queryset to product manager
-        queryset = Product.objects.select_related().prefetch_related(
-            "options__items",
-            Prefetch(
-                "variants",
-                queryset=ProductVariant.objects.select_related(
-                    "option1", "option2", "option3"
-                ).order_by("id"),
-            ),
-            "media",
-        )
-
-        user = self.request.user
-        if not user.is_staff:
-            # TODO move queryset to product manager
-            queryset = queryset.exclude(status=Product.STATUS_DRAFT)
-
-        return queryset.order_by("id")
+        return ProductService.get_product_queryset(self.request)
 
     def create(self, request, *args, **kwargs):
         # Validate

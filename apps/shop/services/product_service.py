@@ -216,3 +216,21 @@ class ProductService:
         item_ids_by_option.extend(item_ids_dict.values())
 
         return item_ids_by_option
+
+    @classmethod
+    def get_product_queryset(cls, request):
+        queryset = Product.objects.select_related().prefetch_related(
+            "options__items",
+            Prefetch(
+                "variants",
+                queryset=ProductVariant.objects.select_related(
+                    "option1", "option2", "option3"
+                ).order_by("id"),
+            ),
+            "media",
+        )
+
+        if not request.user.is_staff:
+            queryset = queryset.exclude(status=Product.STATUS_DRAFT)
+
+        return queryset.order_by("id")
