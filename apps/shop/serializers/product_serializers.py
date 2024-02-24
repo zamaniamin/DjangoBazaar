@@ -105,7 +105,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "published_at",
-            # "images",
         ]
         read_only_fields = [
             "created_at",
