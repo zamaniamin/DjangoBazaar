@@ -1,7 +1,6 @@
 from itertools import product as options_combination
 
 from django.db.models import Prefetch
-from django.utils import timezone
 
 from apps.shop.models.product import (
     Product,
@@ -47,14 +46,19 @@ class ProductService:
         return cls.retrieve_product_details(cls.product.id)
 
     @classmethod
-    def create_product_images(cls, product_id, **data):
-        images = ProductMedia.objects.bulk_create(
-            [
-                ProductMedia(product_id=product_id, src=image_data)
-                for image_data in data["images"]
-            ]
-        )
-        return images
+    def create_product_images(cls, product_id, **images_data):
+        images = [
+            ProductMedia(product_id=product_id, src=image_data)
+            for image_data in images_data["images"]
+        ]
+        return ProductMedia.objects.bulk_create(images)
+
+    @classmethod
+    def upload_product_images(cls, product_id, **images_data):
+        cls.create_product_images(product_id, **images_data)
+
+        # retrieve all images of current product
+        return ProductMedia.objects.filter(product_id=product_id)
 
     @staticmethod
     def retrieve_product_details(product_id):

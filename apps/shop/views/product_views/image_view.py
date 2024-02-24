@@ -73,13 +73,11 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        payload = serializer.validated_data
+        images_data = serializer.validated_data
 
         # save images
         product_id = self.kwargs["product_pk"]
-        ProductService.create_product_images(product_id, **payload)
+        images = ProductService.upload_product_images(product_id, **images_data)
 
-        # retrieve all images of current product
-        updated_images = ProductMedia.objects.filter(product_id=product_id)
-        serializer = ProductImageSerializer(updated_images, many=True)
+        serializer = ProductImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
