@@ -167,6 +167,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             return Product.STATUS_DRAFT
         return value
 
+    def to_representation(self, instance):
+        product_serializer = ProductSerializer(instance)
+        return product_serializer.data
+
 
 class ProductSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)

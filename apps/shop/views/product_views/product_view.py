@@ -87,12 +87,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Create product
         product = ProductService.create_product(**payload)
 
-        # Serialize the created product for the response
-        # TODO use serializer to_representation
-        response_serializer = s.ProductSerializer(product)
-
         # Return the serialized response
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.to_representation(product), status=status.HTTP_201_CREATED
+        )
 
     # ----------------
     # --- variants ---
