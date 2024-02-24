@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.viewsets import GenericViewSet
 
 from apps.shop.models import ProductVariant
-from apps.shop.serializers import product_serializers as s
+from apps.shop.serializers import product_serializers
 
 
 @extend_schema_view(
@@ -28,7 +28,7 @@ class VariantViewSet(
     GenericViewSet,
 ):
     queryset = ProductVariant.objects.all()
-    serializer_class = s.ProductVariantSerializer
+    serializer_class = product_serializers.ProductVariantSerializer
     permission_classes = [IsAdminUser]
 
     ACTION_PERMISSIONS = {"retrieve": [AllowAny()]}

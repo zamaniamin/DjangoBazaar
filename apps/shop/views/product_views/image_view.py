@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
 from apps.shop.models import ProductMedia
-from apps.shop.serializers import product_serializers as s
+from apps.shop.serializers import product_serializers
 from apps.shop.services.product_service import ProductService
 
 
@@ -54,7 +54,7 @@ from apps.shop.services.product_service import ProductService
     ),
 )
 class ProductImageViewSet(viewsets.ModelViewSet):
-    serializer_class = s.ProductImageSerializer
+    serializer_class = product_serializers.ProductImageSerializer
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -81,5 +81,7 @@ class ProductImageViewSet(viewsets.ModelViewSet):
 
         # retrieve all images of current product
         updated_images = ProductMedia.objects.filter(product_id=product_id)
-        serializer = s.ProductImageSerializer(updated_images, many=True)
+        serializer = product_serializers.ProductImageSerializer(
+            updated_images, many=True
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)

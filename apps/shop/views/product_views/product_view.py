@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.models import Product, ProductVariant
 from apps.shop.paginations import DefaultPagination
-from apps.shop.serializers import product_serializers as s
+from apps.shop.serializers import product_serializers
 from apps.shop.services.product_service import ProductService
 
 
@@ -26,7 +26,7 @@ from apps.shop.services.product_service import ProductService
     ),
 )
 class ProductViewSet(viewsets.ModelViewSet):
-    serializer_class = s.ProductSerializer
+    serializer_class = product_serializers.ProductSerializer
     permission_classes = [IsAdminUser]
     # TODO add test case for search, filter, ordering and pagination
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
@@ -43,7 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
 
     ACTION_SERIALIZERS = {
-        "create": s.ProductCreateSerializer,
+        "create": product_serializers.ProductCreateSerializer,
     }
 
     ACTION_PERMISSIONS = {
@@ -102,7 +102,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         product = self.get_object()
         variants = product.variants.all()
-        serializer = s.ProductVariantSerializer(variants, many=True)
+        serializer = product_serializers.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
 
 
