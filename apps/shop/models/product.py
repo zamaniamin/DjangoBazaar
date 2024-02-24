@@ -6,9 +6,6 @@ from django.db import models
 from django.utils import timezone
 
 
-# TODO add product manager
-# class Product(models.Manager):
-#     ...
 class Product(models.Model):
     STATUS_ACTIVE = "active"
     STATUS_ARCHIVED = "archived"
@@ -30,8 +27,6 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
-
-    # objects = models.Manager()
 
     def __str__(self):
         return self.name
