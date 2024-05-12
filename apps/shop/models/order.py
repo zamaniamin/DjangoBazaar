@@ -53,12 +53,18 @@ class Order(models.Model):
 
     total_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     total_discounts = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    total_line_items_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_line_items_price = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0.00
+    )
     taxes_included = models.BooleanField(default=False)
     total_tax = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
-    shipping_address = models.OneToOneField(OrderAddress, related_name='shipping_address', on_delete=models.CASCADE)
-    billing_address = models.OneToOneField(OrderAddress, related_name='billing_address', on_delete=models.CASCADE)
+    shipping_address = models.OneToOneField(
+        OrderAddress, related_name="shipping_address", on_delete=models.CASCADE
+    )
+    billing_address = models.OneToOneField(
+        OrderAddress, related_name="billing_address", on_delete=models.CASCADE
+    )
 
     note = models.TextField(blank=True)
 
@@ -77,7 +83,7 @@ class OrderItem(models.Model):
     # applied_discount
     # price
     # grams
-    
+
     # variant price
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
