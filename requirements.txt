@@ -29,7 +29,6 @@ inflection==0.5.1
 jsonschema==4.20.0
 jsonschema-specifications==2023.11.2
 mypy-extensions==1.0.0
-mysqlclient==2.2.4
 packaging==23.2
 pathspec==0.12.1
 pillow==10.2.0
