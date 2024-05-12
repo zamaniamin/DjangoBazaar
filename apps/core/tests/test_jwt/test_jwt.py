@@ -28,4 +28,5 @@ class JWTTests(APITestCase):
         self.assertTrue(expected["access"].strip())
         self.assertTrue(expected["refresh"].strip())
 
+
 # TODO test invalid email a@a
