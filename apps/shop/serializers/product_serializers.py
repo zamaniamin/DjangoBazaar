@@ -96,6 +96,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "name",
+            "slug",
             "description",
             "status",
             "price",

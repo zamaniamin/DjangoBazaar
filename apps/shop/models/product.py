@@ -4,6 +4,7 @@ import uuid
 
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Product(models.Model):
@@ -20,6 +21,7 @@ class Product(models.Model):
     ]
 
     name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
@@ -34,6 +36,9 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if self.status == Product.STATUS_ACTIVE:
             self.published_at = timezone.now()
+
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
 
         super().save(*args, **kwargs)
 
