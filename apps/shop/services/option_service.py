@@ -114,7 +114,4 @@ class OptionService:
             ),
         )
 
-        if not request.user.is_staff:
-            queryset = queryset.exclude(status=Option.STATUS_DRAFT)
-
         return queryset.order_by("id")
