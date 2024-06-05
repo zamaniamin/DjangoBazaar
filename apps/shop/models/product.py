@@ -38,6 +38,7 @@ class Product(models.Model):
             self.published_at = timezone.now()
 
         if not self.slug:
+            # TODO add tests for slug on create, read, update
             base_slug = slugify(self.name, allow_unicode=True)
             slug = base_slug
             count = 1
@@ -130,7 +131,6 @@ class ProductMedia(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 # todo add product options api
 # todo add product colors api (under options menu, add meta fields 'meta_key=color_code' and 'meta_value=#ffffff')
