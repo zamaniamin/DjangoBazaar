@@ -19,7 +19,6 @@ from apps.shop.services.option_service import OptionService
     partial_update=extend_schema(tags=["Option"], summary="Partial update a option"),
     destroy=extend_schema(tags=["Option"], summary="Deletes a option"),
 )
-
 class OptionViewSet(viewsets.ModelViewSet):
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
@@ -63,16 +62,16 @@ class OptionViewSet(viewsets.ModelViewSet):
         return Response(
             serializer.to_representation(option), status=status.HTTP_201_CREATED
         )
-    
-@extend_schema_view(
-    create=extend_schema(tags=["Option"], summary="Create a new option"),
-    retrieve=extend_schema(tags=["Option"], summary="Retrieve a single option."),
-    list=extend_schema(tags=["Option"], summary="Retrieve a list of options"),
-    update=extend_schema(tags=["Option"], summary="Update a option"),
-    partial_update=extend_schema(tags=["Option"], summary="Partial update a option"),
-    destroy=extend_schema(tags=["Option"], summary="Deletes a option"),
-)
 
+
+@extend_schema_view(
+    create=extend_schema(tags=["Option Item"], summary="Create a new option item"),
+    retrieve=extend_schema(tags=["Option Item"], summary="Retrieve a single option item"),
+    list=extend_schema(tags=["Option Item"], summary="Retrieve a list of options items"),
+    update=extend_schema(tags=["Option Item"], summary="Update an option item"),
+    partial_update=extend_schema(tags=["Option Item"], summary="Partial update an option item"),
+    destroy=extend_schema(tags=["Option Item"], summary="Deletes an option item"),
+)
 class OptionItemViewSet(viewsets.ModelViewSet):
     serializer_class = option_serializers.OptionItemSerializer
     permission_classes = [IsAdminUser]
@@ -116,5 +115,3 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         return Response(
             serializer.to_representation(option), status=status.HTTP_201_CREATED
         )
-    
-
