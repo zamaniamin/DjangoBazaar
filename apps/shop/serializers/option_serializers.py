@@ -18,5 +18,3 @@ class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = ["id", "option_name", "items"]
-
-

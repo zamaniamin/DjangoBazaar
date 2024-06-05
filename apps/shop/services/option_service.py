@@ -34,7 +34,6 @@ class OptionService:
         # Return option object
         return cls.retrieve_option_details(cls.option.id)
 
-    
     @classmethod
     def __create_option_options(cls):
         """
@@ -42,7 +41,7 @@ class OptionService:
 
         Explanation:
         If cls.options_data is provided, it creates Option and OptionOptionItem instances
-        based on the data provided. 
+        based on the data provided.
 
         """
         if cls.options_data:
@@ -88,9 +87,9 @@ class OptionService:
         item_ids_by_option = []
 
         # Query the OptionItem table to retrieve item_ids
-        items = OptionItem.objects.filter(
-            option_id=option_id
-        ).values_list("option_id", "id")
+        items = OptionItem.objects.filter(option_id=option_id).values_list(
+            "option_id", "id"
+        )
 
         # Group item_ids by option_id
         item_ids_dict = {}
@@ -108,9 +107,7 @@ class OptionService:
             "options__items",
             Prefetch(
                 "options",
-                queryset=OptionItem.objects.select_related(
-                    "item_name"
-                ).order_by("id"),
+                queryset=OptionItem.objects.select_related("item_name").order_by("id"),
             ),
         )
 

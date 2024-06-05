@@ -9,9 +9,7 @@ class Option(models.Model):
 
 
 class OptionItem(models.Model):
-    option = models.ForeignKey(
-        Option, on_delete=models.CASCADE, related_name="items"
-    )
+    option = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="items")
     item_name = models.CharField(max_length=255)
 
     class Meta:
