@@ -13,11 +13,11 @@ from apps.shop.services.option_service import OptionService
 
 @extend_schema_view(
     create=extend_schema(tags=["Option"], summary="Create a new option"),
-    retrieve=extend_schema(tags=["Option"], summary="Retrieve a single option."),
+    retrieve=extend_schema(tags=["Option"], summary="Retrieve a single option"),
     list=extend_schema(tags=["Option"], summary="Retrieve a list of options"),
-    update=extend_schema(tags=["Option"], summary="Update a option"),
-    partial_update=extend_schema(tags=["Option"], summary="Partial update a option"),
-    destroy=extend_schema(tags=["Option"], summary="Deletes a option"),
+    update=extend_schema(tags=["Option"], summary="Update an option"),
+    partial_update=extend_schema(tags=["Option"], summary="Partial update an option"),
+    destroy=extend_schema(tags=["Option"], summary="Deletes an option"),
 )
 class OptionViewSet(viewsets.ModelViewSet):
     queryset = Option.objects.all()
