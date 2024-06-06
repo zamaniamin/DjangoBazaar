@@ -12,30 +12,7 @@ class OptionService:
     options_data: list = []
 
     @classmethod
-    def create_option(cls, **data):
-        """
-        Create a new option and return the option object.
-
-        Note:
-            This method creates a new option instance, generates options, and optimizes queries
-            for retrieving the option with related options.
-
-        """
-
-        # Extract relevant data
-        cls.options_data = data.pop("options")
-
-        # Create Option
-        cls.option = Option.objects.create(**data)
-
-        # Create options
-        cls.__create_option_options()
-
-        # Return option object
-        return cls.retrieve_option_details(cls.option.id)
-
-    @classmethod
-    def __create_option_options(cls):
+    def __create_option_items(cls):
         """
         Create options and associated items.
 

@@ -131,6 +131,7 @@ class ProductMedia(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 # todo add product options api
 # todo add product colors api (under options menu, add meta fields 'meta_key=color_code' and 'meta_value=#ffffff')
 # todo add product categorize api
