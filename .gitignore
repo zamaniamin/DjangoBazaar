@@ -170,3 +170,7 @@ media/
 static/
 !/.env.production
 /.env.production
+
+
+
+.vscode/
