@@ -91,3 +91,17 @@ class CreateOptionItemsTest(CoreBaseTestCase):
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_one_option_item_if_option_not_exist(self):
+        # request
+        response = self.client.post(
+            reverse("option-items-list", kwargs={"option_pk": 999}),
+            json.dumps(self.payload),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# TODO refactor remove `str()` type casting from requests
