@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
@@ -70,10 +71,12 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
 
+        # check option is exist or not
+        get_object_or_404(Option, pk=option_id)
+
         # get validated data
         payload = serializer.validated_data
         item_name = payload["item_name"]
-        # quantity = payload["quantity"]
 
         try:
             option_item = OptionItem.objects.create(
@@ -81,7 +84,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
             )
         except IntegrityError:
             return Response(
-                {"detail": "This variant already exist in the cart."},
+                {"detail": "This option item already exist in items."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
