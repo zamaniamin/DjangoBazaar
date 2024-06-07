@@ -36,24 +36,24 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_option_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_name": self.option_name}),
+            reverse("option-items-list", kwargs={"option_pk": str(self.option.id)}),
             json.dumps(self.payload),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_option_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_name": self.option_name}),
+            reverse("option-items-list", kwargs={"option_pk": str(self.option.id)}),
             json.dumps(self.payload),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # ------------------------------
+    # --------------------------------
     # --- Test Create option Items ---
-    # ------------------------------
+    # --------------------------------
 
     def test_create_one_option_item(self):
         # request
