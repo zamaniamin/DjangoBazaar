@@ -40,7 +40,9 @@ class DestroyOptionTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # --- test option is removed ---
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_id})
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # --- test option items are removed ---
@@ -57,14 +59,18 @@ class DestroyOptionTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_option_with_multi_items(self):
-        self.option_id, self.option_items = OptionFactory.add_multiple_items(get_items=True)
+        self.option_id, self.option_items = OptionFactory.add_multiple_items(
+            get_items=True
+        )
         response = self.client.delete(
             reverse("option-detail", kwargs={"pk": self.option_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # --- test option is removed ---
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_id})
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # --- test option items are removed ---
@@ -135,6 +141,9 @@ class DestroyOptionItemsTest(CoreBaseTestCase):
 
     def test_delete_option_item_with_invalid_option_pk(self):
         response = self.client.delete(
-            reverse("option-items-detail", kwargs={"option_pk": 7, "pk": self.option_item.id})
+            reverse(
+                "option-items-detail",
+                kwargs={"option_pk": 7, "pk": self.option_item.id},
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -7,7 +7,6 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class UpdateOptionTest(CoreBaseTestCase):
-
     # -------------------------------
     # --- Test Access Permissions ---
     # -------------------------------
@@ -62,7 +61,7 @@ class UpdateOptionTest(CoreBaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-      
+
     def test_update_option_quantity_bigger_than_stock(self):
         option_name, option_item = OptionFactory.add_one_item(get_item=True, stock=1)
 

@@ -1,8 +1,6 @@
 from faker import Faker
-from apps.shop.models.option import (
-    Option, 
-    OptionItem
-)
+
+from apps.shop.models.option import Option, OptionItem
 
 
 class OptionFactory:
@@ -10,8 +8,7 @@ class OptionFactory:
 
     @staticmethod
     def create_option():
-        option = Option.objects.create()
-        return str(option.option_name)
+        return Option.objects.create(option_name="color")
 
     @classmethod
     def populate_demo_options(cls):
@@ -33,9 +30,7 @@ class OptionFactory:
         option_name = cls.create_option()
 
         option_items = OptionItem.objects.bulk_create(
-            [
-                OptionItem(option_name=option_name, quantity=1)
-            ]
+            [OptionItem(option_name=option_name, quantity=1)]
         )
 
         if get_items:

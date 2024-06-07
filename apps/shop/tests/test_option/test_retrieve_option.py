@@ -88,17 +88,23 @@ class RetrieveOptionTest(CoreBaseTestCase):
 
     def test_retrieve_option_by_admin(self):
         self.set_admin_user_authorization()
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_option_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_option_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # ----------------------------
@@ -115,7 +121,7 @@ class RetrieveOptionTest(CoreBaseTestCase):
         self.assertIsInstance(expected["items"], list)
         item = expected["items"][0]
         self.assertIn("id", item)
-      
+
     def test_retrieve_option_with_multi_items(self):
         option_id = OptionFactory.add_multiple_items()
         response = self.client.get(reverse("option-detail", kwargs={"pk": option_id}))
@@ -142,7 +148,9 @@ class ListOptionItemsTest(CoreBaseTestCase):
     # -------------------------------
 
     def setUp(self):
-        self.option_id, self.option_items = OptionFactory.add_multiple_items(get_items=True)
+        self.option_id, self.option_items = OptionFactory.add_multiple_items(
+            get_items=True
+        )
 
     def test_list_option_items_by_admin(self):
         self.set_admin_user_authorization()
@@ -184,7 +192,9 @@ class ListOptionItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_option_items_with_invalid_option_id(self):
-        response = self.client.get(reverse("option-items-list", kwargs={"option_pk": 11}))
+        response = self.client.get(
+            reverse("option-items-list", kwargs={"option_pk": 11})
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -232,7 +242,8 @@ class RetrieveOptionItemTest(CoreBaseTestCase):
         option_id, option_item = OptionFactory.add_one_item(get_item=True)
         response = self.client.get(
             reverse(
-                "option-items-detail", kwargs={"option_pk": option_id, "pk": option_item.id}
+                "option-items-detail",
+                kwargs={"option_pk": option_id, "pk": option_item.id},
             )
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -242,6 +253,8 @@ class RetrieveOptionItemTest(CoreBaseTestCase):
     def test_retrieve_option_with_invalid_option_id(self):
         option_id, option_item = OptionFactory.add_one_item(get_item=True)
         response = self.client.get(
-            reverse("option-items-detail", kwargs={"option_pk": 11, "pk": option_item.id})
+            reverse(
+                "option-items-detail", kwargs={"option_pk": 11, "pk": option_item.id}
+            )
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

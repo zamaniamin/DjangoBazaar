@@ -17,8 +17,8 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         super().setUpTestData()
 
     def setUp(self):
-        self.option_name = OptionFactory.create_option()
-        self.payload = {"option_name": self.option_name, "quantity": 1}
+        self.option = OptionFactory.create_option()
+        self.payload = {"item_name": "red"}
 
     # ------------------------------
     # --- Test Access Permission ---
@@ -27,7 +27,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_option_item_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_name": self.option_name}),
+            reverse("option-items-list", kwargs={"option_pk": str(self.option.id)}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -67,7 +67,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected["item_name"], str)
-       
+
         # expected quantity and item_total
         self.assertEqual(expected["quantity"], 1)
 
@@ -94,7 +94,9 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         total_price += expected["item_total"]
 
         # expected
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option_name}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option_name})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
@@ -125,7 +127,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
                 "option-items-list",
                 kwargs={"option_name": self.option_name},
             ),
-            json.dumps({ "quantity": 1}),
+            json.dumps({"quantity": 1}),
             content_type="application/json",
         )
 
@@ -157,7 +159,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
                 "option-items-list",
                 kwargs={"option_name": self.option_name},
             ),
-            json.dumps({ "quantity": 4}),
+            json.dumps({"quantity": 4}),
             content_type="application/json",
         )
 
