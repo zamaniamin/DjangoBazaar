@@ -1,14 +1,16 @@
+from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.response import Response
 
 from apps.shop.filters.option_filter import OptionFilter
-from apps.shop.models import Option
+from apps.shop.models import Option, OptionItem
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import option_serializers
-from apps.shop.services.option_service import OptionService
+from apps.shop.serializers.option_serializers import OptionItemSerializer
 
 
 @extend_schema_view(
@@ -56,34 +58,62 @@ class OptionViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(tags=["Option Item"], summary="Deletes an option item"),
 )
 class OptionItemViewSet(viewsets.ModelViewSet):
+    queryset = OptionItem.objects.all()
     serializer_class = option_serializers.OptionItemSerializer
     permission_classes = [IsAdminUser]
-    # TODO add test case for search, filter, ordering and pagination
-    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
-    search_fields = ["item_name"]
-    filterset_class = OptionFilter
-    ordering_fields = [
-        "item_name",
-    ]
-    pagination_class = DefaultPagination
 
-    ACTION_SERIALIZERS = {
-        "create": option_serializers.OptionItemSerializer,
-    }
+    def create(self, request, *args, **kwargs):
+        # validate data
+        option_id = kwargs["option_pk"]
+        serializer = self.get_serializer(
+            data=request.data, context={"option_pk": option_id}
+        )
+        serializer.is_valid(raise_exception=True)
 
-    ACTION_PERMISSIONS = {
-        "list": [AllowAny()],
-        "retrieve": [AllowAny()],
-    }
+        # get validated data
+        payload = serializer.validated_data
+        item_name = payload["item_name"]
+        # quantity = payload["quantity"]
 
-    def get_serializer_class(self):
-        return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
+        try:
+            option_item = OptionItem.objects.create(
+                option_id=option_id, item_name=item_name
+            )
+        except IntegrityError:
+            return Response(
+                {"detail": "This variant already exist in the cart."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-    def get_permissions(self):
-        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+        # return response
+        response_serializer = OptionItemSerializer(option_item)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-    def get_queryset(self):
-        return OptionService.get_option_queryset(self.request)
+    # filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
+    # search_fields = ["item_name"]
+    # filterset_class = OptionFilter
+    # ordering_fields = [
+    #     "item_name",
+    # ]
+    # pagination_class = DefaultPagination
+
+    # ACTION_SERIALIZERS = {
+    #     "create": option_serializers.OptionItemSerializer,
+    # }
+
+    # ACTION_PERMISSIONS = {
+    #     "list": [AllowAny()],
+    #     "retrieve": [AllowAny()],
+    # }
+
+    # def get_serializer_class(self):
+    #     return self.ACTION_SERIALIZERS.get(self.action, self.serializer_class)
+
+    # def get_permissions(self):
+    #     return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    # def get_queryset(self):
+    #     return OptionService.get_option_queryset(self.request)
 
     # def create(self, request, *args, **kwargs):
     #     # Validate
