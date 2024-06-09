@@ -8,7 +8,6 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class CreateOptionItemsTest(CoreBaseTestCase):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
