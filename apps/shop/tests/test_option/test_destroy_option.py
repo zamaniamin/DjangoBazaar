@@ -34,6 +34,10 @@ class DestroyOptionTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # --------------------------
+    # --- Test Delete Option ---
+    # --------------------------
+
     def test_delete_option(self):
         # --- request for delete an option ---
         response = self.client.delete(
