@@ -1,13 +1,10 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
-from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
-from apps.shop.filters.option_filter import OptionFilter
 from apps.shop.models import Option, OptionItem
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import option_serializers
@@ -26,10 +23,7 @@ class OptionViewSet(viewsets.ModelViewSet):
     queryset = Option.objects.all()
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
-    # TODO add test case for search, filter, ordering and pagination
-    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
-    search_fields = ["option_name"]
-    filterset_class = OptionFilter
+    # TODO add test for pagination
     ordering_fields = [
         "option_name",
     ]
