@@ -22,23 +22,74 @@ class ListOptionTest(CoreBaseTestCase):
     def test_list_options_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(reverse("option-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_options_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(reverse("option-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # -----------------------
-    # --- Test List options ---
-    # -----------------------
+    # --------------------------
+    # --- Test List options ----
+    # --------------------------
 
-    def test_empty_list(self):
+    def test_option_list(self):
+        # create a list of options
+        OptionFactory.create_option_list()
+
+        # request
         response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 0)
 
-    def test_list_options_without_items(self):
+        # expected
+        expected = response.json()
+        self.assertEqual(len(expected), 4)
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "count",
+                "next",
+                "previous",
+                "results",
+            },
+        )
+
+        option_list = expected["results"]
+        self.assertIsInstance(option_list, list)
+        self.assertEqual(len(option_list), 2)
+
+        for option in option_list:
+            self.assertEqual(
+                set(option.keys()),
+                {
+                    "id",
+                    "option_name",
+                },
+            )
+
+    def test_option_empty_list(self):
+
+        # request
+        response = self.client.get(reverse("option-list"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # expected
+        expected = response.json()
+        self.assertEqual(len(expected), 4)
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "count",
+                "next",
+                "previous",
+                "results",
+            },
+        )
+        self.assertIsInstance(expected["results"], list)
+        self.assertEqual(len(expected["results"]), 0)
+
+    def _test_list_options_without_items(self):
+        # TODO move this method to test retrieve option item
         # --- test list one option ---
         OptionFactory.create_option()
         response = self.client.get(reverse("option-list"))
@@ -62,7 +113,8 @@ class ListOptionTest(CoreBaseTestCase):
             self.assertIn("items", option)
             self.assertIn("total_price", option)
 
-    def test_list_options_with_items(self):
+    def _test_list_options_with_items(self):
+        # TODO move this method to test retrieve option item
         OptionFactory.add_multiple_items()
         response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

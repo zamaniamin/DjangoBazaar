@@ -56,7 +56,7 @@ class CreateOptionTest(CoreBaseTestCase):
 
         # request
         payload = {
-            "option_name": OptionFactory.option_name,
+            "option_name": OptionFactory.option_name_color,
         }
         response = self.client.post(
             reverse("option-list"), json.dumps(payload), content_type="application/json"

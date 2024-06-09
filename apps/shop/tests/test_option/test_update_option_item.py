@@ -23,7 +23,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
                 "option-items-detail",
                 kwargs={
                     "option_pk": self.option_name,
-                    "pk": self.option_item.option_name,
+                    "pk": self.option_item.option_name_color,
                 },
             ),
             json.dumps({"quantity": 3}),
@@ -62,7 +62,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
                 "option-items-detail",
                 kwargs={
                     "option_pk": self.option_name,
-                    "pk": self.option_item.option_name,
+                    "pk": self.option_item.option_name_color,
                 },
             ),
             json.dumps({"quantity": new_quantity}),
@@ -76,7 +76,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         response = self.client.patch(
             reverse(
                 "option-items-detail",
-                kwargs={"option_pk": option_name, "pk": option_item.option_name},
+                kwargs={"option_pk": option_name, "pk": option_item.option_name_color},
             ),
             json.dumps({"quantity": 3}),
             content_type="application/json",
@@ -92,7 +92,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
                 "option-items-detail",
                 kwargs={
                     "option_pk": "5a092b03-7920-4c61-ba98-f749296e4750",
-                    "pk": option_item.option_name,
+                    "pk": option_item.option_name_color,
                 },
             ),
             json.dumps({"quantity": 3}),

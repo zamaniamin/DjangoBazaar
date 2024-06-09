@@ -68,7 +68,7 @@ class UpdateOptionTest(CoreBaseTestCase):
         response = self.client.patch(
             reverse(
                 "option-detail",
-                kwargs={"option_pk": option_name, "pk": option_item.option_name},
+                kwargs={"option_pk": option_name, "pk": option_item.option_name_color},
             ),
             json.dumps({"quantity": 3}),
             content_type="application/json",
@@ -84,7 +84,7 @@ class UpdateOptionTest(CoreBaseTestCase):
                 "option-detail",
                 kwargs={
                     "option_pk": "5a092b03-7920-4c61-ba98-f749296e4750",
-                    "pk": option_item.option_name,
+                    "pk": option_item.option_name_color,
                 },
             ),
             json.dumps({"quantity": 3}),
