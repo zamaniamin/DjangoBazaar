@@ -57,6 +57,14 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     serializer_class = option_serializers.OptionItemSerializer
     permission_classes = [IsAdminUser]
 
+    ACTION_PERMISSIONS = {
+        "list": [AllowAny()],
+        "retrieve": [AllowAny()],
+    }
+
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
     def create(self, request, *args, **kwargs):
         # validate data
         option_id = kwargs["option_pk"]
