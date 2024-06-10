@@ -6,53 +6,88 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class ListOptionItemsTest(CoreBaseTestCase):
+
+    def setUp(self):
+        self.option = OptionFactory.create_option()
+        self.option_items = OptionFactory.add_option_item_list(self.option.id)
+        self.set_admin_user_authorization()
+
     # -------------------------------
     # --- Test Access Permissions ---
     # -------------------------------
 
-    def setUp(self):
-        self.option_id, self.option_items = OptionFactory.add_multiple_items(
-            get_items=True
-        )
-
     def test_list_option_items_by_admin(self):
-        self.set_admin_user_authorization()
         response = self.client.get(
-            reverse("option-items-list", kwargs={"option_pk": self.option_id})
+            reverse("option-items-list", kwargs={"option_pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_option_items_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            reverse("option-items-list", kwargs={"option_pk": self.option_id})
+            reverse("option-items-list", kwargs={"option_pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_option_items_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            reverse("option-items-list", kwargs={"option_pk": self.option_id})
+            reverse("option-items-list", kwargs={"option_pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # ------------------------------
+    # --- Test List Option Items ---
+    # ------------------------------
 
     def test_list_option_items(self):
+        # create a list of items for option
+        option_items = OptionFactory.add_option_item_list(self.option.id)
+
+        # make request
         response = self.client.get(
-            reverse("option-items-list", kwargs={"option_pk": self.option_id})
+            reverse("option-items-list", kwargs={"option_pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # 
         expected_option_items = response.json()
-        self.assertEqual(len(expected_option_items), len(self.option_items))
+        self.assertEqual(len(expected_option_items), len(option_items))
 
         for item in expected_option_items:
-            self.assertIn("id", item)
+            self.assertEqual(
+                set(item.keys()),
+                {
+                    "id",
+                    "item_name",
+                },
+            )
 
     def test_list_empty_option_items(self):
-        option_id = OptionFactory.create_option()
-        response = self.client.get(
-            reverse("option-items-list", kwargs={"option_pk": option_id})
-        )
+        # request
+        response = self.client.get(reverse("option-items-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # expected
+        expected = response.json()
+        self.assertEqual(len(expected), 4)
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "count",
+                "next",
+                "previous",
+                "results",
+            },
+        )
+        self.assertIsInstance(expected["results"], list)
+        self.assertEqual(len(expected["results"]), 0)
+
+        # option = OptionFactory.create_option()
+        # response = self.client.get(
+        #     reverse("option-items-list", kwargs={"option_pk": option.id})
+        # )
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_option_items_with_invalid_option_id(self):
         response = self.client.get(
