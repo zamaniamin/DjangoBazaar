@@ -6,11 +6,11 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class ListOptionItemsTest(CoreBaseTestCase):
-
     def setUp(self):
         self.set_admin_user_authorization()
         self.option = OptionFactory.create_option()
         self.option_items = OptionFactory.add_option_item_list(self.option.id)
+
     # -------------------------------
     # --- Test Access Permissions ---
     # -------------------------------
@@ -46,7 +46,7 @@ class ListOptionItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # 
+        #
         expected_option_items = response.json()
         self.assertEqual(len(expected_option_items), len(self.option_items))
 
@@ -61,7 +61,9 @@ class ListOptionItemsTest(CoreBaseTestCase):
 
     def test_option_items_empty_list(self):
         # request
-        response = self.client.get(reverse("option-items-list", kwargs={"option_pk": self.option.id}))
+        response = self.client.get(
+            reverse("option-items-list", kwargs={"option_pk": self.option.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -126,12 +128,15 @@ class RetrieveOptionItemTest(CoreBaseTestCase):
     # -------------------------------
     def setUp(self):
         self.set_admin_user_authorization()
+
     @classmethod
     def setUpTestData(cls):
         cls.option = OptionFactory.create_option()
         cls.option_items = OptionFactory.add_option_item_list(cls.option.id)
         super().setUpTestData()
-        cls.option_id, cls.option_item = OptionFactory.add_one_option_item(cls.option.id)
+        cls.option_id, cls.option_item = OptionFactory.add_one_option_item(
+            cls.option.id
+        )
 
     def test_retrieve_option_item_by_admin(self):
         response = self.client.get(
@@ -196,7 +201,9 @@ class RetrieveOptionItemTest(CoreBaseTestCase):
         self.assertIn("id", item)
 
     def test_retrieve_option_with_multi_items(self):
-        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option.id}))
+        response = self.client.get(
+            reverse("option-detail", kwargs={"pk": self.option.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         expected = response.json()

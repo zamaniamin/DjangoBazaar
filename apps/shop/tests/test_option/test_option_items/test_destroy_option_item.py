@@ -45,7 +45,10 @@ class DestroyOptionItemsTest(CoreBaseTestCase):
 
     def test_delete_option_item(self):
         response = self.client.delete(
-            reverse("option-detail", kwargs={"option_pk": self.option.id, "pk": self.option_item.id})
+            reverse(
+                "option-detail",
+                kwargs={"option_pk": self.option.id, "pk": self.option_item.id},
+            )
         )
         self.assertNotEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -67,5 +70,7 @@ class DestroyOptionItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_delete_option_404(self):
-        response = self.client.delete(reverse("option-items-detail", kwargs={"pk": 999}))
+        response = self.client.delete(
+            reverse("option-items-detail", kwargs={"pk": 999})
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
