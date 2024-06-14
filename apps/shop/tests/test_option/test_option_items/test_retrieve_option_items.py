@@ -195,11 +195,10 @@ class RetrieveOptionItemTest(CoreBaseTestCase):
         item = expected["items"][0]
         self.assertIn("id", item)
 
-    def _test_retrieve_option_with_multi_items(self):
-        # TODO move this method to test retrieve option item
-        option_id = OptionFactory.add_multiple_items()
-        response = self.client.get(reverse("option-detail", kwargs={"pk": option_id}))
+    def test_retrieve_option_with_multi_items(self):
+        response = self.client.get(reverse("option-detail", kwargs={"pk": self.option.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         expected = response.json()
         self.assertEqual(len(expected), 3)
         self.assertIsInstance(uuid.UUID(expected["id"]), uuid.UUID)
