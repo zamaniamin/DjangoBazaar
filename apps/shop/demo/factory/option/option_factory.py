@@ -11,7 +11,9 @@ class OptionFactory:
     item_name_black = "black"
 
     @classmethod
-    def create_option(cls):
+    def create_option(cls, option_name=""):
+        if option_name:
+            return Option.objects.create(option_name=option_name)
         return Option.objects.create(option_name=cls.option_name_color)
 
     @classmethod
