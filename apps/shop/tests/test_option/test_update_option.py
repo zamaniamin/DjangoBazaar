@@ -7,118 +7,97 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class UpdateOptionTest(CoreBaseTestCase):
-
     # -------------------------------
     # --- Test Access Permissions ---
     # -------------------------------
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.option_name = OptionFactory.add_one_item(get_item=True)
+        cls.option = OptionFactory.create_option()
+
+    def setUp(self):
+        self.set_admin_user_authorization()
 
     def test_update_option_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.patch(
+        # request
+        payload = {"option_name": "black"}
+        response = self.client.put(
             reverse(
                 "option-detail",
-                kwargs={"option_pk": self.option_name, "pk": self.option_name},
+                kwargs={"pk": self.option.id},
             ),
-            json.dumps({"quantity": 3}),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_option_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-detail",
-                kwargs={"option_pk": self.option_name},
+                kwargs={"pk": self.option.id},
             ),
-            json.dumps({"quantity": 3}),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_option_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-detail",
-                kwargs={"option_pk": self.option_name},
+                kwargs={"pk": self.option.id},
             ),
-            json.dumps({"quantity": 3}),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_update_option_quantity(self):
-        response = self.client.patch(
+    # ---------------------
+    # --- Update Option ---
+    # ---------------------
+
+    def test_update_option(self):
+        # get old option name
+        old_option_name = self.option.option_name
+
+        # request
+        new_option_name = "color2"
+        payload = {"option_name": new_option_name}
+        response = self.client.put(
             reverse(
                 "option-detail",
-                kwargs={"option_pk": self.option_name, "pk": self.option_name},
+                kwargs={"pk": self.option.id},
             ),
-            json.dumps({"quantity": 3}),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-      
-    def test_update_option_quantity_bigger_than_stock(self):
-        option_name, option_item = OptionFactory.add_one_item(get_item=True, stock=1)
-
-        response = self.client.patch(
-            reverse(
-                "option-detail",
-                kwargs={"option_pk": option_name, "pk": option_item.option_name},
-            ),
-            json.dumps({"quantity": 3}),
+            json.dumps(payload),
             content_type="application/json",
         )
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "id",
+                "option_name",
+            },
+        )
+        self.assertEqual(expected["option_name"], new_option_name)
+        self.assertNotEqual(old_option_name, new_option_name)
 
-    def test_update_option_if_option_not_exist(self):
-        option_name, option_item = OptionFactory.add_one_item(get_item=True)
-        response = self.client.patch(
+    def test_update_option_404(self):
+        # request
+        new_option_name = "color2"
+        payload = {"option_name": new_option_name}
+        response = self.client.put(
             reverse(
                 "option-detail",
-                kwargs={
-                    "option_pk": "5a092b03-7920-4c61-ba98-f749296e4750",
-                    "pk": option_item.option_name,
-                },
+                kwargs={"pk": 999},
             ),
-            json.dumps({"quantity": 3}),
+            json.dumps(payload),
             content_type="application/json",
         )
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_option_if_not_exist(self):
-        option_name, option_item = OptionFactory.add_one_item(get_item=True)
-        response = self.client.patch(
-            reverse(
-                "option-detail",
-                kwargs={"option_pk": option_name, "pk": 1111},
-            ),
-            json.dumps({"quantity": 3}),
-            content_type="application/json",
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_option_with_invalid_option_pk(self):
-        option_name, option_item = OptionFactory.add_one_item(get_item=True)
-        response = self.client.patch(
-            reverse(
-                "option-detail",
-                kwargs={"option_pk": 7, "pk": option_item.id},
-            ),
-            json.dumps({"quantity": 3}),
-            content_type="application/json",
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

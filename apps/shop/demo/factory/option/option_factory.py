@@ -1,43 +1,39 @@
 from faker import Faker
-from apps.shop.models.option import (
-    Option, 
-    OptionItem
-)
+
+from apps.shop.models.option import Option, OptionItem
 
 
 class OptionFactory:
     faker = Faker()
-
-    @staticmethod
-    def create_option():
-        option = Option.objects.create()
-        return str(option.option_name)
-
-    @classmethod
-    def populate_demo_options(cls):
-        cls.add_one_item()
-        cls.add_multiple_items()
+    option_name_color = "color"
+    option_name_size = "size"
+    item_name = "red"
+    item_name_black = "black"
 
     @classmethod
-    def add_one_item(cls, get_item: bool = False, quantity: int = 1):
-        option_name = cls.create_option()
-        option_item = OptionItem.objects.create(
-            option_name=option_name, quantity=quantity
-        )
-        if get_item:
-            return option_name, option_item
-        return option_name
+    def create_option(cls, option_name=""):
+        if option_name:
+            return Option.objects.create(option_name=option_name)
+        return Option.objects.create(option_name=cls.option_name_color)
 
     @classmethod
-    def add_multiple_items(cls, get_items: bool = False):
-        option_name = cls.create_option()
+    def add_one_option_item(cls, option_id):
+        return OptionItem.objects.create(option_id=option_id, item_name=cls.item_name)
 
-        option_items = OptionItem.objects.bulk_create(
-            [
-                OptionItem(option_name=option_name, quantity=1)
-            ]
-        )
+    @classmethod
+    def add_option_item_list(cls, option_id):
+        items = [
+            OptionItem(option_id=option_id, item_name=cls.item_name),
+            OptionItem(option_id=option_id, item_name=cls.item_name_black),
+        ]
+        return OptionItem.objects.bulk_create(items)
 
-        if get_items:
-            return option_name, option_items
-        return option_name
+    @classmethod
+    def create_option_list(cls):
+        Option.objects.create(option_name=cls.option_name_color)
+        Option.objects.create(option_name=cls.option_name_size)
+
+    # @classmethod
+    # def populate_demo_options(cls):
+    #     cls.add_one_option_item()
+    #     cls.add_multiple_items()
