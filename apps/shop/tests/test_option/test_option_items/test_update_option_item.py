@@ -8,9 +8,6 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
 class UpdateOptionItemTest(CoreBaseTestCase):
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -20,14 +17,16 @@ class UpdateOptionItemTest(CoreBaseTestCase):
     def setUp(self):
         self.set_admin_user_authorization()
 
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
     def test_update_option_by_admin(self):
         payload = {"item_name": "color"}
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-items-detail",
-                kwargs={
-                    "option_pk": self.option.id, "pk": self.item.id
-                },
+                kwargs={"option_pk": self.option.id, "pk": self.item.id},
             ),
             json.dumps(payload),
             content_type="application/json",
@@ -37,12 +36,10 @@ class UpdateOptionItemTest(CoreBaseTestCase):
     def test_update_option_by_regular_user(self):
         self.set_regular_user_authorization()
         payload = {"item_name": "color"}
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-items-detail",
-                kwargs={
-                    "option_pk": self.option.id, "pk": self.item.id
-                },
+                kwargs={"option_pk": self.option.id, "pk": self.item.id},
             ),
             json.dumps(payload),
             content_type="application/json",
@@ -51,12 +48,10 @@ class UpdateOptionItemTest(CoreBaseTestCase):
 
     def test_update_option_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-items-detail",
-                kwargs={
-                    "option_pk": self.option.id, "pk": self.item.id
-                },
+                kwargs={"option_pk": self.option.id, "pk": self.item.id},
             ),
             json.dumps({"item_name": "color"}),
             content_type="application/json",
@@ -73,9 +68,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         response = self.client.put(
             reverse(
                 "option-items-detail",
-                kwargs={
-                    "option_pk": self.option.id, "pk": self.item.id
-                },
+                kwargs={"option_pk": self.option.id, "pk": self.item.id},
             ),
             json.dumps(payload),
             content_type="application/json",
@@ -111,13 +104,13 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_option_item_with_invalid_option_pk(self):
-        response = self.client.patch(
+        response = self.client.put(
             reverse(
                 "option-items-detail",
-                kwargs={"option_pk": 77, "pk": self.item.id},
+                kwargs={"option_pk": 99999, "pk": self.item.id},
             ),
-            json.dumps({"item_name": "color"}),
+            json.dumps({"item_name": "blue"}),
             content_type="application/json",
         )
         # expected
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
