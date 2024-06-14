@@ -56,6 +56,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     queryset = OptionItem.objects.all()
     serializer_class = option_serializers.OptionItemSerializer
     permission_classes = [IsAdminUser]
+    http_method_names = ["post", "get", "put", "delete"]
 
     ACTION_PERMISSIONS = {
         "list": [AllowAny()],
@@ -93,3 +94,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         # return response
         response_serializer = OptionItemSerializer(option_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        get_object_or_404(Option, pk=self.kwargs["option_pk"])
+        return super().update(request, *args, **kwargs)
