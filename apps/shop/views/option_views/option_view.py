@@ -53,7 +53,6 @@ class OptionViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(tags=["Option Item"], summary="Deletes an option item"),
 )
 class OptionItemViewSet(viewsets.ModelViewSet):
-    queryset = OptionItem.objects.all()
     serializer_class = option_serializers.OptionItemSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
@@ -62,6 +61,11 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         "list": [AllowAny()],
         "retrieve": [AllowAny()],
     }
+
+    def get_queryset(self):
+        option_id = self.kwargs.get("option_pk")
+        get_object_or_404(Option, pk=option_id)
+        return OptionItem.objects.filter(option_id=option_id)
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
@@ -75,6 +79,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         # check option is exist or not
+        # TODO can I remove this line?
         get_object_or_404(Option, pk=option_id)
 
         # get validated data
@@ -94,11 +99,3 @@ class OptionItemViewSet(viewsets.ModelViewSet):
         # return response
         response_serializer = OptionItemSerializer(option_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-    def update(self, request, *args, **kwargs):
-        get_object_or_404(Option, pk=self.kwargs["option_pk"])
-        return super().update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        get_object_or_404(Option, pk=self.kwargs["option_pk"])
-        return super().destroy(request, *args, **kwargs)
