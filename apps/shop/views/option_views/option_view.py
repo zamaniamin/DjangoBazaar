@@ -98,3 +98,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         get_object_or_404(Option, pk=self.kwargs["option_pk"])
         return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        get_object_or_404(Option, pk=self.kwargs["option_pk"])
+        return super().destroy(request, *args, **kwargs)
