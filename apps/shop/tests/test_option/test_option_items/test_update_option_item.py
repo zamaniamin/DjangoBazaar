@@ -15,7 +15,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
         cls.option = OptionFactory.create_option()
-        cls.option_name, cls.option_item = OptionFactory.add_one_option_item(cls.option.id)
+        cls.item = OptionFactory.add_one_option_item(cls.option.id)
 
     def setUp(self):
         self.set_admin_user_authorization()
@@ -26,8 +26,7 @@ class UpdateOptionItemTest(CoreBaseTestCase):
             reverse(
                 "option-items-detail",
                 kwargs={
-                    "option_pk": self.option_name,
-                    "pk": self.option_item.option_name_color,
+                    "option_pk": self.option.id, "pk": self.item.id
                 },
             ),
             json.dumps(payload),
@@ -41,7 +40,9 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         response = self.client.patch(
             reverse(
                 "option-items-detail",
-                kwargs={"option_pk": self.option_name, "pk": self.option.id},
+                kwargs={
+                    "option_pk": self.option.id, "pk": self.item.id
+                },
             ),
             json.dumps(payload),
             content_type="application/json",
@@ -53,24 +54,56 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         response = self.client.patch(
             reverse(
                 "option-items-detail",
-                kwargs={"option_pk": self.option_name, "pk": self.option.id},
+                kwargs={
+                    "option_pk": self.option.id, "pk": self.item.id
+                },
             ),
-            json.dumps({"quantity": 3}),
+            json.dumps({"item_name": "color"}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_update_option_item_if_not_exist(self):
-        option_name, option_item = OptionFactory.add_one_option_item(self.option.id)
-        response = self.client.patch(
+    def test_update_option(self):
+        # get old option name
+        old_item_name = self.item.item_name
+
+        # request
+        new_item_name = "color2"
+        payload = {"item_name": new_item_name}
+        response = self.client.put(
             reverse(
                 "option-items-detail",
                 kwargs={
-                    "option_pk": "5a092b03-7920-4c61-ba98-f749296e4750",
-                    "pk": option_item.option_name_color,
+                    "option_pk": self.option.id, "pk": self.item.id
                 },
             ),
-            json.dumps({"quantity": 3}),
+            json.dumps(payload),
+            content_type="application/json",
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "id",
+                "item_name",
+            },
+        )
+        self.assertEqual(expected["item_name"], new_item_name)
+        self.assertNotEqual(old_item_name, new_item_name)
+
+    def test_update_option_item_404(self):
+        # request
+        new_item_name = "color2"
+        payload = {"item_name": new_item_name}
+        response = self.client.put(
+            reverse(
+                "option-items-detail",
+                kwargs={"option_pk": self.option.id, "pk": 999},
+            ),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -78,15 +111,13 @@ class UpdateOptionItemTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_option_item_with_invalid_option_pk(self):
-        option_name, option_item = OptionFactory.add_one_option_item(self.option.id)
         response = self.client.patch(
             reverse(
                 "option-items-detail",
-                kwargs={"option_pk": 7, "pk": option_item.id},
+                kwargs={"option_pk": 77, "pk": self.item.id},
             ),
-            json.dumps({"quantity": 3}),
+            json.dumps({"item_name": "color"}),
             content_type="application/json",
         )
-
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
