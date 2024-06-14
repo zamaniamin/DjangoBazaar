@@ -21,7 +21,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     # --- Test Access Permission ---
     # ------------------------------
 
-    def test_create_option_item_by_admin(self):
+    def test_create_item_by_admin(self):
         response = self.client.post(
             reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
@@ -29,7 +29,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_option_item_by_regular_user(self):
+    def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
             reverse("option-items-list", kwargs={"option_pk": self.option.id}),
@@ -38,7 +38,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_create_option_item_by_anonymous_user(self):
+    def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
             reverse("option-items-list", kwargs={"option_pk": self.option.id}),
@@ -47,11 +47,11 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --------------------------------
-    # --- Test Create option Items ---
-    # --------------------------------
+    # -------------------------
+    # --- Test Create Items ---
+    # -------------------------
 
-    def test_create_one_option_item(self):
+    def test_create_one_item(self):
         # request
         response = self.client.post(
             reverse("option-items-list", kwargs={"option_pk": self.option.id}),
@@ -64,7 +64,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         expected = response.json()
         self.assertIsInstance(expected["item_name"], str)
 
-    def test_create_one_option_item_if_already_exist(self):
+    def test_create_one_item_if_already_exist(self):
         # create an option item
         OptionFactory.add_one_option_item(self.option.id)
 
@@ -78,7 +78,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_option_item_if_item_name_is_empty(self):
+    def test_create_one_item_if_item_name_is_empty(self):
         # request
         payload = {"item_name": ""}
         response = self.client.post(
@@ -90,7 +90,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_option_item_if_option_not_exist(self):
+    def test_create_one_item_if_option_not_exist(self):
         # request
         response = self.client.post(
             reverse("option-items-list", kwargs={"option_pk": 999}),
