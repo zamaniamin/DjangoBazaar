@@ -4,6 +4,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 
 def generate_upload_path(instance, filename):
@@ -19,7 +20,7 @@ def generate_upload_path(instance, filename):
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField(null=True, blank=True)
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     subcategory_of = models.ForeignKey(
@@ -36,7 +37,18 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         self.clean()
-        super().save(*args, **kwargs)
 
+        # TODO move this logic to a method `automatic_slug_creation()`
+        if not self.slug:
+            # TODO add tests for slug on create, read, update
+            base_slug = slugify(self.name, allow_unicode=True)
+            slug = base_slug
+            count = 1
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+
+        super().save(*args, **kwargs)
 
 # TODO subcategory_of cant be same as current category id
