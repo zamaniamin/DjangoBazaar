@@ -4,10 +4,7 @@ from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.filters import (
-    SearchFilter,
-    OrderingFilter
-)
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.shop.models import Attribute, AttributeItem
@@ -20,7 +17,9 @@ from apps.shop.serializers import attribute_serializers
     retrieve=extend_schema(tags=["Attribute"], summary="Retrieve a single attribute"),
     list=extend_schema(tags=["Attribute"], summary="Retrieve a list of attributes"),
     update=extend_schema(tags=["Attribute"], summary="Update an attribute"),
-    partial_update=extend_schema(tags=["Attribute"], summary="Partial update an attribute"),
+    partial_update=extend_schema(
+        tags=["Attribute"], summary="Partial update an attribute"
+    ),
     destroy=extend_schema(tags=["Attribute"], summary="Deletes an attribute"),
 )
 class AttributeViewSet(viewsets.ModelViewSet):
@@ -31,24 +30,11 @@ class AttributeViewSet(viewsets.ModelViewSet):
     ordering_fields = [
         "name",
     ]
-    lookup_field='url'
-    lookup_url_kwarg = 'url'
-
     # Filter options
-    filter_backends = [
-        DjangoFilterBackend,
-        SearchFilter,
-        OrderingFilter
-    ]
-    filterset_fields = [
-        'name'
-    ]
-    search_fields = [
-        'name'
-    ]
-    ordering_fields = [
-        'name'
-    ]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ["name"]
+    search_fields = ["name"]
+    ordering_fields = ["name"]
     pagination_class = DefaultPagination
 
     ACTION_PERMISSIONS = {
@@ -61,7 +47,9 @@ class AttributeViewSet(viewsets.ModelViewSet):
 
 
 @extend_schema_view(
-    create=extend_schema(tags=["Attribute Item"], summary="Create a new attribute item"),
+    create=extend_schema(
+        tags=["Attribute Item"], summary="Create a new attribute item"
+    ),
     retrieve=extend_schema(
         tags=["Attribute Item"], summary="Retrieve a single attribute item"
     ),
@@ -119,5 +107,7 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
             )
 
         # return response
-        response_serializer = attribute_serializers.AttributeItemSerializer(attribute_item)
+        response_serializer = attribute_serializers.AttributeItemSerializer(
+            attribute_item
+        )
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)

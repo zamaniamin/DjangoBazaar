@@ -5,6 +5,7 @@ from apps.shop.models import (
     AttributeItem,
 )
 
+
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
