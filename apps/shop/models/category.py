@@ -8,21 +8,22 @@ from django.utils.text import slugify
 
 
 def generate_upload_path(instance, filename):
+    # TODO remove privacy data from image files and only accept jpeg and png formats?
     unique_id = uuid.uuid4().hex
     _, ext = os.path.splitext(filename)
 
     # Add "test_" prefix to unique_id if running in test mode
     if "test" in sys.argv:
-        return f"test/categories/{instance.id}/{unique_id}{ext}"
+        return f"test/categories/{unique_id}{ext}"
     else:
-        return f"categories/{instance.id}/{unique_id}{ext}"
+        return f"categories/{unique_id}{ext}"
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
+    image = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     subcategory_of = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -30,6 +31,9 @@ class Category(models.Model):
         blank=True,
         related_name="subcategories",
     )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
         if self.subcategory_of and self.subcategory_of == self:
