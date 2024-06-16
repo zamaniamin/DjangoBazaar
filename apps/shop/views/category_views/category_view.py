@@ -1,5 +1,7 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAdminUser, AllowAny
 
 from apps.shop.models.category import Category
 from apps.shop.serializers.category_serializers import CategorySerializer
@@ -18,3 +20,13 @@ from apps.shop.serializers.category_serializers import CategorySerializer
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    ACTION_PERMISSIONS = {
+        "list": [AllowAny()],
+        "retrieve": [AllowAny()],
+    }
+
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
