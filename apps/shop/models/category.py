@@ -35,6 +35,7 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
+        # TODO this should be when category was updated
         if self.parent and self.parent == self:
             raise ValidationError("A category cannot be a parent of itself.")
 
@@ -53,5 +54,6 @@ class Category(models.Model):
             self.slug = slug
 
         super().save(*args, **kwargs)
+
 
 # TODO subcategory_of cant be same as current category id
