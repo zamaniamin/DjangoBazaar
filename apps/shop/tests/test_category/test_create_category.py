@@ -156,3 +156,4 @@ class CreateCategoryTest(CoreBaseTestCase):
 # TODO test update a category cannot be a parent of itself.
 
 # TODO test destroy
+# TODO test destroy category and check the children parent field is set to null
