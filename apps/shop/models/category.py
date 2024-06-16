@@ -39,10 +39,7 @@ class Category(models.Model):
         if self.parent and self.parent == self:
             raise ValidationError("A category cannot be a parent of itself.")
 
-    def save(self, *args, **kwargs):
-        self.clean()
-
-        # TODO move this logic to a method `automatic_slug_creation()`
+    def automatic_slug_creation(self):
         if not self.slug:
             # TODO add tests for slug on create, read, update
             base_slug = slugify(self.name, allow_unicode=True)
@@ -53,7 +50,7 @@ class Category(models.Model):
                 count += 1
             self.slug = slug
 
+    def save(self, *args, **kwargs):
+        self.clean()
+        self.automatic_slug_creation()
         super().save(*args, **kwargs)
-
-
-# TODO subcategory_of cant be same as current category id
