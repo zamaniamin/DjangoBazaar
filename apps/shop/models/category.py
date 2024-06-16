@@ -55,4 +55,5 @@ class Category(models.Model):
 
         super().save(*args, **kwargs)
 
+
 # TODO subcategory_of cant be same as current category id

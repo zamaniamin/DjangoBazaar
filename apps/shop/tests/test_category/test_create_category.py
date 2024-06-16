@@ -9,7 +9,6 @@ from config import settings
 
 
 class CreateCategoryTest(CoreBaseTestCase):
-
     @classmethod
     def setUpTestData(cls):
         # Runs once per test class.
@@ -38,7 +37,9 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "test category",
         }
-        response = self.client.post(path=reverse(viewname="category-list"), data=payload)
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_category_by_regular_user(self):
@@ -60,7 +61,9 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "test category",
         }
-        response = self.client.post(path=reverse(viewname="category-list"), data=payload)
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
@@ -78,11 +81,10 @@ class CreateCategoryTest(CoreBaseTestCase):
 
     def test_creat_category_with_image(self):
         # request
-        payload = {
-            "name": "test category",
-            "image": self.generate_single_photo_file()
-        }
-        response = self.client.post(path=reverse(viewname="category-list"), data=payload)
+        payload = {"name": "test category", "image": self.generate_single_photo_file()}
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -99,7 +101,9 @@ class CreateCategoryTest(CoreBaseTestCase):
 
         # expected file is saved in media directory
         file_path = os.path.abspath(str(settings.BASE_DIR))
-        extracted_path = re.search(pattern=r"testserver\/(.*)", string=expected["image"]).group(1)
+        extracted_path = re.search(
+            pattern=r"testserver\/(.*)", string=expected["image"]
+        ).group(1)
         full_file_path = os.path.join(file_path, extracted_path)
         self.assertTrue(os.path.exists(full_file_path))
 
@@ -113,9 +117,10 @@ class CreateCategoryTest(CoreBaseTestCase):
             "slug": "test-custom-slug",  # TODO test with farsi characters
             "description": "any description",
             # "subcategory_of": "",
-
         }
-        response = self.client.post(path=reverse(viewname="category-list"), data=payload)
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
@@ -133,10 +138,13 @@ class CreateCategoryTest(CoreBaseTestCase):
 
         # expected file is saved in media directory
         file_path = os.path.abspath(str(settings.BASE_DIR))
-        extracted_path = re.search(pattern=r"testserver\/(.*)", string=expected["image"]).group(1)
+        extracted_path = re.search(
+            pattern=r"testserver\/(.*)", string=expected["image"]
+        ).group(1)
         full_file_path = os.path.join(file_path, extracted_path)
         self.assertTrue(os.path.exists(full_file_path))
-        
+
+
 # TODO test create with invalid payloads
 # TODO test retrieve and list
 # TODO test update
