@@ -15,5 +15,7 @@ class CategoryFactory:
 
     @classmethod
     def create_categories_list(cls):
-        return (Category.objects.create(name=f"{cls.sample_name} 1"),
-                Category.objects.create(name=f"{cls.sample_name} 2"))
+        return (
+            Category.objects.create(name=f"{cls.sample_name} 1"),
+            Category.objects.create(name=f"{cls.sample_name} 2"),
+        )
