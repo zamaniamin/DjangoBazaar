@@ -24,20 +24,19 @@ class Category(models.Model):
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
-    subcategory_of = models.ForeignKey(
+    parent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="subcategories",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
-        if self.subcategory_of and self.subcategory_of == self:
-            raise ValidationError("A category cannot be a subcategory of itself.")
+        if self.parent and self.parent == self:
+            raise ValidationError("A category cannot be a parent of itself.")
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -54,6 +53,5 @@ class Category(models.Model):
             self.slug = slug
 
         super().save(*args, **kwargs)
-
 
 # TODO subcategory_of cant be same as current category id

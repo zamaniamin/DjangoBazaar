@@ -75,7 +75,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(expected["slug"], "test-category")
         self.assertIsNone(expected["description"])
         self.assertIsNone(expected["image"])
-        self.assertIsNone(expected["subcategory_of"])
+        self.assertIsNone(expected["parent"])
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
 
@@ -95,7 +95,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(expected["slug"], "test-category")
         self.assertIsNone(expected["description"])
         self.assertTrue(expected["image"].strip())
-        self.assertIsNone(expected["subcategory_of"])
+        self.assertIsNone(expected["parent"])
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
 
@@ -109,14 +109,15 @@ class CreateCategoryTest(CoreBaseTestCase):
 
     def test_create_category_with_all_fields(self):
         # TODO create a category factory class
-        # TODO use created category as parent to get their id and add it to subcategory_of
+        # create a category and use it as parent category
+        # TODO use created category as parent to get their id and add it to parent
         # make request
         payload = {
             "name": "test category",
             "image": self.generate_single_photo_file(),
             "slug": "test-custom-slug",  # TODO test with farsi characters
             "description": "any description",
-            # "subcategory_of": "",
+            # "parent": "",
         }
         response = self.client.post(
             path=reverse(viewname="category-list"), data=payload
@@ -132,7 +133,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(expected["slug"], payload["slug"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertTrue(expected["image"].strip())
-        self.assertIsNone(expected["subcategory_of"])
+        self.assertIsNone(expected["parent"])
         self.assertDatetimeFormat(expected["created_at"])
         self.assertDatetimeFormat(expected["updated_at"])
 
@@ -143,7 +144,6 @@ class CreateCategoryTest(CoreBaseTestCase):
         ).group(1)
         full_file_path = os.path.join(file_path, extracted_path)
         self.assertTrue(os.path.exists(full_file_path))
-
 
 # TODO test create with invalid payloads
 # TODO test retrieve and list
