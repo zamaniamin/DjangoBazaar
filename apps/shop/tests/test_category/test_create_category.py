@@ -148,12 +148,3 @@ class CreateCategoryTest(CoreBaseTestCase):
 
 
 # TODO test create with invalid payloads
-
-# TODO test retrieve and list
-# TODO test list children of a category
-
-# TODO test update
-# TODO test update a category cannot be a parent of itself.
-
-# TODO test destroy
-# TODO test destroy category and check the children parent field is set to null
