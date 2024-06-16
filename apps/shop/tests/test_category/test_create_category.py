@@ -82,7 +82,7 @@ class CreateCategoryTest(CoreBaseTestCase):
 
     def test_creat_category_with_image(self):
         # request
-        payload = {"name": "test category", "image": self.generate_single_photo_file()}
+        payload = {"name": "test category", "image": self.image_file}
         response = self.client.post(
             path=reverse(viewname="category-list"), data=payload
         )
