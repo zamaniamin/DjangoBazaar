@@ -10,3 +10,11 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
+
+    def validate(self, data):
+        # Check if the category is its own parent
+        if "parent" in data and data["parent"] == self.instance:
+            raise serializers.ValidationError(
+                "A category cannot be a parent of itself."
+            )
+        return data

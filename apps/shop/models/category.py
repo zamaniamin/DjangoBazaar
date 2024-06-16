@@ -2,7 +2,6 @@ import os
 import sys
 import uuid
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
@@ -34,11 +33,6 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def clean(self):
-        # TODO this should be when category was updated
-        if self.parent and self.parent == self:
-            raise ValidationError("A category cannot be a parent of itself.")
-
     def automatic_slug_creation(self):
         if not self.slug:
             # TODO add tests for slug on create, read, update
@@ -51,6 +45,5 @@ class Category(models.Model):
             self.slug = slug
 
     def save(self, *args, **kwargs):
-        self.clean()
         self.automatic_slug_creation()
         super().save(*args, **kwargs)
