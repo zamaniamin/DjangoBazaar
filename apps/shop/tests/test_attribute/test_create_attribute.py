@@ -61,7 +61,7 @@ class CreateAttributeTest(CoreBaseTestCase):
 
         # request
         payload = {
-            "name": AttributeFactory.attribute_name_type,
+            "name": AttributeFactory.attribute_name_2,
         }
         response = self.client.post(
             reverse("attribute-list"),

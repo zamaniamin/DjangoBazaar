@@ -12,7 +12,9 @@ class Attribute(models.Model):
 
 
 class AttributeItem(models.Model):
-    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, related_name="items")
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="items"
+    )
     item_name = models.CharField(max_length=255)
 
     class Meta:

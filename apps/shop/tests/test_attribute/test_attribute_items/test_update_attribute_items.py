@@ -22,13 +22,13 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
     # -------------------------------
 
     def test_update_item_by_admin(self):
-        payload = {"name": "color"}
+        payload = {"item_name": "new item name"}
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": self.item.id},
             ),
-            json.dumps(payload),
+            data=json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -36,8 +36,8 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
     def test_update_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": self.item.id},
             ),
             content_type="application/json",
@@ -47,8 +47,8 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
     def test_update_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": self.item.id},
             ),
             content_type="application/json",
@@ -61,17 +61,17 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
 
     def test_update_item(self):
         # get old item name
-        old_item_name = self.item.name
+        old_item_name = self.item.item_name
 
         # request
-        new_item_name = "red 2"
-        payload = {"name": new_item_name}
+        new_item_name = "item name 2"
+        payload = {"item_name": new_item_name}
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": self.item.id},
             ),
-            json.dumps(payload),
+            data=json.dumps(payload),
             content_type="application/json",
         )
 
@@ -82,17 +82,17 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
             set(response.data.keys()),
             {
                 "id",
-                "name",
+                "item_name",
             },
         )
-        self.assertEqual(expected["name"], new_item_name)
+        self.assertEqual(expected["item_name"], new_item_name)
         self.assertNotEqual(old_item_name, new_item_name)
 
     def test_update_with_invalid_item_pk(self):
         # request
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             ),
             content_type="application/json",
@@ -103,8 +103,8 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
 
     def test_update_attribute_item_with_invalid_attribute_pk(self):
         response = self.client.put(
-            reverse(
-                "attribute-items-detail",
+            path=reverse(
+                viewname="attribute-items-detail",
                 kwargs={"attribute_pk": 99999, "pk": self.item.id},
             ),
             content_type="application/json",

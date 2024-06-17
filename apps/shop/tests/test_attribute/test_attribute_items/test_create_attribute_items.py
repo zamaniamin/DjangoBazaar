@@ -8,14 +8,10 @@ from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
 class CreateAttributeItemsTest(CoreBaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
     def setUp(self):
         self.set_admin_user_authorization()
         self.attribute = AttributeFactory.create_attribute()
-        self.payload = {"name": AttributeFactory.attribute_name}
+        self.payload = {"item_name": AttributeFactory.attribute_item_name}
 
     # ------------------------------
     # --- Test Access Permission ---
@@ -23,8 +19,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
 
     def test_create_item_by_admin(self):
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -32,8 +31,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -41,8 +43,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -54,15 +59,19 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_one_item(self):
         # request
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
-        self.assertIsInstance(expected["name"], str)
+        self.assertIsInstance(expected["id"], int)
+        self.assertIsInstance(expected["item_name"], str)
 
     def test_create_one_item_if_already_exist(self):
         # create an attribute item
@@ -70,20 +79,26 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_item_if_attribute_name_is_empty(self):
+    def test_create_one_item_if_item_name_is_empty(self):
         # request
-        payload = {"name": ""}
+        payload = {"item_name": ""}
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": self.attribute.id}),
-            json.dumps(payload),
+            path=reverse(
+                viewname="attribute-items-list",
+                kwargs={"attribute_pk": self.attribute.id},
+            ),
+            data=json.dumps(payload),
             content_type="application/json",
         )
 
@@ -93,8 +108,8 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_one_item_if_attribute_not_exist(self):
         # request
         response = self.client.post(
-            reverse("attribute-items-list", kwargs={"attribute_pk": 999}),
-            json.dumps(self.payload),
+            path=reverse(viewname="attribute-items-list", kwargs={"attribute_pk": 999}),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 

@@ -82,11 +82,11 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
 
         # get validated data
         payload = serializer.validated_data
-        name = payload["name"]
+        name = payload["item_name"]
 
         try:
             attribute_item = AttributeItem.objects.create(
-                attribute_id=attribute_id, name=name
+                attribute_id=attribute_id, item_name=name
             )
         except IntegrityError:
             return Response(
