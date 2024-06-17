@@ -56,5 +56,29 @@ class DestroyCategoryTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_delete_parent_category(self):
+        """
+        test destroy category and check the parent field of children is set to null
+        """
 
-# TODO test destroy category and check the parent field of children is set to null
+        # make a family
+        parent = self.category
+        child_1, child_2 = CategoryFactory.create_categories_list()
+        child_1.parent = parent
+        child_2.parent = parent
+        child_1.save()
+        child_2.save()
+
+        # request
+        response = self.client.delete(
+            path=reverse(viewname="category-detail", kwargs={"pk": parent.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Reload the children from the database to get the latest state
+        child_1.refresh_from_db()
+        child_2.refresh_from_db()
+
+        # expected
+        self.assertIsNone(child_1.parent)
+        self.assertIsNone(child_2.parent)
