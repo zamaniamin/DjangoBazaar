@@ -4,8 +4,6 @@ from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter, OrderingFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.shop.models import Attribute, AttributeItem
 from apps.shop.paginations import DefaultPagination
@@ -17,24 +15,17 @@ from apps.shop.serializers import attribute_serializers
     retrieve=extend_schema(tags=["Attribute"], summary="Retrieve a single attribute"),
     list=extend_schema(tags=["Attribute"], summary="Retrieve a list of attributes"),
     update=extend_schema(tags=["Attribute"], summary="Update an attribute"),
-    partial_update=extend_schema(
-        tags=["Attribute"], summary="Partial update an attribute"
-    ),
     destroy=extend_schema(tags=["Attribute"], summary="Deletes an attribute"),
 )
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = attribute_serializers.AttributeSerializer
     permission_classes = [IsAdminUser]
+    http_method_names = ["post", "get", "put", "delete"]
     # TODO add test for pagination
     ordering_fields = [
-        "name",
+        "attribute_name",
     ]
-    # Filter options
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["name"]
-    search_fields = ["name"]
-    ordering_fields = ["name"]
     pagination_class = DefaultPagination
 
     ACTION_PERMISSIONS = {
@@ -57,9 +48,6 @@ class AttributeViewSet(viewsets.ModelViewSet):
         tags=["Attribute Item"], summary="Retrieve a list of attributes items"
     ),
     update=extend_schema(tags=["Attribute Item"], summary="Update an attribute item"),
-    partial_update=extend_schema(
-        tags=["Attribute Item"], summary="Partial update an attribute item"
-    ),
     destroy=extend_schema(tags=["Attribute Item"], summary="Deletes an attribute item"),
 )
 class AttributeItemViewSet(viewsets.ModelViewSet):

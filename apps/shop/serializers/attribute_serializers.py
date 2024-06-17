@@ -15,4 +15,4 @@ class AttributeSerializer(serializers.ModelSerializer):
 class AttributeItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeItem
-        fields = ["id", "name"]
+        fields = ["id", "item_name"]
