@@ -32,8 +32,3 @@ class OptionFactory:
     def create_option_list(cls):
         Option.objects.create(option_name=cls.option_name_color)
         Option.objects.create(option_name=cls.option_name_size)
-
-    # @classmethod
-    # def populate_demo_options(cls):
-    #     cls.add_one_option_item()
-    #     cls.add_multiple_items()
