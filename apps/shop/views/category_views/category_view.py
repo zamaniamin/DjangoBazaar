@@ -24,6 +24,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
     pagination_class = DefaultPagination
+    http_method_names = ["post", "get", "put", "delete"]
 
     ACTION_PERMISSIONS = {
         "list": [AllowAny()],
