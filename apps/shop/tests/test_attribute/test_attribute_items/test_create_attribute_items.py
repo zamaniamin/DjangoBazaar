@@ -8,10 +8,14 @@ from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
 class CreateAttributeItemsTest(CoreBaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.attribute = AttributeFactory.create_attribute()
+        cls.payload = {"item_name": AttributeFactory.attribute_item_name}
+
     def setUp(self):
         self.set_admin_user_authorization()
-        self.attribute = AttributeFactory.create_attribute()
-        self.payload = {"item_name": AttributeFactory.attribute_item_name}
 
     # ------------------------------
     # --- Test Access Permission ---

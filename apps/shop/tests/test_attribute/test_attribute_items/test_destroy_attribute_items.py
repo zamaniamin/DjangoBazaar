@@ -6,10 +6,14 @@ from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
 class DestroyAttributeItemsTest(CoreBaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.attribute = AttributeFactory.create_attribute()
+        cls.attribute_item = AttributeFactory.add_one_attribute_item(cls.attribute.id)
+
     def setUp(self):
         self.set_admin_user_authorization()
-        self.attribute = AttributeFactory.create_attribute()
-        self.attribute_item = AttributeFactory.add_one_attribute_item(self.attribute.id)
 
     # -------------------------------
     # --- Test Access Permissions ---
@@ -54,7 +58,7 @@ class DestroyAttributeItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ---------------------------
-    # --- Test Delete an item ---
+    # --- Test Delete An Item ---
     # ---------------------------
 
     def test_delete_item(self):
@@ -82,7 +86,7 @@ class DestroyAttributeItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_item_with_invalid_attribute_pk(self):
+    def test_delete_item_if_attribute_not_exist(self):
         response = self.client.delete(
             path=reverse(
                 viewname="attribute-items-detail",
@@ -91,7 +95,7 @@ class DestroyAttributeItemsTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_item_with_invalid_item_pk(self):
+    def test_delete_item_if_item_not_exist(self):
         response = self.client.delete(
             path=reverse(
                 viewname="attribute-items-detail",

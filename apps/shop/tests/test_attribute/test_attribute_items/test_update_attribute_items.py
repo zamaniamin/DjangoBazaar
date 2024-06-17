@@ -88,7 +88,7 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
         self.assertEqual(expected["item_name"], new_item_name)
         self.assertNotEqual(old_item_name, new_item_name)
 
-    def test_update_with_invalid_item_pk(self):
+    def test_update_item_if_item_not_exist(self):
         # request
         response = self.client.put(
             path=reverse(
@@ -101,7 +101,7 @@ class UpdateAttributeItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_attribute_item_with_invalid_attribute_pk(self):
+    def test_update_item_if_attribute_not_exist(self):
         response = self.client.put(
             path=reverse(
                 viewname="attribute-items-detail",
