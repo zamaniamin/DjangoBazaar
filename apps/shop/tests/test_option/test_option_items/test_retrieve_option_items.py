@@ -68,6 +68,7 @@ class ListOptionItemsTest(CoreBaseTestCase):
 
         # expected
         expected = response.json()
+        # todo len should be 0
         self.assertEqual(len(expected), 2)
 
         # check keys are exist in the response body
