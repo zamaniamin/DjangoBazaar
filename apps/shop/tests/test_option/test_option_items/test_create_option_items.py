@@ -11,11 +11,11 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
+        cls.option = OptionFactory.create_option()
+        cls.payload = {"item_name": OptionFactory.item_name}
 
     def setUp(self):
         self.set_admin_user_authorization()
-        self.option = OptionFactory.create_option()
-        self.payload = {"item_name": OptionFactory.item_name}
 
     # ------------------------------
     # --- Test Access Permission ---
@@ -23,8 +23,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
 
     def test_create_item_by_admin(self):
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -32,8 +34,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -41,8 +45,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -54,8 +60,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_one_item(self):
         # request
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -70,8 +78,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -82,8 +92,10 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         # request
         payload = {"item_name": ""}
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(payload),
+            path=reverse(
+                viewname="option-items-list", kwargs={"option_pk": self.option.id}
+            ),
+            data=json.dumps(payload),
             content_type="application/json",
         )
 
@@ -93,8 +105,8 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_one_item_if_option_not_exist(self):
         # request
         response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": 999}),
-            json.dumps(self.payload),
+            path=reverse(viewname="option-items-list", kwargs={"option_pk": 999}),
+            data=json.dumps(self.payload),
             content_type="application/json",
         )
 
