@@ -5,11 +5,14 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import product_serializers
 from apps.shop.services.product_service import ProductService
+from apps.shop.models.product import Product
+from django.db.models import Q
 
 
 @extend_schema_view(
@@ -86,5 +89,36 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = product_serializers.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
 
+    @api_view(['GET'])
+    def get_product_item_queryset(request):
+        query = request.GET.get('q', '')
+        if query:
+            products = Product.objects.filter(
+                Q(name__icontains=query) |
+                Q(description__icontains=query) |
+                Q(option_items__item_name__icontains=query)
+            ).distinct()
+        else:
+            products = Product.objects.all()
+
+        serializer = product_serializers.ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    def get_item_category_queryset(self):
+        queryset = Product.objects.all()
+        item_name = self.request.query_params.get('item_name', None)
+
+        if item_name:
+            queryset = queryset.filter(option_items__item_name__icontains=item_name).select_related('category').distinct()
+
+        return queryset
+
+    def get_product_category_queryset(self):
+        queryset = Product.objects.all()
+        name = self.request.query_params.get('name', None)
+        description = self.request.query_params.get('description', None)
+        if name:
+            queryset = queryset.filter(name__icontains=name).filter(description__icontains=description).select_related('category').distinct()
+        return queryset
 
 # TODO add new variant to product and update the product options base on new items in the variant
