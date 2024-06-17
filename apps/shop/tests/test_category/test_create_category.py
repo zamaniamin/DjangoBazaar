@@ -162,4 +162,5 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["slug"], "دسته-بندی")
 
+
 # TODO test create with invalid payloads
