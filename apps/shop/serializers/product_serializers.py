@@ -106,6 +106,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "published_at",
+            "category",
+            "attribute"
         ]
         read_only_fields = [
             "created_at",
@@ -181,7 +183,6 @@ class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, source="media", read_only=True)
-
     class Meta:
         model = Product
         fields = [
@@ -195,6 +196,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "published_at",
+            "category",
+            "attribute"
         ]
 
     def to_representation(self, instance):

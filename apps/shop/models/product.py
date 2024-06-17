@@ -29,7 +29,15 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
-
+    category = models.ManyToManyField(
+        'Category',
+        related_name="products",
+    )
+    attribute = models.ForeignKey(
+        'Attribute',
+        related_name="products",
+        on_delete=models.PROTECT
+    )
     def __str__(self):
         return self.name
 
