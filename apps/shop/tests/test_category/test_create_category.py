@@ -116,7 +116,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "test category",
             "image": self.generate_single_photo_file(),
-            "slug": "test-custom-slug",  # TODO test with farsi characters
+            "slug": "test-custom-slug",
             "description": "any description",
             "parent": parent_category.id,
         }
@@ -146,5 +146,20 @@ class CreateCategoryTest(CoreBaseTestCase):
         full_file_path = os.path.join(file_path, extracted_path)
         self.assertTrue(os.path.exists(full_file_path))
 
+    def test_create_category_with_persian_characters(self):
+        # make request
+        payload = {
+            "name": "دسته بندی",
+        }
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # expected
+        expected = response.json()
+        self.assertEqual(len(expected), 8)
+        self.assertEqual(expected["name"], payload["name"])
+        self.assertEqual(expected["slug"], "دسته-بندی")
 
 # TODO test create with invalid payloads

@@ -23,6 +23,7 @@ class OptionViewSet(viewsets.ModelViewSet):
     queryset = Option.objects.all().order_by("option_name")
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
+    http_method_names = ["post", "get", "put", "delete"]
     # TODO add test for pagination
     ordering_fields = [
         "option_name",

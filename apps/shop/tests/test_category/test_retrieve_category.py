@@ -156,6 +156,3 @@ class RetrieveOptionTest(CoreBaseTestCase):
             path=reverse(viewname="category-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-# TODO test list children of a category

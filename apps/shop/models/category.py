@@ -35,7 +35,6 @@ class Category(models.Model):
 
     def automatic_slug_creation(self):
         if not self.slug:
-            # TODO add tests for slug on create, read, update
             base_slug = slugify(self.name, allow_unicode=True)
             slug = base_slug
             count = 1
