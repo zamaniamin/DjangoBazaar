@@ -8,15 +8,16 @@ from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
 class UpdateCartItemTest(CoreBaseTestCase):
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.cart_id, cls.cart_item = CartFactory.add_one_item(get_item=True)
 
-    def test_update_cart_by_admin(self):
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    def test_update_item_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.patch(
             reverse(
@@ -28,7 +29,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_update_cart_by_regular_user(self):
+    def test_update_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.patch(
             reverse(
@@ -40,7 +41,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_update_cart_by_anonymous_user(self):
+    def test_update_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.patch(
             reverse(
@@ -52,7 +53,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_update_cart_item_quantity(self):
+    def test_update_item_quantity(self):
         new_quantity = self.cart_item.quantity + 1
         price = float(self.cart_item.variant.price)
         item_total = price * new_quantity
@@ -82,7 +83,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
             expected_cart_item["item_total"], round(item_total, 2), places=2
         )
 
-    def test_update_cart_item_quantity_bigger_than_stock(self):
+    def test_update_item_quantity_bigger_than_stock(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True, stock=1)
 
         response = self.client.patch(
@@ -97,7 +98,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_cart_item_if_variant_not_in_stock(self):
+    def test_update_item_if_variant_not_in_stock(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True, stock=0)
 
         response = self.client.patch(
@@ -112,7 +113,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_cart_item_if_cart_not_exist(self):
+    def test_update_item_if_cart_not_exist(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         response = self.client.patch(
             reverse(
@@ -129,7 +130,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_cart_item_if_not_exist(self):
+    def test_update_item_if_not_exist(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         response = self.client.patch(
             reverse(
@@ -143,7 +144,7 @@ class UpdateCartItemTest(CoreBaseTestCase):
         # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_cart_item_with_invalid_cart_pk(self):
+    def test_update_item_with_invalid_cart_pk(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         response = self.client.patch(
             reverse(
