@@ -16,44 +16,45 @@ class CreateAttributeTest(CoreBaseTestCase):
 
     def test_create_attribute_by_admin(self):
         payload = {
-            "name": "test attribute",
+            "attribute_name": "test attribute",
         }
         response = self.client.post(
-            reverse("attribute-list"),
-            json.dumps(payload),
+            path=reverse(viewname="attribute-list"),
+            data=json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_attributes_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.post(reverse("attribute-list"))
+        response = self.client.post(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_attributes_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.post(reverse("attribute-list"))
+        response = self.client.post(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # -----------------------------
-    # --- Test Create an attribute ---
-    # -----------------------------
+    # --------------------------------
+    # --- Test Create An Attribute ---
+    # --------------------------------
 
     def test_create_attribute(self):
         # request
         payload = {
-            "name": "test attribute",
+            "attribute_name": "test attribute",
         }
         response = self.client.post(
-            reverse("attribute-list"),
-            json.dumps(payload),
+            path=reverse(viewname="attribute-list"),
+            data=json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
         # expected
         expected = response.json()
         self.assertEqual(len(expected), 2)
-        self.assertEqual(expected["name"], payload["name"])
+        self.assertEqual(expected["attribute_name"], payload["attribute_name"])
 
     def test_create_attribute_if_already_exist(self):
         # create an attribute item
@@ -61,11 +62,11 @@ class CreateAttributeTest(CoreBaseTestCase):
 
         # request
         payload = {
-            "name": AttributeFactory.attribute_name_type,
+            "attribute_name": AttributeFactory.attribute_name,
         }
         response = self.client.post(
-            reverse("attribute-list"),
-            json.dumps(payload),
+            path=reverse(viewname="attribute-list"),
+            data=json.dumps(payload),
             content_type="application/json",
         )
 
@@ -74,10 +75,10 @@ class CreateAttributeTest(CoreBaseTestCase):
 
     def test_create_attribute_if_name_is_empty(self):
         # request
-        payload = {"name": ""}
+        payload = {"attribute_name": ""}
         response = self.client.post(
-            reverse("attribute-list"),
-            json.dumps(payload),
+            path=reverse(viewname="attribute-list"),
+            data=json.dumps(payload),
             content_type="application/json",
         )
 

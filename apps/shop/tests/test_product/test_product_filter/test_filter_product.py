@@ -29,7 +29,9 @@ class FilterProductTest(ProductBaseTestCase):
         cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
 
     def test_filter_active_product(self):
-        response = self.client.get(reverse("product-list"), data={"status": "active"})
+        response = self.client.get(
+            path=reverse(viewname="product-list"), data={"status": "active"}
+        )
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)

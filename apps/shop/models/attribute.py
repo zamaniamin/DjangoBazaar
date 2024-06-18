@@ -2,27 +2,23 @@ from django.db import models
 
 
 class Attribute(models.Model):
-    class Meta:
-        ordering = ["name"]
+    attribute_name = models.CharField(max_length=100, unique=True)
 
-    name = models.CharField(
-        verbose_name="Name",
-        max_length=100,
-        help_text="User attribute name",
-    )
+    class Meta:
+        ordering = ["attribute_name"]
 
     def __str__(self):
-        return self.name
+        return self.attribute_name
 
 
 class AttributeItem(models.Model):
     attribute = models.ForeignKey(
         Attribute, on_delete=models.CASCADE, related_name="items"
     )
-    name = models.CharField(max_length=255)
+    item_name = models.CharField(max_length=255)
 
     class Meta:
-        unique_together = ("attribute", "name")
+        unique_together = ("attribute", "item_name")
 
     def __str__(self):
-        return self.name
+        return self.item_name

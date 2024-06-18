@@ -16,7 +16,6 @@ from apps.shop.serializers.option_serializers import OptionItemSerializer
     retrieve=extend_schema(tags=["Option"], summary="Retrieve a single option"),
     list=extend_schema(tags=["Option"], summary="Retrieve a list of options"),
     update=extend_schema(tags=["Option"], summary="Update an option"),
-    partial_update=extend_schema(tags=["Option"], summary="Partial update an option"),
     destroy=extend_schema(tags=["Option"], summary="Deletes an option"),
 )
 class OptionViewSet(viewsets.ModelViewSet):
@@ -48,9 +47,6 @@ class OptionViewSet(viewsets.ModelViewSet):
         tags=["Option Item"], summary="Retrieve a list of options items"
     ),
     update=extend_schema(tags=["Option Item"], summary="Update an option item"),
-    partial_update=extend_schema(
-        tags=["Option Item"], summary="Partial update an option item"
-    ),
     destroy=extend_schema(tags=["Option Item"], summary="Deletes an option item"),
 )
 class OptionItemViewSet(viewsets.ModelViewSet):

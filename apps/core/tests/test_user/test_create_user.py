@@ -18,13 +18,13 @@ class CreateUserTest(APITestCase):
             "password_confirm": "Test_1234",
         }
         response = self.client.post(
-            reverse("user-list"),
+            path=reverse(viewname="user-list"),
             data=json.dumps(payload),
             content_type="application/json",
         )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertFalse("password" in response.data)
         self.assertFalse("password_confirm" in response.data)
         self.assertTrue("email" in response.data)

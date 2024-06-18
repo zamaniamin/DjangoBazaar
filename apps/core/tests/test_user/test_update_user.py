@@ -7,7 +7,11 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class UpdateUserTest(CoreBaseTestCase):
-    def test_update_by_admin(self):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_update_user_by_admin(self):
         # request
         self.set_admin_user_authorization()
         payload = {
@@ -17,13 +21,13 @@ class UpdateUserTest(CoreBaseTestCase):
             "is_active": True,
         }
         response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}),
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id}),
             data=json.dumps(payload),
             content_type="application/json",
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)
         self.assertIsInstance(expected["id"], int)
@@ -37,15 +41,15 @@ class UpdateUserTest(CoreBaseTestCase):
             or self.assertDatetimeFormat(expected["last_login"])
         )
 
-    def test_update_by_regular_user(self):
+    def test_update_user_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_by_anonymous_user(self):
+    def test_update_user_by_anonymous_user(self):
         response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}), {}
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

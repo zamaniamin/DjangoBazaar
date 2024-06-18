@@ -14,29 +14,29 @@ class ListAttributeTest(CoreBaseTestCase):
     # ------------------------------
 
     def test_list_attributes_by_admin(self):
-        response = self.client.get(reverse("attribute-list"))
+        response = self.client.get(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_attributes_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(reverse("attribute-list"))
+        response = self.client.get(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_attributes_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("attribute-list"))
+        response = self.client.get(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # --------------------------
-    # --- Test List attributes ----
-    # --------------------------
+    # -----------------------------
+    # --- Test List Attributes ----
+    # -----------------------------
 
     def test_attribute_list(self):
         # create a list of attributes
         AttributeFactory.create_attribute_list()
 
         # request
-        response = self.client.get(reverse("attribute-list"))
+        response = self.client.get(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -61,13 +61,13 @@ class ListAttributeTest(CoreBaseTestCase):
                 set(attribute.keys()),
                 {
                     "id",
-                    "name",
+                    "attribute_name",
                 },
             )
 
-    def test_attribute_empty_list(self):
+    def test_list_is_empty(self):
         # request
-        response = self.client.get(reverse("attribute-list"))
+        response = self.client.get(path=reverse(viewname="attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -101,32 +101,32 @@ class RetrieveAttributeTest(CoreBaseTestCase):
     def test_retrieve_attribute_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_attribute_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_attribute_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # -------------------------------
-    # --- Test Retrieve an attribute ---
-    # -------------------------------
+    # ----------------------------------
+    # --- Test Retrieve An Attribute ---
+    # ----------------------------------
 
     def test_retrieve_attribute(self):
         # request
         response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -135,10 +135,12 @@ class RetrieveAttributeTest(CoreBaseTestCase):
             set(response.data.keys()),
             {
                 "id",
-                "name",
+                "attribute_name",
             },
         )
 
     def test_retrieve_attribute_404(self):
-        response = self.client.get(reverse("attribute-detail", kwargs={"pk": 11}))
+        response = self.client.get(
+            path=reverse(viewname="attribute-detail", kwargs={"pk": 999})
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
