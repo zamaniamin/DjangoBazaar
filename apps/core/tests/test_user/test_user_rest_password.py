@@ -22,12 +22,10 @@ class UserResetPasswordTest(APITestCase):
             "email": self.regular_user.email,
         }
         response = self.client.post(
-            reverse("user-reset-password"),
+            path=reverse(viewname="user-reset-password"),
             data=json.dumps(payload),
             content_type="application/json",
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expected email is sent
@@ -45,12 +43,10 @@ class UserResetPasswordTest(APITestCase):
             "new_password": UserFactory.demo_password() + "test",
         }
         response = self.client.post(
-            reverse("user-reset-password-conformation"),
+            path=reverse(viewname="user-reset-password-conformation"),
             data=json.dumps(payload),
             content_type="application/json",
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expected new password is set
@@ -70,12 +66,10 @@ class UserResetPasswordTest(APITestCase):
             "new_password": demo_password + "test2",
         }
         response = self.client.post(
-            reverse("user-change-password"),
+            path=reverse(viewname="user-change-password"),
             data=json.dumps(payload),
             content_type="application/json",
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expected new password is set

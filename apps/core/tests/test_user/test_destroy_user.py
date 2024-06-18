@@ -7,24 +7,28 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class DestroyUserTest(CoreBaseTestCase):
-    def test_delete_by_admin(self):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_delete_user_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
             get_user_model().objects.get(id=self.regular_user.id)
 
-    def test_delete_by_regular_user(self):
+    def test_delete_user_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_delete_by_anonymous_user(self):
+    def test_delete_user_by_anonymous_user(self):
         response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

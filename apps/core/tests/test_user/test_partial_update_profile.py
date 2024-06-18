@@ -7,7 +7,11 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class PartialUpdateProfileTest(CoreBaseTestCase):
-    def test_partial_update_by_admin(self):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_partial_update_profile_by_admin(self):
         # request
         self.set_admin_user_authorization()
         payload = {
@@ -15,13 +19,13 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
             "last_name": "admin l name",
         }
         response = self.client.patch(
-            reverse("user-me"),
+            path=reverse(viewname="user-me"),
             data=json.dumps(payload),
             content_type="application/json",
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -36,18 +40,18 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
             },
         )
 
-    def test_partial_update_by_regular_user(self):
+    def test_partial_update_profile_by_regular_user(self):
         # request
         self.set_regular_user_authorization()
         payload = {"first_name": "member f name"}
         response = self.client.patch(
-            reverse("user-me"),
+            path=reverse(viewname="user-me"),
             data=json.dumps(payload),
             content_type="application/json",
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -62,6 +66,6 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
             },
         )
 
-    def test_partial_update_by_anonymous_user(self):
-        response = self.client.patch(reverse("user-me"))
+    def test_partial_update_profile_by_anonymous_user(self):
+        response = self.client.patch(path=reverse(viewname="user-me"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

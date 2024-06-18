@@ -5,16 +5,20 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class RetrieveUserTest(CoreBaseTestCase):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
     def test_retrieve_user_by_admin(self):
         self.set_admin_user_authorization()
 
         # request
         response = self.client.get(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 7)
         self.assertIsInstance(expected["id"], int)
@@ -31,12 +35,12 @@ class RetrieveUserTest(CoreBaseTestCase):
     def test_retrieve_user_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_retrieve_user_by_anonymous_user(self):
         response = self.client.get(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
