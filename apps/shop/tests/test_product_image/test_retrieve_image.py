@@ -15,7 +15,44 @@ class RetrieveImageTest(ProductBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
+        cls.product = ProductFactory.create_product(has_images=True)
 
+    def setUp(self):
+        self.set_admin_user_authorization()
+
+    # -------------------------------
+    # --- Test Access Permissions ---
+    # -------------------------------
+
+    def test_retrieve_image_by_regular_user(self):
+        self.set_regular_user_authorization()
+        media_id = self.product.media.first().id
+        response = self.client.get(
+            path=reverse(
+                viewname="product-images-detail",
+                kwargs={"product_pk": self.product.id, "pk": media_id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_image_by_anonymous_user(self):
+        self.set_anonymous_user_authorization()
+        media_id = self.product.media.first().id
+        response = self.client.get(
+            path=reverse(
+                viewname="product-images-detail",
+                kwargs={"product_pk": self.product.id, "pk": media_id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class ListImageTest(ProductBaseTestCase):
+    files: list
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
         cls.product = ProductFactory.create_product(has_images=True)
 
     def setUp(self):
@@ -27,63 +64,36 @@ class RetrieveImageTest(ProductBaseTestCase):
 
     def test_list_images_by_regular_user(self):
         self.set_regular_user_authorization()
-
-        # request
         response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id})
+            path=reverse(
+                viewname="product-images-list", kwargs={"product_pk": self.product.id}
+            )
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_images_by_anonymous_user(self):
-        # request
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id})
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_image_by_regular_user(self):
-        self.set_regular_user_authorization()
-        media_id = self.product.media.first().id
-
-        # request
-        response = self.client.get(
-            reverse(
-                "product-images-detail",
-                kwargs={"product_pk": self.product.id, "pk": media_id},
+            path=reverse(
+                viewname="product-images-list", kwargs={"product_pk": self.product.id}
             )
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_image_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        media_id = self.product.media.first().id
+    # --------------------------------
+    # --- Test List Product Images ---
+    # --------------------------------
 
+    def test_list_with_one_image(self):
         # request
         response = self.client.get(
-            reverse(
-                "product-images-detail",
-                kwargs={"product_pk": self.product.id, "pk": media_id},
-            )
+            path=reverse(
+                viewname="product-images-list", kwargs={"product_pk": self.product.id}
+            ),
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_with_one_image(self):
-        # request
-        response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id}),
-        )
-
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         image = expected[0]
         self.assertIsInstance(expected, list)
@@ -111,7 +121,9 @@ class RetrieveImageTest(ProductBaseTestCase):
         # request
         active_product = ProductFactory.create_product(has_images=True)
         response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": active_product.id}),
+            path=reverse(
+                viewname="product-images-list", kwargs={"product_pk": active_product.id}
+            ),
         )
 
         # expected
