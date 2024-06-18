@@ -26,7 +26,7 @@ class UpdateVariantTest(ProductBaseTestCase):
             "stock": 111,
         }
         response = self.client.put(
-            reverse("variant-detail", kwargs={"pk": self.variant_id}),
+            path=reverse(viewname="variant-detail", kwargs={"pk": self.variant_id}),
             data=json.dumps(payload),
             content_type="application/json",
         )
@@ -39,3 +39,5 @@ class UpdateVariantTest(ProductBaseTestCase):
 
 
 # TODO add partial update too
+# TODO add access permission
+# TODO test with multi scenario
