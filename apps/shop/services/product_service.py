@@ -35,9 +35,14 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
+        cls.category_data = data.pop("category")
 
         # Create product
         cls.product = Product.objects.create(**data)
+
+        # Add categories to product
+        if cls.category_data:
+            cls.product.category.set(cls.category_data)
 
         # Create options
         cls.__create_product_options()

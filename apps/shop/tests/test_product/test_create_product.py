@@ -493,6 +493,7 @@ class CreateProductTest(ProductBaseTestCase):
             "price": 11,
             "stock": 11,
             "options": [],
+            "category": [],
         }
         product = ProductService.create_product(**product_data)
         self.assertIsNotNone(product.published_at)

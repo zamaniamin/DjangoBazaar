@@ -92,6 +92,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(many=True, required=False, default=None)
     variants = ProductVariantSerializer(many=True, read_only=True)
 
+    category = serializers.ListSerializer(
+        child=serializers.IntegerField(), required=False, default=None
+    )
+
     class Meta:
         model = Product
         fields = [
@@ -107,7 +111,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
             "category",
-            "attribute"
         ]
         read_only_fields = [
             "created_at",
@@ -183,6 +186,7 @@ class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, source="media", read_only=True)
+
     class Meta:
         model = Product
         fields = [
@@ -197,7 +201,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "published_at",
             "category",
-            "attribute"
         ]
 
     def to_representation(self, instance):
