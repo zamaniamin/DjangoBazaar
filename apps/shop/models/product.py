@@ -29,15 +29,14 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
-    category = models.ManyToManyField(
-        'Category',
+    category = models.ForeignKey(
+        "Category",
         related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
-    attribute = models.ForeignKey(
-        'Attribute',
-        related_name="products",
-        on_delete=models.PROTECT
-    )
+
     def __str__(self):
         return self.name
 
@@ -138,7 +137,6 @@ class ProductMedia(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 # todo add product options api
 # todo add product colors api (under options menu, add meta fields 'meta_key=color_code' and 'meta_value=#ffffff')
