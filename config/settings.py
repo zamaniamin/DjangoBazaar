@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "debug_toolbar",
     "corsheaders",
+    "zero_migrations",
     # Made by me
     "apps.core",
     "apps.shop",
