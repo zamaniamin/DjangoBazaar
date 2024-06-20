@@ -132,7 +132,7 @@ class ListProductsTest(ProductBaseTestCase):
         expected_products = expected["results"]
         self.assertEqual(len(expected_products), 4)
         for product in expected_products:
-            self.assertEqual(len(product), 10)
+            self.assertEqual(len(product), 11)
             self.assertIn("id", product)
             self.assertIn("name", product)
             self.assertIn("description", product)

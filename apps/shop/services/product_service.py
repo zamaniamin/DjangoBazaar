@@ -18,6 +18,7 @@ class ProductService:
     options: list | None = []
     options_data: list = []
     variants: list = []
+    category: list = []
     media: list | None = None
 
     @classmethod
@@ -35,7 +36,7 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
-        cls.category_data = data.pop("category")
+        cls.category_data = data.pop("category", None)
 
         # Create product
         cls.product = Product.objects.create(**data)
