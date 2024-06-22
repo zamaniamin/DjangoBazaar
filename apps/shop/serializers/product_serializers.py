@@ -92,10 +92,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(many=True, required=False, default=None)
     variants = ProductVariantSerializer(many=True, read_only=True)
 
-    category = serializers.ListSerializer(
-        child=serializers.IntegerField(), required=False, default=None
-    )
-
     class Meta:
         model = Product
         fields = [
