@@ -515,11 +515,6 @@ class CreateProductTest(ProductBaseTestCase):
     # --- Test Create Product With categories ---
     # -------------------------------------------
 
-    # TDD:
-    # 1- red = fail test
-    # 2- green = pass tess
-    # 3- refactor = refactor the code logic
-
     def test_create_product_with_category(self):
         # make request
         payload = {"name": "test product with category", "category": self.category.id}
