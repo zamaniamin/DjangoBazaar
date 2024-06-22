@@ -21,7 +21,7 @@ class Product(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)  # TODO add slug to serializers
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
@@ -137,7 +137,6 @@ class ProductMedia(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 # todo add product options api
 # todo add product colors api (under options menu, add meta fields 'meta_key=color_code' and 'meta_value=#ffffff')
