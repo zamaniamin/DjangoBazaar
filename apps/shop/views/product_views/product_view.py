@@ -120,4 +120,5 @@ class ProductViewSet(viewsets.ModelViewSet):
     #
     #     return queryset
 
+
 # TODO add new variant to product and update the product options base on new items in the variant
