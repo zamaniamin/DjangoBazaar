@@ -2,12 +2,18 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.utils import json
 
+from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 
 
 class CreateProductTest(ProductBaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.category = CategoryFactory.create_category()
+
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -493,7 +499,6 @@ class CreateProductTest(ProductBaseTestCase):
             "price": 11,
             "stock": 11,
             "options": [],
-            "category": [],
         }
         product = ProductService.create_product(**product_data)
         self.assertIsNotNone(product.published_at)
@@ -505,3 +510,59 @@ class CreateProductTest(ProductBaseTestCase):
         product_data["status"] = Product.STATUS_ARCHIVED
         product = ProductService.create_product(**product_data)
         self.assertIsNone(product.published_at)
+
+    # -------------------------------------------
+    # --- Test Create Product With categories ---
+    # -------------------------------------------
+
+    # TDD:
+    # 1- red = fail test
+    # 2- green = pass tess
+    # 3- refactor = refactor the code logic
+
+    def test_create_product_with_category(self):
+        # make request
+        payload = {"name": "test product with category", "category": self.category.id}
+        response = self.client.post(
+            path=reverse(viewname="product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        # expected product
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["name"], payload["name"])
+        self.assertEqual(expected["category"], self.category.id)
+
+    # -------------------------------------------------
+    # --- Test Create Product with Invalid category ---
+    # -------------------------------------------------
+
+    def test_create_product_if_category_not_exist(self):
+        # make request
+        payload = {"name": "test product with category", "category": 999}
+        response = self.client.post(
+            path=reverse(viewname="product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        # expected product
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_product_with_empty_category(self):
+        # make request
+        payload = {"name": "test product with category", "category": ""}
+        response = self.client.post(
+            path=reverse(viewname="product-list"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        # expected product
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertIsNone(expected["category"])
