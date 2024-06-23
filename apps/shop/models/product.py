@@ -38,6 +38,20 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
+    attributeItem = models.ForeignKey(
+        "AttributeItem",
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    optionItem = models.ForeignKey(
+        "OptionItem",
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
