@@ -113,6 +113,19 @@ class SearchProductTest(ProductBaseTestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(len(response.data["results"]), 1)
+    def test_unicode_characters(self):
+        unicode_term = "Café"
+        Product.objects.create(name="Café Table", description="Stylish café table", category= self.category1)
+        response = self.client.get(reverse("product-list"),{"search": "Café"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_empty_input(self):
+        response = self.client.get(reverse("product-list"),{"search": ""})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_input(self):
+        response = self.client.get(reverse("product-list"),{"search": "123-"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # TODO scenario 1 : test search base on just "product name"
     # TODO scenario 2 : test search base on "product name" and "product description"
