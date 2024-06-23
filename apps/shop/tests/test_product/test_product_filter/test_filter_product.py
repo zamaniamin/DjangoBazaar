@@ -40,6 +40,19 @@ class FilterProductTest(ProductBaseTestCase):
         self.assertEqual(expected["count"], 3)
         self.assertEqual(len(expected["results"]), 3)
 
+    def test_pagination_is_ten(self):
+        response = self.client.get(reverse("product-list"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 10)  # ?
+
+    def test_invalid_page_number(self):
+        response = self.client.get(reverse("product-list") + "?page=999")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_non_integer_page_number(self):
+        response = self.client.get(reverse("product-list") + "?page=abc")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 # TODO scenario 1 : test pagination
 # TODO scenario 2 : test in each pagination should load 10 products (DefaultPagination.page_size)
