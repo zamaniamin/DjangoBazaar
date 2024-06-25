@@ -3,10 +3,12 @@ from rest_framework_nested import routers
 from apps.shop.views.cart_views.cart_view import CartViewSet, CartItemViewSet
 from apps.shop.views.category_views.category_view import CategoryViewSet
 from apps.shop.views.option_views.option_view import OptionViewSet, OptionItemViewSet
+from apps.shop.views.review_views.review_view import ReviewViewSet
 from apps.shop.views.attribute_views.attribute_view import (
     AttributeViewSet,
     AttributeItemViewSet,
 )
+
 from apps.shop.views.product_views.image_view import ProductImageViewSet
 from apps.shop.views.product_views.product_view import ProductViewSet
 from apps.shop.views.product_views.variant_view import VariantViewSet
@@ -18,6 +20,7 @@ router.register("carts", CartViewSet, basename="cart")
 router.register("options", OptionViewSet, basename="option")
 router.register("categories", CategoryViewSet, basename="category")
 router.register("attributes", AttributeViewSet, basename="attribute")
+router.register("reviews", ReviewViewSet, basename="review")
 
 products_router = routers.NestedDefaultRouter(router, "products", lookup="product")
 products_router.register("images", ProductImageViewSet, basename="product-images")
