@@ -38,10 +38,9 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    attributeItem = models.ForeignKey(
+    attributeItem = models.ManyToManyField(
         "AttributeItem",
         related_name="products",
-        on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )

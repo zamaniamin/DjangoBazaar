@@ -20,6 +20,7 @@ class ProductService:
     variants: list = []
     category: list = []
     media: list | None = None
+    attributeItem: list = []
 
     @classmethod
     def create_product(cls, **data):
@@ -36,10 +37,12 @@ class ProductService:
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
         cls.options_data = data.pop("options")
-
+        cls.attributes = data.pop("attributeItem", None)
+        # Add categories to product
         # Create product
         cls.product = Product.objects.create(**data)
-
+        if cls.attributes:
+            cls.product.attributeItem.set(cls.attributes)
         # Create options
         cls.__create_product_options()
 
