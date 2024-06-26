@@ -21,7 +21,9 @@ class Product(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    slug = models.SlugField(
+        max_length=255, unique=True, blank=True, null=True
+    )  # TODO add slug to serializers
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
@@ -29,7 +31,33 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
-
+    category = models.ForeignKey(
+        "Category",
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    attributeItem = models.ManyToManyField(
+        "AttributeItem",
+        related_name="products",
+        null=True,
+        blank=True,
+    )
+    optionItem = models.ForeignKey(
+        "OptionItem",
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    review = models.ForeignKey(
+        "Review",
+        related_name="products",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     def __str__(self):
         return self.name
 
