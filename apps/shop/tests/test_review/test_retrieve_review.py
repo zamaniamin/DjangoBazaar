@@ -2,10 +2,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.core.tests.base_test import CoreBaseTestCase
-from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
+from apps.shop.demo.factory.review.review_factory import ReviewFactory
 
 
-class ListAttributeTest(CoreBaseTestCase):
+class ListReviewTest(CoreBaseTestCase):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -13,30 +13,30 @@ class ListAttributeTest(CoreBaseTestCase):
     # --- Test Access Permission ---
     # ------------------------------
 
-    def test_list_attributes_by_admin(self):
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+    def test_list_reviews_by_admin(self):
+        response = self.client.get(path=reverse(viewname="review-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_list_attributes_by_regular_user(self):
+    def test_list_reviews_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(path=reverse(viewname="review-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_list_attributes_by_anonymous_user(self):
+    def test_list_reviews_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(path=reverse(viewname="review-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # -----------------------------
-    # --- Test List Attributes ----
+    # --- Test List Reviews ----
     # -----------------------------
 
-    def test_attribute_list(self):
-        # create a list of attributes
-        AttributeFactory.create_attribute_list()
+    def test_review_list(self):
+        # create a list of reviews
+        ReviewFactory.create_review_list()
 
         # request
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(path=reverse(viewname="review-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -52,22 +52,26 @@ class ListAttributeTest(CoreBaseTestCase):
             },
         )
 
-        attribute_list = expected["results"]
-        self.assertIsInstance(attribute_list, list)
-        self.assertEqual(len(attribute_list), 2)
+        review_list = expected["results"]
+        self.assertIsInstance(review_list, list)
+        self.assertEqual(len(review_list), 2)
 
-        for attribute in attribute_list:
+        for review in review_list:
             self.assertEqual(
-                set(attribute.keys()),
+                set(review.keys()),
                 {
                     "id",
-                    "attribute_name",
+                    "message",
+                    'rating',
+                    'user',
+                    'status',
+                    'product'
                 },
             )
 
     def test_list_is_empty(self):
         # request
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(path=reverse(viewname="review-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -85,48 +89,46 @@ class ListAttributeTest(CoreBaseTestCase):
         self.assertIsInstance(expected["results"], list)
         self.assertEqual(len(expected["results"]), 0)
 
-    # TODO add pagination test
 
-
-class RetrieveAttributeTest(CoreBaseTestCase):
+class RetrieveReviewTest(CoreBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
+        cls.review = ReviewFactory.create_review()
 
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------
 
-    def test_retrieve_attribute_by_admin(self):
+    def test_retrieve_review_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="review-detail", kwargs={"pk": self.review.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_attribute_by_regular_user(self):
+    def test_retrieve_review_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="review-detail", kwargs={"pk": self.review.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_attribute_by_anonymous_user(self):
+    def test_retrieve_review_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="review-detail", kwargs={"pk": self.review.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # ----------------------------------
-    # --- Test Retrieve An Attribute ---
+    # --- Test Retrieve An Review ---
     # ----------------------------------
 
-    def test_retrieve_attribute(self):
+    def test_retrieve_review(self):
         # request
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            path=reverse(viewname="review-detail", kwargs={"pk": self.review.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -135,12 +137,16 @@ class RetrieveAttributeTest(CoreBaseTestCase):
             set(response.data.keys()),
             {
                 "id",
-                "attribute_name",
+                "message",
+                'rating',
+                'user',
+                'status',
+                'product'
             },
         )
 
-    def test_retrieve_attribute_404(self):
+    def test_retrieve_review_404(self):
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": 999})
+            path=reverse(viewname="review-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
