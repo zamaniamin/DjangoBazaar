@@ -34,6 +34,7 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def automatic_slug_creation(self):
+        # TODO fix bug on automatic assign count
         if not self.slug:
             base_slug = slugify(self.name, allow_unicode=True)
             slug = base_slug
