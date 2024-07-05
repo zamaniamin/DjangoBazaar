@@ -51,7 +51,13 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-
+    review = models.ForeignKey(
+        "Review",
+        related_name="products",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     def __str__(self):
         return self.name
 
