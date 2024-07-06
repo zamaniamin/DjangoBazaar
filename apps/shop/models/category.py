@@ -20,7 +20,7 @@ def generate_upload_path(instance, filename):
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, allow_unicode=True)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     parent = models.ForeignKey(
