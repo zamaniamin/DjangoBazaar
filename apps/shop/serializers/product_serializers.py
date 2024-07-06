@@ -109,7 +109,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "category",
             "attributeItem",
             "optionItem",
-            "review"
+            "review",
         ]
         read_only_fields = [
             "created_at",
@@ -202,7 +202,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "category",
             "attributeItem",
             "optionItem",
-            "review"
+            "review",
         ]
 
     def to_representation(self, instance):

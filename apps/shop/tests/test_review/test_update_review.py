@@ -21,9 +21,7 @@ class UpdateReviewTest(CoreBaseTestCase):
 
     def test_update_review_by_admin(self):
         # request
-        payload = {
-            "message": ReviewFactory.review_message_2
-        }
+        payload = {"message": ReviewFactory.review_message_2}
         response = self.client.put(
             path=reverse(
                 viewname="review-detail",
@@ -81,14 +79,7 @@ class UpdateReviewTest(CoreBaseTestCase):
         expected = response.json()
         self.assertEqual(
             set(response.data.keys()),
-            {
-                "id",
-                "message",
-                'rating',
-                'user',
-                'status',
-                'product'
-            },
+            {"id", "message", "rating", "user", "status", "product"},
         )
         self.assertEqual(expected["message"], new_message)
         self.assertNotEqual(old_message, new_message)

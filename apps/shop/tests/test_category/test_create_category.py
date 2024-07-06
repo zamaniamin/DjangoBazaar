@@ -151,6 +151,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "دسته بندی",
         }
+        # TODO maintains readability without unnecessary verbosity
         response = self.client.post(
             path=reverse(viewname="category-list"), data=payload
         )

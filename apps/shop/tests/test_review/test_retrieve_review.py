@@ -59,14 +59,7 @@ class ListReviewTest(CoreBaseTestCase):
         for review in review_list:
             self.assertEqual(
                 set(review.keys()),
-                {
-                    "id",
-                    "message",
-                    'rating',
-                    'user',
-                    'status',
-                    'product'
-                },
+                {"id", "message", "rating", "user", "status", "product"},
             )
 
     def test_list_is_empty(self):
@@ -135,14 +128,7 @@ class RetrieveReviewTest(CoreBaseTestCase):
         # expected
         self.assertEqual(
             set(response.data.keys()),
-            {
-                "id",
-                "message",
-                'rating',
-                'user',
-                'status',
-                'product'
-            },
+            {"id", "message", "rating", "user", "status", "product"},
         )
 
     def test_retrieve_review_404(self):
