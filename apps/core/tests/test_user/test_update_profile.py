@@ -19,8 +19,8 @@ class UpdateProfileTest(CoreBaseTestCase):
             "last_name": "admin l name",
         }
         response = self.client.put(
-            path=reverse(viewname="user-me"),
-            data=json.dumps(payload),
+            reverse("user-me"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -45,8 +45,8 @@ class UpdateProfileTest(CoreBaseTestCase):
         self.set_regular_user_authorization()
         payload = {"first_name": "member f name"}
         response = self.client.put(
-            path=reverse(viewname="user-me"),
-            data=json.dumps(payload),
+            reverse("user-me"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -67,5 +67,5 @@ class UpdateProfileTest(CoreBaseTestCase):
         )
 
     def test_update_profile_by_anonymous_user(self):
-        response = self.client.put(path=reverse(viewname="user-me"))
+        response = self.client.put(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

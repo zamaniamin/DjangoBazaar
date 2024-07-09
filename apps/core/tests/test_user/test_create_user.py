@@ -18,8 +18,8 @@ class CreateUserTest(APITestCase):
             "password_confirm": "Test_1234",
         }
         response = self.client.post(
-            path=reverse(viewname="user-list"),
-            data=json.dumps(payload),
+            reverse("user-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

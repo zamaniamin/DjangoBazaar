@@ -14,7 +14,7 @@ class RetrieveUserTest(CoreBaseTestCase):
 
         # request
         response = self.client.get(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -35,12 +35,12 @@ class RetrieveUserTest(CoreBaseTestCase):
     def test_retrieve_user_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_retrieve_user_by_anonymous_user(self):
         response = self.client.get(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

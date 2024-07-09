@@ -32,8 +32,8 @@ class UserChangeEmailTest(APITestCase):
             "new_email": new_email,
         }
         response = self.client.post(
-            path=reverse(viewname="user-change-email"),
-            data=json.dumps(payload),
+            reverse("user-change-email"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -65,8 +65,8 @@ class UserChangeEmailTest(APITestCase):
             "otp": TokenService.create_otp_token(new_email),
         }
         response = self.client.post(
-            path=reverse(viewname="user-change-email-conformation"),
-            data=json.dumps(payload),
+            reverse("user-change-email-conformation"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

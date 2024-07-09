@@ -12,7 +12,7 @@ class RetrieveProfileTest(CoreBaseTestCase):
     def test_retrieve_profile_by_admin(self):
         # request
         self.set_admin_user_authorization()
-        response = self.client.get(path=reverse(viewname="user-me"))
+        response = self.client.get(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -33,7 +33,7 @@ class RetrieveProfileTest(CoreBaseTestCase):
     def test_retrieve_profile_by_regular_user(self):
         # request
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="user-me"))
+        response = self.client.get(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -52,5 +52,5 @@ class RetrieveProfileTest(CoreBaseTestCase):
         )
 
     def test_retrieve_profile_by_anonymous_user(self):
-        response = self.client.get(path=reverse(viewname="user-me"))
+        response = self.client.get(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

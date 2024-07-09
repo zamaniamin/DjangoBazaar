@@ -22,8 +22,8 @@ class UserActivationTest(APITestCase):
             "otp": TokenService.create_otp_token(self.inactive_user.email),
         }
         response = self.client.patch(
-            path=reverse(viewname="user-activation"),
-            data=json.dumps(payload),
+            reverse("user-activation"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -51,8 +51,8 @@ class UserActivationTest(APITestCase):
         # request
         payload = {"email": self.inactive_user.email}
         response = self.client.post(
-            path=reverse(viewname="user-resend-activation"),
-            data=json.dumps(payload),
+            reverse("user-resend-activation"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

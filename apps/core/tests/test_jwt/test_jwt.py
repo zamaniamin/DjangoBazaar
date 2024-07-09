@@ -18,7 +18,7 @@ class JWTTests(APITestCase):
         payload = {"email": self.user.email, "password": UserFactory.demo_password()}
         response = self.client.post(
             self.base_url + "create/",
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -27,6 +27,5 @@ class JWTTests(APITestCase):
         expected = response.json()
         self.assertTrue(expected["access"].strip())
         self.assertTrue(expected["refresh"].strip())
-
 
 # TODO test invalid email a@a

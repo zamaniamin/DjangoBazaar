@@ -19,8 +19,8 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
             "last_name": "admin l name",
         }
         response = self.client.patch(
-            path=reverse(viewname="user-me"),
-            data=json.dumps(payload),
+            reverse("user-me"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -45,8 +45,8 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
         self.set_regular_user_authorization()
         payload = {"first_name": "member f name"}
         response = self.client.patch(
-            path=reverse(viewname="user-me"),
-            data=json.dumps(payload),
+            reverse("user-me"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -67,5 +67,5 @@ class PartialUpdateProfileTest(CoreBaseTestCase):
         )
 
     def test_partial_update_profile_by_anonymous_user(self):
-        response = self.client.patch(path=reverse(viewname="user-me"))
+        response = self.client.patch(reverse("user-me"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

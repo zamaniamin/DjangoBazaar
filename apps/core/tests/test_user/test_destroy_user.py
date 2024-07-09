@@ -14,7 +14,7 @@ class DestroyUserTest(CoreBaseTestCase):
     def test_delete_user_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.delete(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         with self.assertRaises(ObjectDoesNotExist):
@@ -23,12 +23,12 @@ class DestroyUserTest(CoreBaseTestCase):
     def test_delete_user_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.delete(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_user_by_anonymous_user(self):
         response = self.client.delete(
-            path=reverse(viewname="user-detail", kwargs={"pk": self.regular_user.id})
+            reverse("user-detail", kwargs={"pk": self.regular_user.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
