@@ -151,6 +151,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "دسته بندی",
         }
+        # TODO maintains readability without unnecessary verbosity
         response = self.client.post(
             path=reverse(viewname="category-list"), data=payload
         )
@@ -161,6 +162,21 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(len(expected), 8)
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["slug"], "دسته-بندی")
+
+    def test_create_category_with_empty_parent(self):
+        # make request
+        payload = {
+            "name": "test category",
+            "parent": "",
+        }
+        response = self.client.post(
+            path=reverse(viewname="category-list"), data=payload
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # expected
+        expected = response.json()
+        self.assertEqual(len(expected), 8)
 
 
 # TODO test create with invalid payloads

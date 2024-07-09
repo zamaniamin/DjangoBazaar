@@ -28,7 +28,13 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     # TODO add test case for search, filter, ordering and pagination
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
-    search_fields = ["name", "description"]
+    search_fields = [
+        "name",
+        "description",
+        "category__name",
+        "attributeItem__item_name",
+        "optionItem__item_name",
+    ]
     filterset_class = ProductFilter
     ordering_fields = [
         "name",
@@ -85,6 +91,40 @@ class ProductViewSet(viewsets.ModelViewSet):
         variants = product.variants.all()
         serializer = product_serializers.ProductVariantSerializer(variants, many=True)
         return Response(serializer.data)
+
+    # def get_product_category_queryset(self):
+    #     queryset = Product.objects.all()
+    #     name = self.request.query_params.get('name', None)
+    #     description = self.request.query_params.get('description', None)
+    #     if name:
+    #         queryset = queryset.filter(name__icontains=name).filter(description__icontains=description).select_related(
+    #             'category').distinct()
+    #     return queryset
+
+    # @api_view(['GET'])
+    # def get_product_item_queryset(request):
+    #     query = request.GET.get('q', '')
+    #     if query:
+    #         products = Product.objects.filter(
+    #             Q(name__icontains=query) |
+    #             Q(description__icontains=query) |
+    #             Q(option_items__item_name__icontains=query)
+    #         ).distinct()
+    #     else:
+    #         products = Product.objects.all()
+    #
+    #     serializer = product_serializers.ProductSerializer(products, many=True)
+    #     return Response(serializer.data)
+
+    # def get_item_category_queryset(self):
+    #     queryset = Product.objects.all()
+    #     item_name = self.request.query_params.get('item_name', None)
+    #
+    #     if item_name:
+    #         queryset = queryset.filter(option_items__item_name__icontains=item_name).select_related(
+    #             'category').distinct()
+    #
+    #     return queryset
 
 
 # TODO add new variant to product and update the product options base on new items in the variant
