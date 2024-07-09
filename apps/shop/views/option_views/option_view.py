@@ -19,7 +19,7 @@ from apps.shop.serializers.option_serializers import OptionItemSerializer
     destroy=extend_schema(tags=["Option"], summary="Deletes an option"),
 )
 class OptionViewSet(viewsets.ModelViewSet):
-    queryset = Option.objects.all().order_by("option_name")
+    queryset = Option.objects.all().order_by("-created_at")
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
