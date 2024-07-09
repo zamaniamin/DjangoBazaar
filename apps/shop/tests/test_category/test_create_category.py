@@ -39,18 +39,18 @@ class CreateCategoryTest(CoreBaseTestCase):
             "name": "test category",
         }
         response = self.client.post(
-            path=reverse(viewname="category-list"), data=payload
+            reverse("category-list"), payload
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_category_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.post(path=reverse(viewname="category-list"))
+        response = self.client.post(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_category_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.post(path=reverse(viewname="category-list"))
+        response = self.client.post(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ------------------------------
@@ -63,7 +63,7 @@ class CreateCategoryTest(CoreBaseTestCase):
             "name": "test category",
         }
         response = self.client.post(
-            path=reverse(viewname="category-list"), data=payload
+            reverse("category-list"), payload
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -84,7 +84,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         # request
         payload = {"name": "test category", "image": self.image_file}
         response = self.client.post(
-            path=reverse(viewname="category-list"), data=payload
+            reverse("category-list"), payload
         )
 
         # expected
@@ -121,7 +121,7 @@ class CreateCategoryTest(CoreBaseTestCase):
             "parent": parent_category.id,
         }
         response = self.client.post(
-            path=reverse(viewname="category-list"), data=payload
+            reverse("category-list"), payload
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -152,7 +152,7 @@ class CreateCategoryTest(CoreBaseTestCase):
             "name": "دسته بندی",
         }
         response = self.client.post(
-            path=reverse(viewname="category-list"), data=payload
+            reverse("category-list"), payload
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -161,6 +161,5 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(len(expected), 8)
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["slug"], "دسته-بندی")
-
 
 # TODO test create with invalid payloads

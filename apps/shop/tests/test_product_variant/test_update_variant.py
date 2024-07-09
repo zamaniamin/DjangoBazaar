@@ -26,8 +26,8 @@ class UpdateVariantTest(ProductBaseTestCase):
             "stock": 111,
         }
         response = self.client.put(
-            path=reverse(viewname="variant-detail", kwargs={"pk": self.variant_id}),
-            data=json.dumps(payload),
+            reverse("variant-detail", kwargs={"pk": self.variant_id}),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -36,7 +36,6 @@ class UpdateVariantTest(ProductBaseTestCase):
         expected = response.json()
         self.assertEqual(expected["price"], 11)
         self.assertEqual(expected["stock"], 111)
-
 
 # TODO add partial update too
 # TODO add access permission

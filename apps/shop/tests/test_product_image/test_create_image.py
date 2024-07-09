@@ -30,8 +30,8 @@ class CreateImageTest(ProductBaseTestCase):
     def test_images_upload_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            path=reverse(
-                viewname="product-images-list",
+            reverse(
+                "product-images-list",
                 kwargs={"product_pk": self.active_product.id},
             )
         )
@@ -40,8 +40,8 @@ class CreateImageTest(ProductBaseTestCase):
     def test_images_upload_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            path=reverse(
-                viewname="product-images-list",
+            reverse(
+                "product-images-list",
                 kwargs={"product_pk": self.active_product.id},
             )
         )
@@ -55,11 +55,11 @@ class CreateImageTest(ProductBaseTestCase):
         # request
         payload = {"images": self.files}
         response = self.client.post(
-            path=reverse(
-                viewname="product-images-list",
+            reverse(
+                "product-images-list",
                 kwargs={"product_pk": self.active_product.id},
             ),
-            data=payload,
+            payload,
             format="multipart",
         )
 
@@ -89,7 +89,6 @@ class CreateImageTest(ProductBaseTestCase):
         expected_data = ProductImageSerializer(product_media, many=True).data
         actual_data = response.data
         self.assertEqual(actual_data, expected_data)
-
 
 # TODO test update image
 # TODO test delete image

@@ -44,7 +44,7 @@ class ListProductsTest(ProductBaseTestCase):
 
         # request
         self.set_admin_user_authorization()
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -69,7 +69,7 @@ class ListProductsTest(ProductBaseTestCase):
 
         # request
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -95,7 +95,7 @@ class ListProductsTest(ProductBaseTestCase):
 
         # request
         self.set_anonymous_user_authorization()
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -123,7 +123,7 @@ class ListProductsTest(ProductBaseTestCase):
         """
 
         # request
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -155,7 +155,7 @@ class ListNoProductsTest(APITestCase):
         """
 
         # request
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -177,7 +177,7 @@ class ListDraftProductsTest(APITestCase):
         ProductFactory.create_product(status="draft")
 
         # request
-        response = self.client.get(path=reverse(viewname="product-list"))
+        response = self.client.get(reverse("product-list"))
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -226,7 +226,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # request
             response = self.client.get(
-                path=reverse(viewname="product-detail", kwargs={"pk": product.id})
+                reverse("product-detail", kwargs={"pk": product.id})
             )
 
             # expected
@@ -245,7 +245,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # request
             response = self.client.get(
-                path=reverse(viewname="product-detail", kwargs={"pk": product.id})
+                reverse("product-detail", kwargs={"pk": product.id})
             )
 
             # expected
@@ -267,7 +267,7 @@ class RetrieveProductTest(ProductBaseTestCase):
         for product in [self.active_product, self.archived_product, self.draft_product]:
             # request
             response = self.client.get(
-                path=reverse(viewname="product-detail", kwargs={"pk": product.id})
+                reverse("product-detail", kwargs={"pk": product.id})
             )
 
             # expected
@@ -291,8 +291,8 @@ class RetrieveProductTest(ProductBaseTestCase):
 
         # request
         response = self.client.get(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             )
         )
 
@@ -333,8 +333,8 @@ class RetrieveProductTest(ProductBaseTestCase):
 
         # request
         response = self.client.get(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.variable_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.variable_product.id}
             )
         )
 
@@ -369,10 +369,9 @@ class RetrieveProductTest(ProductBaseTestCase):
 
     def test_retrieve_product_if_not_exist(self):
         response = self.client.get(
-            path=reverse(viewname="product-detail", kwargs={"pk": 999})
+            reverse("product-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
 # TODO test_with_media
 # TODO test_with_options_media

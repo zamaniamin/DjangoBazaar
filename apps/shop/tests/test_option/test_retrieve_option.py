@@ -14,17 +14,17 @@ class ListOptionTest(CoreBaseTestCase):
     # ------------------------------
 
     def test_list_options_by_admin(self):
-        response = self.client.get(path=reverse(viewname="option-list"))
+        response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_options_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="option-list"))
+        response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_options_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(path=reverse(viewname="option-list"))
+        response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # --------------------------
@@ -36,7 +36,7 @@ class ListOptionTest(CoreBaseTestCase):
         OptionFactory.create_option_list()
 
         # request
-        response = self.client.get(path=reverse(viewname="option-list"))
+        response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -67,7 +67,7 @@ class ListOptionTest(CoreBaseTestCase):
 
     def test_option_empty_list(self):
         # request
-        response = self.client.get(path=reverse(viewname="option-list"))
+        response = self.client.get(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -101,21 +101,21 @@ class RetrieveOptionTest(CoreBaseTestCase):
     def test_retrieve_option_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="option-detail", kwargs={"pk": self.option.id})
+            reverse("option-detail", kwargs={"pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_option_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="option-detail", kwargs={"pk": self.option.id})
+            reverse("option-detail", kwargs={"pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_option_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="option-detail", kwargs={"pk": self.option.id})
+            reverse("option-detail", kwargs={"pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -126,7 +126,7 @@ class RetrieveOptionTest(CoreBaseTestCase):
     def test_retrieve_option(self):
         # request
         response = self.client.get(
-            path=reverse(viewname="option-detail", kwargs={"pk": self.option.id})
+            reverse("option-detail", kwargs={"pk": self.option.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -141,6 +141,6 @@ class RetrieveOptionTest(CoreBaseTestCase):
 
     def test_retrieve_option_404(self):
         response = self.client.get(
-            path=reverse(viewname="option-detail", kwargs={"pk": 999})
+            reverse("option-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

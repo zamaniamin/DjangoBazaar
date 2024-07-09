@@ -14,17 +14,17 @@ class ListCategoryTest(CoreBaseTestCase):
     # ------------------------------
 
     def test_list_categories_by_admin(self):
-        response = self.client.get(path=reverse(viewname="category-list"))
+        response = self.client.get(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_categories_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="category-list"))
+        response = self.client.get(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_categories_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(path=reverse(viewname="category-list"))
+        response = self.client.get(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # -----------------------------
@@ -36,7 +36,7 @@ class ListCategoryTest(CoreBaseTestCase):
         CategoryFactory.create_categories_list()
 
         # request
-        response = self.client.get(path=reverse(viewname="category-list"))
+        response = self.client.get(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -73,7 +73,7 @@ class ListCategoryTest(CoreBaseTestCase):
 
     def test_list_empty(self):
         # request
-        response = self.client.get(path=reverse(viewname="category-list"))
+        response = self.client.get(reverse("category-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -107,21 +107,21 @@ class RetrieveOptionTest(CoreBaseTestCase):
     def test_retrieve_category_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id})
+            reverse("category-detail", kwargs={"pk": self.category.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_category_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id})
+            reverse("category-detail", kwargs={"pk": self.category.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_category_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id})
+            reverse("category-detail", kwargs={"pk": self.category.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -132,7 +132,7 @@ class RetrieveOptionTest(CoreBaseTestCase):
     def test_retrieve_category(self):
         # request
         response = self.client.get(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id})
+            reverse("category-detail", kwargs={"pk": self.category.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -153,6 +153,6 @@ class RetrieveOptionTest(CoreBaseTestCase):
 
     def test_retrieve_category_if_not_exist(self):
         response = self.client.get(
-            path=reverse(viewname="category-detail", kwargs={"pk": 999})
+            reverse("category-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

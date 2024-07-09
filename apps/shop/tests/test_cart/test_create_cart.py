@@ -13,17 +13,17 @@ class CreateCartTest(CoreBaseTestCase):
 
     def test_create_cart_by_admin(self):
         self.set_admin_user_authorization()
-        response = self.client.post(path=reverse(viewname="cart-list"))
+        response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_cart_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.post(path=reverse(viewname="cart-list"))
+        response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_cart_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.post(path=reverse(viewname="cart-list"))
+        response = self.client.post(reverse("cart-list"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     # --------------------------
@@ -33,7 +33,7 @@ class CreateCartTest(CoreBaseTestCase):
     def test_create_cart(self):
         # request
         response = self.client.post(
-            path=reverse(viewname="cart-list"), content_type="application/json"
+            reverse("cart-list"), content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

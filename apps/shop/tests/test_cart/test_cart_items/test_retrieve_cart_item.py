@@ -18,21 +18,21 @@ class ListCartItemsTest(CoreBaseTestCase):
     def test_list_items_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id})
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_items_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id})
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_items_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id})
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -43,7 +43,7 @@ class ListCartItemsTest(CoreBaseTestCase):
     def test_list_items(self):
         # make request
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id})
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -71,13 +71,13 @@ class ListCartItemsTest(CoreBaseTestCase):
 
         # make request
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": cart_id})
+            reverse("cart-items-list", kwargs={"cart_pk": cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_items_with_invalid_cart_id(self):
         response = self.client.get(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": 11})
+            reverse("cart-items-list", kwargs={"cart_pk": 11})
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -95,8 +95,8 @@ class RetrieveCartItemTest(CoreBaseTestCase):
     def test_retrieve_item_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -105,8 +105,8 @@ class RetrieveCartItemTest(CoreBaseTestCase):
     def test_retrieve_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -115,8 +115,8 @@ class RetrieveCartItemTest(CoreBaseTestCase):
     def test_retrieve_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -131,8 +131,8 @@ class RetrieveCartItemTest(CoreBaseTestCase):
 
         # make request
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": cart_id, "pk": cart_item.id},
             )
         )
@@ -159,8 +159,8 @@ class RetrieveCartItemTest(CoreBaseTestCase):
 
         # make request
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail", kwargs={"cart_pk": 11, "pk": cart_item.id}
+            reverse(
+                "cart-items-detail", kwargs={"cart_pk": 11, "pk": cart_item.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

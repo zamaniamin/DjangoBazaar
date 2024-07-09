@@ -23,11 +23,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
 
     def test_create_item_by_admin(self):
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -35,11 +35,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -47,11 +47,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -63,11 +63,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_one_item(self):
         # request
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -83,11 +83,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -98,11 +98,11 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
         # request
         payload = {"item_name": ""}
         response = self.client.post(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -112,8 +112,8 @@ class CreateAttributeItemsTest(CoreBaseTestCase):
     def test_create_one_item_if_attribute_not_exist(self):
         # request
         response = self.client.post(
-            path=reverse(viewname="attribute-items-list", kwargs={"attribute_pk": 999}),
-            data=json.dumps(self.payload),
+            reverse("attribute-items-list", kwargs={"attribute_pk": 999}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
 

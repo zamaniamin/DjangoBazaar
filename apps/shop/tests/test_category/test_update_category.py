@@ -28,19 +28,19 @@ class UpdateCategoryTest(CoreBaseTestCase):
         # request
         payload = {"name": "updated category"}
         response = self.client.put(
-            path=reverse(
-                viewname="category-detail",
+            reverse(
+                "category-detail",
                 kwargs={"pk": self.category.id},
             ),
-            data=payload,
+            payload,
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_category_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="category-detail",
+            reverse(
+                "category-detail",
                 kwargs={"pk": self.category.id},
             )
         )
@@ -49,8 +49,8 @@ class UpdateCategoryTest(CoreBaseTestCase):
     def test_update_category_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="category-detail",
+            reverse(
+                "category-detail",
                 kwargs={"pk": self.category.id},
             )
         )
@@ -68,8 +68,8 @@ class UpdateCategoryTest(CoreBaseTestCase):
         new_category_name = "new category name"
         payload = {"name": new_category_name}
         response = self.client.put(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id}),
-            data=payload,
+            reverse("category-detail", kwargs={"pk": self.category.id}),
+            payload,
         )
 
         # expected
@@ -101,8 +101,8 @@ class UpdateCategoryTest(CoreBaseTestCase):
             "parent": self.simple_cat_2.id,
         }
         response = self.client.put(
-            path=reverse(viewname="category-detail", kwargs={"pk": self.category.id}),
-            data=payload,
+            reverse("category-detail", kwargs={"pk": self.category.id}),
+            payload,
         )
 
         # expected
@@ -125,11 +125,11 @@ class UpdateCategoryTest(CoreBaseTestCase):
         # request
         payload = {"parent": self.category.id}
         response = self.client.put(
-            path=reverse(
-                viewname="category-detail",
+            reverse(
+                "category-detail",
                 kwargs={"pk": self.category.id},
             ),
-            data=payload,
+            payload,
         )
 
         # expected
@@ -139,11 +139,11 @@ class UpdateCategoryTest(CoreBaseTestCase):
         # request
         payload = {"name": "new category"}
         response = self.client.put(
-            path=reverse(
-                viewname="category-detail",
+            reverse(
+                "category-detail",
                 kwargs={"pk": 999},
             ),
-            data=payload,
+            payload,
         )
 
         # expected

@@ -28,8 +28,8 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.set_regular_user_authorization()
         media_id = self.product.media.first().id
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-detail",
+            reverse(
+                "product-images-detail",
                 kwargs={"product_pk": self.product.id, "pk": media_id},
             )
         )
@@ -39,8 +39,8 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.set_anonymous_user_authorization()
         media_id = self.product.media.first().id
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-detail",
+            reverse(
+                "product-images-detail",
                 kwargs={"product_pk": self.product.id, "pk": media_id},
             )
         )
@@ -65,8 +65,8 @@ class ListImageTest(ProductBaseTestCase):
     def test_list_images_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-list", kwargs={"product_pk": self.product.id}
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -74,8 +74,8 @@ class ListImageTest(ProductBaseTestCase):
     def test_list_images_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-list", kwargs={"product_pk": self.product.id}
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -87,8 +87,8 @@ class ListImageTest(ProductBaseTestCase):
     def test_list_with_one_image(self):
         # request
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-list", kwargs={"product_pk": self.product.id}
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.product.id}
             ),
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -121,8 +121,8 @@ class ListImageTest(ProductBaseTestCase):
         # request
         active_product = ProductFactory.create_product(has_images=True)
         response = self.client.get(
-            path=reverse(
-                viewname="product-images-list", kwargs={"product_pk": active_product.id}
+            reverse(
+                "product-images-list", kwargs={"product_pk": active_product.id}
             ),
         )
 

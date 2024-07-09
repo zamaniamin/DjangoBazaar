@@ -21,8 +21,8 @@ class ListAttributeItemsTest(CoreBaseTestCase):
 
     def test_list_items_by_admin(self):
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             )
         )
@@ -31,8 +31,8 @@ class ListAttributeItemsTest(CoreBaseTestCase):
     def test_list_items_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             )
         )
@@ -41,8 +41,8 @@ class ListAttributeItemsTest(CoreBaseTestCase):
     def test_list_items_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             )
         )
@@ -55,8 +55,8 @@ class ListAttributeItemsTest(CoreBaseTestCase):
     def test_list_items(self):
         # make request
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-list",
+            reverse(
+                "attribute-items-list",
                 kwargs={"attribute_pk": self.attribute.id},
             )
         )
@@ -77,7 +77,7 @@ class ListAttributeItemsTest(CoreBaseTestCase):
 
     def test_list_items_if_attribute_not_exist(self):
         response = self.client.get(
-            path=reverse(viewname="attribute-items-list", kwargs={"attribute_pk": 999})
+            reverse("attribute-items-list", kwargs={"attribute_pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -87,8 +87,8 @@ class ListAttributeItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-list", kwargs={"attribute_pk": attribute.id}
+            reverse(
+                "attribute-items-list", kwargs={"attribute_pk": attribute.id}
             )
         )
 
@@ -114,8 +114,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
 
     def test_retrieve_item_by_admin(self):
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -127,8 +127,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
     def test_retrieve_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -140,8 +140,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
     def test_retrieve_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -156,8 +156,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
 
     def test_retrieve_item(self):
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -178,8 +178,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
 
     def test_retrieve_item_if_attribute_not_exist(self):
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
             )
         )
@@ -187,8 +187,8 @@ class RetrieveAttributeItemTest(CoreBaseTestCase):
 
     def test_retrieve_item_if_item_not_exist(self):
         response = self.client.get(
-            path=reverse(
-                viewname="attribute-items-detail",
+            reverse(
+                "attribute-items-detail",
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )

@@ -39,8 +39,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
     def test_create_item_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            data=json.dumps(self.payload),
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -48,8 +48,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
     def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            data=json.dumps(self.payload),
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -57,8 +57,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
     def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            data=json.dumps(self.payload),
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -70,8 +70,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
     def test_create_item(self):
         # request
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            data=json.dumps(self.payload),
+            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
 
@@ -107,8 +107,8 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": cart_item.variant_id, "quantity": 1}
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": cart_id}),
-            data=json.dumps(payload),
+            reverse("cart-items-list", kwargs={"cart_pk": cart_id}),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -119,10 +119,10 @@ class CreateCartItemsTest(CoreBaseTestCase):
         for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
-                path=reverse(
-                    viewname="cart-items-list", kwargs={"cart_pk": self.cart_id}
+                reverse(
+                    "cart-items-list", kwargs={"cart_pk": self.cart_id}
                 ),
-                data=json.dumps(payload),
+                json.dumps(payload),
                 content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -131,7 +131,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
         # expected
         response = self.client.get(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
@@ -143,19 +143,19 @@ class CreateCartItemsTest(CoreBaseTestCase):
 
     def test_create_item_with_invalid_cart_pk(self):
         response = self.client.post(
-            path=reverse(viewname="cart-items-list", kwargs={"cart_pk": 7}),
-            data=json.dumps(self.payload),
+            reverse("cart-items-list", kwargs={"cart_pk": 7}),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_item_if_uuid_not_exist(self):
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750"},
             ),
-            data=json.dumps(self.payload),
+            json.dumps(self.payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -172,11 +172,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -189,11 +189,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make requesst
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -210,11 +210,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -227,11 +227,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": product_variant.id, "quantity": 4}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -244,11 +244,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": 9999, "quantity": 1}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -261,11 +261,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make request
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.client.post(
-            path=reverse(
-                viewname="cart-items-list",
+            reverse(
+                "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -287,11 +287,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make requests
         for invalid_payload in invalid_payloads:
             response = self.client.post(
-                path=reverse(
-                    viewname="cart-items-list",
+                reverse(
+                    "cart-items-list",
                     kwargs={"cart_pk": self.cart_id},
                 ),
-                data=json.dumps(invalid_payload),
+                json.dumps(invalid_payload),
                 content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -312,11 +312,11 @@ class CreateCartItemsTest(CoreBaseTestCase):
         # make requests
         for invalid_payload in invalid_payloads:
             response = self.client.post(
-                path=reverse(
-                    viewname="cart-items-list",
+                reverse(
+                    "cart-items-list",
                     kwargs={"cart_pk": self.cart_id},
                 ),
-                data=json.dumps(invalid_payload),
+                json.dumps(invalid_payload),
                 content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

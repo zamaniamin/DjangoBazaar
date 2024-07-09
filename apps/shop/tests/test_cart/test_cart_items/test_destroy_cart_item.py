@@ -15,8 +15,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
     def test_delete_item_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.delete(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -25,8 +25,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
     def test_delete_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.delete(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -35,8 +35,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
     def test_delete_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.delete(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -48,8 +48,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
 
     def test_delete_item(self):
         response = self.client.delete(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -57,8 +57,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
 
         # --- test cart item is removed ---
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -66,8 +66,8 @@ class DestroyCartItemsTest(CoreBaseTestCase):
 
     def test_delete_item_with_invalid_cart_pk(self):
         response = self.client.delete(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": 7, "pk": self.cart_item.id},
             )
         )

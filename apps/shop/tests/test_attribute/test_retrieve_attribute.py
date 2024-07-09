@@ -14,17 +14,17 @@ class ListAttributeTest(CoreBaseTestCase):
     # ------------------------------
 
     def test_list_attributes_by_admin(self):
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_attributes_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_attributes_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # -----------------------------
@@ -36,7 +36,7 @@ class ListAttributeTest(CoreBaseTestCase):
         AttributeFactory.create_attribute_list()
 
         # request
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -67,7 +67,7 @@ class ListAttributeTest(CoreBaseTestCase):
 
     def test_list_is_empty(self):
         # request
-        response = self.client.get(path=reverse(viewname="attribute-list"))
+        response = self.client.get(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -101,21 +101,21 @@ class RetrieveAttributeTest(CoreBaseTestCase):
     def test_retrieve_attribute_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_attribute_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_attribute_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -126,7 +126,7 @@ class RetrieveAttributeTest(CoreBaseTestCase):
     def test_retrieve_attribute(self):
         # request
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": self.attribute.id})
+            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -141,6 +141,6 @@ class RetrieveAttributeTest(CoreBaseTestCase):
 
     def test_retrieve_attribute_404(self):
         response = self.client.get(
-            path=reverse(viewname="attribute-detail", kwargs={"pk": 999})
+            reverse("attribute-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

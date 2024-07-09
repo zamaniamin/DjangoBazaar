@@ -23,11 +23,11 @@ class UpdateAttributeTest(CoreBaseTestCase):
         # request
         payload = {"attribute_name": AttributeFactory.attribute_name_2}
         response = self.client.put(
-            path=reverse(
-                viewname="attribute-detail",
+            reverse(
+                "attribute-detail",
                 kwargs={"pk": self.attribute.id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -35,8 +35,8 @@ class UpdateAttributeTest(CoreBaseTestCase):
     def test_update_attribute_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="attribute-detail",
+            reverse(
+                "attribute-detail",
                 kwargs={"pk": self.attribute.id},
             ),
             content_type="application/json",
@@ -46,8 +46,8 @@ class UpdateAttributeTest(CoreBaseTestCase):
     def test_update_attribute_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="attribute-detail",
+            reverse(
+                "attribute-detail",
                 kwargs={"pk": self.attribute.id},
             ),
             content_type="application/json",
@@ -66,11 +66,11 @@ class UpdateAttributeTest(CoreBaseTestCase):
         new_attribute_name = "new attribute"
         payload = {"attribute_name": new_attribute_name}
         response = self.client.put(
-            path=reverse(
-                viewname="attribute-detail",
+            reverse(
+                "attribute-detail",
                 kwargs={"pk": self.attribute.id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -90,8 +90,8 @@ class UpdateAttributeTest(CoreBaseTestCase):
     def test_update_attribute_not_exist(self):
         # request
         response = self.client.put(
-            path=reverse(
-                viewname="attribute-detail",
+            reverse(
+                "attribute-detail",
                 kwargs={"pk": 999},
             ),
             content_type="application/json",

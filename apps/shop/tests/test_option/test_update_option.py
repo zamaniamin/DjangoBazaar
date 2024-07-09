@@ -23,11 +23,11 @@ class UpdateOptionTest(CoreBaseTestCase):
         # request
         payload = {"option_name": "black"}
         response = self.client.put(
-            path=reverse(
-                viewname="option-detail",
+            reverse(
+                "option-detail",
                 kwargs={"pk": self.option.id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -35,8 +35,8 @@ class UpdateOptionTest(CoreBaseTestCase):
     def test_update_option_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="option-detail",
+            reverse(
+                "option-detail",
                 kwargs={"pk": self.option.id},
             ),
             content_type="application/json",
@@ -46,8 +46,8 @@ class UpdateOptionTest(CoreBaseTestCase):
     def test_update_option_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="option-detail",
+            reverse(
+                "option-detail",
                 kwargs={"pk": self.option.id},
             ),
             content_type="application/json",
@@ -66,11 +66,11 @@ class UpdateOptionTest(CoreBaseTestCase):
         new_option_name = "color2"
         payload = {"option_name": new_option_name}
         response = self.client.put(
-            path=reverse(
-                viewname="option-detail",
+            reverse(
+                "option-detail",
                 kwargs={"pk": self.option.id},
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -90,8 +90,8 @@ class UpdateOptionTest(CoreBaseTestCase):
     def test_update_if_option_not_exist(self):
         # request
         response = self.client.put(
-            path=reverse(
-                viewname="option-detail",
+            reverse(
+                "option-detail",
                 kwargs={"pk": 999},
             ),
             content_type="application/json",

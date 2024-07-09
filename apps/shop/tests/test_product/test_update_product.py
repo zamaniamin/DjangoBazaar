@@ -33,8 +33,8 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_product_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -42,8 +42,8 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_partial_update_product_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.patch(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -51,8 +51,8 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_product_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -60,8 +60,8 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_partial_update_product_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.patch(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             )
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -74,10 +74,10 @@ class UpdateProductTest(ProductBaseTestCase):
         # make request
         payload = {"name": "updated name"}
         response = self.client.put(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -89,10 +89,10 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_product_without_required_fields(self):
         payload = {"description": "updated description"}
         response = self.client.put(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -105,10 +105,10 @@ class UpdateProductTest(ProductBaseTestCase):
         ]
         for payload in payloads:
             response = self.client.patch(
-                path=reverse(
-                    viewname="product-detail", kwargs={"pk": self.simple_product.id}
+                reverse(
+                    "product-detail", kwargs={"pk": self.simple_product.id}
                 ),
-                data=json.dumps(payload),
+                json.dumps(payload),
                 content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -120,10 +120,10 @@ class UpdateProductTest(ProductBaseTestCase):
         # make request
         payload = {"description": "updated description"}
         response = self.client.patch(
-            path=reverse(
-                viewname="product-detail", kwargs={"pk": self.simple_product.id}
+            reverse(
+                "product-detail", kwargs={"pk": self.simple_product.id}
             ),
-            data=json.dumps(payload),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -139,8 +139,8 @@ class UpdateProductTest(ProductBaseTestCase):
         # update status to active
         payload = {"status": Product.STATUS_ACTIVE}
         response = self.client.patch(
-            path=reverse(viewname="product-detail", kwargs={"pk": product.id}),
-            data=json.dumps(payload),
+            reverse("product-detail", kwargs={"pk": product.id}),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)

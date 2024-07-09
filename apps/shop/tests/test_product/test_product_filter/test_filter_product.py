@@ -30,7 +30,7 @@ class FilterProductTest(ProductBaseTestCase):
 
     def test_filter_active_product(self):
         response = self.client.get(
-            path=reverse(viewname="product-list"), data={"status": "active"}
+            reverse("product-list"), {"status": "active"}
         )
 
         # expected
@@ -39,7 +39,6 @@ class FilterProductTest(ProductBaseTestCase):
         self.assertEqual(len(expected), 4)
         self.assertEqual(expected["count"], 3)
         self.assertEqual(len(expected["results"]), 3)
-
 
 # TODO create a list of products and use them in test scenarios
 # TODO test base on user role

@@ -15,41 +15,41 @@ class DestroyCartTest(CoreBaseTestCase):
     def test_delete_cart_by_admin(self):
         self.set_admin_user_authorization()
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_cart_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_cart_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_cart(self):
         # make request
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test cart is removed
         response = self.client.get(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # test cart items are removed
         response = self.client.get(
-            path=reverse(
-                viewname="cart-items-detail",
+            reverse(
+                "cart-items-detail",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
@@ -57,7 +57,7 @@ class DestroyCartTest(CoreBaseTestCase):
 
     def test_delete_cart_with_invalid_pk(self):
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": 7})
+            reverse("cart-detail", kwargs={"pk": 7})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -67,21 +67,21 @@ class DestroyCartTest(CoreBaseTestCase):
 
         # make request
         response = self.client.delete(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test cart is removed
         response = self.client.get(
-            path=reverse(viewname="cart-detail", kwargs={"pk": self.cart_id})
+            reverse("cart-detail", kwargs={"pk": self.cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # test cart items are removed
         for item in self.cart_items:
             response = self.client.get(
-                path=reverse(
-                    viewname="cart-items-detail",
+                reverse(
+                    "cart-items-detail",
                     kwargs={"cart_pk": self.cart_id, "pk": item.id},
                 )
             )

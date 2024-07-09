@@ -19,20 +19,20 @@ class CreateAttributeTest(CoreBaseTestCase):
             "attribute_name": "test attribute",
         }
         response = self.client.post(
-            path=reverse(viewname="attribute-list"),
-            data=json.dumps(payload),
+            reverse("attribute-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_attributes_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.post(path=reverse(viewname="attribute-list"))
+        response = self.client.post(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_attributes_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.post(path=reverse(viewname="attribute-list"))
+        response = self.client.post(reverse("attribute-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # --------------------------------
@@ -45,8 +45,8 @@ class CreateAttributeTest(CoreBaseTestCase):
             "attribute_name": "test attribute",
         }
         response = self.client.post(
-            path=reverse(viewname="attribute-list"),
-            data=json.dumps(payload),
+            reverse("attribute-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -65,8 +65,8 @@ class CreateAttributeTest(CoreBaseTestCase):
             "attribute_name": AttributeFactory.attribute_name,
         }
         response = self.client.post(
-            path=reverse(viewname="attribute-list"),
-            data=json.dumps(payload),
+            reverse("attribute-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -77,8 +77,8 @@ class CreateAttributeTest(CoreBaseTestCase):
         # request
         payload = {"attribute_name": ""}
         response = self.client.post(
-            path=reverse(viewname="attribute-list"),
-            data=json.dumps(payload),
+            reverse("attribute-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
 

@@ -19,20 +19,20 @@ class CreateOptionTest(CoreBaseTestCase):
             "option_name": "test option",
         }
         response = self.client.post(
-            path=reverse(viewname="option-list"),
-            data=json.dumps(payload),
+            reverse("option-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_options_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.post(path=reverse(viewname="option-list"))
+        response = self.client.post(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_options_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.post(path=reverse(viewname="option-list"))
+        response = self.client.post(reverse("option-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # -----------------------------
@@ -45,8 +45,8 @@ class CreateOptionTest(CoreBaseTestCase):
             "option_name": "test option",
         }
         response = self.client.post(
-            path=reverse(viewname="option-list"),
-            data=json.dumps(payload),
+            reverse("option-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -65,8 +65,8 @@ class CreateOptionTest(CoreBaseTestCase):
             "option_name": OptionFactory.option_name_color,
         }
         response = self.client.post(
-            path=reverse(viewname="option-list"),
-            data=json.dumps(payload),
+            reverse("option-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
 
@@ -77,8 +77,8 @@ class CreateOptionTest(CoreBaseTestCase):
         # request
         payload = {"option_name": ""}
         response = self.client.post(
-            path=reverse(viewname="option-list"),
-            data=json.dumps(payload),
+            reverse("option-list"),
+            json.dumps(payload),
             content_type="application/json",
         )
 
