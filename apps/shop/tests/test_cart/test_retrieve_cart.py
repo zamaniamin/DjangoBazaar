@@ -103,23 +103,17 @@ class RetrieveCartTest(CoreBaseTestCase):
 
     def test_retrieve_cart_by_admin(self):
         self.set_admin_user_authorization()
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_cart_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_cart_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # ----------------------------
@@ -130,9 +124,7 @@ class RetrieveCartTest(CoreBaseTestCase):
         cart_id = CartFactory.add_one_item()
 
         # make request
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -159,9 +151,7 @@ class RetrieveCartTest(CoreBaseTestCase):
         cart_id = CartFactory.add_multiple_items()
 
         # make request
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
@@ -186,13 +176,9 @@ class RetrieveCartTest(CoreBaseTestCase):
 
     def test_retrieve_cart_with_invalid_pk(self):
         # test pk as string
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": "11"})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": "11"}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # test pk as int
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": 11})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": 11}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

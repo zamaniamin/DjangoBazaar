@@ -33,36 +33,28 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_product_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.put(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_partial_update_product_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.patch(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_product_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.put(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_partial_update_product_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.patch(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -74,9 +66,7 @@ class UpdateProductTest(ProductBaseTestCase):
         # make request
         payload = {"name": "updated name"}
         response = self.client.put(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            ),
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
             json.dumps(payload),
             content_type="application/json",
         )
@@ -89,9 +79,7 @@ class UpdateProductTest(ProductBaseTestCase):
     def test_update_product_without_required_fields(self):
         payload = {"description": "updated description"}
         response = self.client.put(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            ),
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
             json.dumps(payload),
             content_type="application/json",
         )
@@ -105,9 +93,7 @@ class UpdateProductTest(ProductBaseTestCase):
         ]
         for payload in payloads:
             response = self.client.patch(
-                reverse(
-                    "product-detail", kwargs={"pk": self.simple_product.id}
-                ),
+                reverse("product-detail", kwargs={"pk": self.simple_product.id}),
                 json.dumps(payload),
                 content_type="application/json",
             )
@@ -120,9 +106,7 @@ class UpdateProductTest(ProductBaseTestCase):
         # make request
         payload = {"description": "updated description"}
         response = self.client.patch(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            ),
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
             json.dumps(payload),
             content_type="application/json",
         )

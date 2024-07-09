@@ -38,9 +38,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "test category",
         }
-        response = self.client.post(
-            reverse("category-list"), payload
-        )
+        response = self.client.post(reverse("category-list"), payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_category_by_regular_user(self):
@@ -62,9 +60,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "test category",
         }
-        response = self.client.post(
-            reverse("category-list"), payload
-        )
+        response = self.client.post(reverse("category-list"), payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
@@ -83,9 +79,7 @@ class CreateCategoryTest(CoreBaseTestCase):
     def test_creat_category_with_image(self):
         # request
         payload = {"name": "test category", "image": self.image_file}
-        response = self.client.post(
-            reverse("category-list"), payload
-        )
+        response = self.client.post(reverse("category-list"), payload)
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -120,9 +114,7 @@ class CreateCategoryTest(CoreBaseTestCase):
             "description": "any description",
             "parent": parent_category.id,
         }
-        response = self.client.post(
-            reverse("category-list"), payload
-        )
+        response = self.client.post(reverse("category-list"), payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
@@ -151,9 +143,7 @@ class CreateCategoryTest(CoreBaseTestCase):
         payload = {
             "name": "دسته بندی",
         }
-        response = self.client.post(
-            reverse("category-list"), payload
-        )
+        response = self.client.post(reverse("category-list"), payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected
@@ -161,5 +151,6 @@ class CreateCategoryTest(CoreBaseTestCase):
         self.assertEqual(len(expected), 8)
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["slug"], "دسته-بندی")
+
 
 # TODO test create with invalid payloads

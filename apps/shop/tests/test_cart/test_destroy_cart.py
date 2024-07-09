@@ -41,9 +41,7 @@ class DestroyCartTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test cart is removed
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # test cart items are removed
@@ -56,9 +54,7 @@ class DestroyCartTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_cart_with_invalid_pk(self):
-        response = self.client.delete(
-            reverse("cart-detail", kwargs={"pk": 7})
-        )
+        response = self.client.delete(reverse("cart-detail", kwargs={"pk": 7}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_cart_with_multi_items(self):
@@ -72,9 +68,7 @@ class DestroyCartTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test cart is removed
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # test cart items are removed

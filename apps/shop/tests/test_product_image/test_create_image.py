@@ -90,5 +90,6 @@ class CreateImageTest(ProductBaseTestCase):
         actual_data = response.data
         self.assertEqual(actual_data, expected_data)
 
+
 # TODO test update image
 # TODO test delete image

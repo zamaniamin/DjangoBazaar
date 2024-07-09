@@ -87,9 +87,7 @@ class ListAttributeItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.get(
-            reverse(
-                "attribute-items-list", kwargs={"attribute_pk": attribute.id}
-            )
+            reverse("attribute-items-list", kwargs={"attribute_pk": attribute.id})
         )
 
         # expected

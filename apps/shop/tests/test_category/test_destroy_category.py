@@ -51,9 +51,7 @@ class DestroyCategoryTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_category_if_not_exist(self):
-        response = self.client.delete(
-            reverse("category-detail", kwargs={"pk": 999})
-        )
+        response = self.client.delete(reverse("category-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_parent_category(self):

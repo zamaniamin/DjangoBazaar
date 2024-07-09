@@ -291,9 +291,7 @@ class RetrieveProductTest(ProductBaseTestCase):
 
         # request
         response = self.client.get(
-            reverse(
-                "product-detail", kwargs={"pk": self.simple_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
         )
 
         # expected
@@ -333,9 +331,7 @@ class RetrieveProductTest(ProductBaseTestCase):
 
         # request
         response = self.client.get(
-            reverse(
-                "product-detail", kwargs={"pk": self.variable_product.id}
-            )
+            reverse("product-detail", kwargs={"pk": self.variable_product.id})
         )
 
         # expected product
@@ -368,10 +364,9 @@ class RetrieveProductTest(ProductBaseTestCase):
         # TODO add media assertion
 
     def test_retrieve_product_if_not_exist(self):
-        response = self.client.get(
-            reverse("product-detail", kwargs={"pk": 999})
-        )
+        response = self.client.get(reverse("product-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 # TODO test_with_media
 # TODO test_with_options_media

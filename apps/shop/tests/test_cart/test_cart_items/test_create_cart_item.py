@@ -119,9 +119,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
         for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.client.post(
-                reverse(
-                    "cart-items-list", kwargs={"cart_pk": self.cart_id}
-                ),
+                reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
                 json.dumps(payload),
                 content_type="application/json",
             )
@@ -130,9 +128,7 @@ class CreateCartItemsTest(CoreBaseTestCase):
             total_price += expected["item_total"]
 
         # expected
-        response = self.client.get(
-            reverse("cart-detail", kwargs={"pk": self.cart_id})
-        )
+        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)

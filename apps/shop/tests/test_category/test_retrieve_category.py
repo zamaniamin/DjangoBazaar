@@ -152,7 +152,5 @@ class RetrieveOptionTest(CoreBaseTestCase):
         )
 
     def test_retrieve_category_if_not_exist(self):
-        response = self.client.get(
-            reverse("category-detail", kwargs={"pk": 999})
-        )
+        response = self.client.get(reverse("category-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

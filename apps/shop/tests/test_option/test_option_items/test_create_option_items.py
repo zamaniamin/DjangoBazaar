@@ -23,9 +23,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
 
     def test_create_item_by_admin(self):
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -34,9 +32,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_item_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -45,9 +41,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_item_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -60,9 +54,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
     def test_create_one_item(self):
         # request
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -78,9 +70,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
 
         # request
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(self.payload),
             content_type="application/json",
         )
@@ -92,9 +82,7 @@ class CreateOptionItemsTest(CoreBaseTestCase):
         # request
         payload = {"item_name": ""}
         response = self.client.post(
-            reverse(
-                "option-items-list", kwargs={"option_pk": self.option.id}
-            ),
+            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
             json.dumps(payload),
             content_type="application/json",
         )

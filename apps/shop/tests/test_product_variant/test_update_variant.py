@@ -37,6 +37,7 @@ class UpdateVariantTest(ProductBaseTestCase):
         self.assertEqual(expected["price"], 11)
         self.assertEqual(expected["stock"], 111)
 
+
 # TODO add partial update too
 # TODO add access permission
 # TODO test with multi scenario

@@ -29,9 +29,7 @@ class FilterProductTest(ProductBaseTestCase):
         cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
 
     def test_filter_active_product(self):
-        response = self.client.get(
-            reverse("product-list"), {"status": "active"}
-        )
+        response = self.client.get(reverse("product-list"), {"status": "active"})
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -39,6 +37,7 @@ class FilterProductTest(ProductBaseTestCase):
         self.assertEqual(len(expected), 4)
         self.assertEqual(expected["count"], 3)
         self.assertEqual(len(expected["results"]), 3)
+
 
 # TODO create a list of products and use them in test scenarios
 # TODO test base on user role
