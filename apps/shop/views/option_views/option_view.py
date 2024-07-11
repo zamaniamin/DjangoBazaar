@@ -62,7 +62,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         option_id = self.kwargs.get("option_pk")
         get_object_or_404(Option, pk=option_id)
-        return OptionItem.objects.filter(option_id=option_id).order_by('created_at')
+        return OptionItem.objects.filter(option_id=option_id).order_by('-created_at')
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
