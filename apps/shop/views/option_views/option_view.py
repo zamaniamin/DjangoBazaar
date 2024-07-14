@@ -89,7 +89,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
             )
         except IntegrityError:
             return Response(
-                {"detail": "This option item already exist in items."},
+                {"item_name": "item with this item name already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
