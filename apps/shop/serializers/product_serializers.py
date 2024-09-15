@@ -182,15 +182,20 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, source="media", read_only=True)
 
+    # TODO set these fields `variants_min_price`, `variants_max_price`, `variants_total_stock` at CRUD response body
     class Meta:
         model = Product
         fields = [
             "id",
             "name",
+            "slug",
             "description",
             "status",
             "options",
             "variants",
+            # "variants_min_price",
+            # "variants_max_price",
+            # "variants_total_stock",
             "images",
             "created_at",
             "updated_at",
