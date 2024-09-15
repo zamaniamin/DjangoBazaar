@@ -62,6 +62,8 @@ class ListOptionTest(CoreBaseTestCase):
                 {
                     "id",
                     "option_name",
+                    "updated_at",
+                    "created_at",
                 },
             )
 
@@ -136,6 +138,8 @@ class RetrieveOptionTest(CoreBaseTestCase):
             {
                 "id",
                 "option_name",
+                "updated_at",
+                "created_at",
             },
         )
 

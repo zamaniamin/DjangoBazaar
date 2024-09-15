@@ -82,6 +82,8 @@ class UpdateOptionTest(CoreBaseTestCase):
             {
                 "id",
                 "option_name",
+                "updated_at",
+                "created_at",
             },
         )
         self.assertEqual(expected["option_name"], new_option_name)
