@@ -51,6 +51,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
+        self.assertEqual(expected["slug"], "test-product")
 
         # expected product date and time
         self.assertExpectedDatetimeFormat(expected)
@@ -100,6 +101,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["name"], payload["name"])
         self.assertEqual(expected["description"], payload["description"])
         self.assertEqual(expected["status"], payload["status"])
+        self.assertEqual(expected["slug"], "test-product")
 
         # expected product date and time
         self.assertExpectedDatetimeFormat(expected)
@@ -150,6 +152,7 @@ class CreateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["name"], payload["name"])
         self.assertIsNone(expected["description"])
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
+        self.assertEqual(expected["slug"], "test-product")
 
         # expected product date and time
         self.assertExpectedDatetimeFormat(expected, published_at=None)
@@ -461,6 +464,7 @@ class CreateProductTest(ProductBaseTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # TODO test invalid slug
     def test_max_3_options(self):
         """
         Test create a product with more than three options.

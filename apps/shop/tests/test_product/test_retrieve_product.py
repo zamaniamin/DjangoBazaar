@@ -57,6 +57,22 @@ class ListProductsTest(ProductBaseTestCase):
                 product["status"],
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
             )
+            self.assertEqual(
+                set(product.keys()),
+                {
+                    "id",
+                    "name",
+                    "slug",
+                    "description",
+                    "status",
+                    "options",
+                    "variants",
+                    "images",
+                    "created_at",
+                    "updated_at",
+                    "published_at",
+                },
+            )
 
     def test_list_product_by_regular_user(self):
         """
@@ -81,6 +97,22 @@ class ListProductsTest(ProductBaseTestCase):
             self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
             self.assertIn(
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
+            )
+            self.assertEqual(
+                set(product.keys()),
+                {
+                    "id",
+                    "name",
+                    "slug",
+                    "description",
+                    "status",
+                    "options",
+                    "variants",
+                    "images",
+                    "created_at",
+                    "updated_at",
+                    "published_at",
+                },
             )
 
     def test_list_product_by_anonymous_user(self):
@@ -132,9 +164,10 @@ class ListProductsTest(ProductBaseTestCase):
         expected_products = expected["results"]
         self.assertEqual(len(expected_products), 4)
         for product in expected_products:
-            self.assertEqual(len(product), 10)
+            self.assertEqual(len(product), 11)
             self.assertIn("id", product)
             self.assertIn("name", product)
+            self.assertIn("slug", product)
             self.assertIn("description", product)
             self.assertIn("status", product)
             self.assertIn("options", product)
