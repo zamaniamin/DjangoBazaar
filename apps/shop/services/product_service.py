@@ -233,4 +233,4 @@ class ProductService:
         if not request.user.is_staff:
             queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
-        return queryset.order_by("id")
+        return queryset.order_by("-created_at")
