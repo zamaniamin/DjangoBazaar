@@ -131,6 +131,7 @@ class ProductMedia(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 # TODO use variant-media instead of color image or color code, use product pictures for colors show
 
 # todo add product options api
