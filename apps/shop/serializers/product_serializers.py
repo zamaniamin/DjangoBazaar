@@ -45,6 +45,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             "product_id",
             "price",
             "stock",
+            "sku",
             "option1",
             "option2",
             "option3",
@@ -89,6 +90,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             MaxValueValidator(limit_value=9999999999.99),
         ],
     )
+    # TODO write tests for sku field on API endpoints
+    sku = serializers.CharField(max_length=250, allow_blank=True, required=False)
     options = ProductOptionSerializer(many=True, required=False, default=None)
     variants = ProductVariantSerializer(many=True, read_only=True)
 
@@ -101,6 +104,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "status",
             "price",
             "stock",
+            "sku",
             "options",
             "variants",
             "created_at",

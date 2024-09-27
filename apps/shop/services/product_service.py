@@ -15,6 +15,7 @@ class ProductService:
     product = None
     price: int | float
     stock: int
+    sku: str
     options: list | None = []
     options_data: list = []
     variants: list = []
@@ -34,6 +35,8 @@ class ProductService:
         # Extract relevant data
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
+        # TODO write tests for sku field on API endpoints
+        cls.sku = data.pop("sku")
         cls.options_data = data.pop("options")
 
         # Create product
@@ -173,6 +176,7 @@ class ProductService:
                     option3_id=option3,
                     price=cls.price,
                     stock=cls.stock,
+                    sku=cls.sku,
                 )
                 variants_to_create.append(new_variant)
 
@@ -181,7 +185,7 @@ class ProductService:
         else:
             # Create a single ProductVariant instance for the product
             ProductVariant.objects.create(
-                product=cls.product, price=cls.price, stock=cls.stock
+                product=cls.product, price=cls.price, stock=cls.stock, sku=cls.sku
             )
 
     @staticmethod

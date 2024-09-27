@@ -137,8 +137,11 @@ class ProductMedia(models.Model):
     def save(self, *args, **kwargs):
         if self.is_main:
             # Unset previous main images for the product
-            ProductMedia.objects.filter(product=self.product, is_main=True).update(is_main=False)
+            ProductMedia.objects.filter(product=self.product, is_main=True).update(
+                is_main=False
+            )
         super(ProductMedia, self).save(*args, **kwargs)
+
 
 # TODO use variant-media instead of color image or color code, use product pictures for colors show
 
