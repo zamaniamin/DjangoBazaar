@@ -127,10 +127,18 @@ class ProductMedia(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="media")
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     alt = models.CharField(max_length=250, blank=True, null=True)
+    # TODO write test for `is_main` field
+    # TODO add `alt` and `is_main` field to API endpoints
+    is_main = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            # Unset previous main images for the product
+            ProductMedia.objects.filter(product=self.product, is_main=True).update(is_main=False)
+        super(ProductMedia, self).save(*args, **kwargs)
 
 # TODO use variant-media instead of color image or color code, use product pictures for colors show
 
