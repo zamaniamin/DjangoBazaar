@@ -21,7 +21,11 @@ class Product(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    # TODO write test to check product accept unicode in the slug.
+    # TODO auto add hyphens for space characters.
+    slug = models.SlugField(
+        max_length=255, unique=True, blank=True, null=True, allow_unicode=True
+    )
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
