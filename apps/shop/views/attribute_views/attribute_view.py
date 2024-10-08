@@ -18,7 +18,8 @@ from apps.shop.serializers import attribute_serializers
     destroy=extend_schema(tags=["Attribute"], summary="Deletes an attribute"),
 )
 class AttributeViewSet(viewsets.ModelViewSet):
-    queryset = Attribute.objects.all()
+    # TODO write test for check attributes is order by created-at
+    queryset = Attribute.objects.all().order_by("-created_at")
     serializer_class = attribute_serializers.AttributeSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
@@ -63,7 +64,10 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         attribute_id = self.kwargs.get("attribute_pk")
         get_object_or_404(Attribute, pk=attribute_id)
-        return AttributeItem.objects.filter(attribute_id=attribute_id)
+        # TODO write test for check attribute items is order by created-at
+        return AttributeItem.objects.filter(attribute_id=attribute_id).order_by(
+            "-created_at"
+        )
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())

@@ -19,6 +19,7 @@ from apps.shop.serializers.option_serializers import OptionItemSerializer
     destroy=extend_schema(tags=["Option"], summary="Deletes an option"),
 )
 class OptionViewSet(viewsets.ModelViewSet):
+    # TODO write test for check options is order by created-at
     queryset = Option.objects.all().order_by("-created_at")
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
@@ -62,6 +63,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         option_id = self.kwargs.get("option_pk")
         get_object_or_404(Option, pk=option_id)
+        # TODO write test for check option items is order by created-at
         return OptionItem.objects.filter(option_id=option_id).order_by("-created_at")
 
     def get_permissions(self):
