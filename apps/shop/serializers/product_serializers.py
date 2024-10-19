@@ -91,7 +91,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         ],
     )
     # TODO write tests for sku field on API endpoints
-    sku = serializers.CharField(max_length=250, allow_blank=True, required=False)
+    sku = serializers.CharField(
+        max_length=250, allow_blank=True, required=False, default=""
+    )
     options = ProductOptionSerializer(many=True, required=False, default=None)
     variants = ProductVariantSerializer(many=True, read_only=True)
 
