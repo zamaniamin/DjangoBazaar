@@ -15,13 +15,13 @@ class ProductFactory:
 
     @classmethod
     def create_product(
-        cls,
-        status: str = Product.STATUS_ACTIVE,
-        is_variable: bool = False,
-        random_options: bool = False,
-        get_payload: bool = False,
-        has_images: bool = False,
-        stock: int = -1,
+            cls,
+            status: str = Product.STATUS_ACTIVE,
+            is_variable: bool = False,
+            random_options: bool = False,
+            get_payload: bool = False,
+            has_images: bool = False,
+            stock: int = -1,
     ):
         helper = ProductFactoryHelper()
 
@@ -41,6 +41,7 @@ class ProductFactory:
             "status": status,
             "price": helper.random_price(),
             "stock": helper.random_stock() if stock <= -1 else stock,
+            "sku": "123",
             "options": options,
         }
         product = ProductService.create_product(**product_data)

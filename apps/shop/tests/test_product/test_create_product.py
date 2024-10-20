@@ -496,6 +496,7 @@ class CreateProductTest(ProductBaseTestCase):
             "status": Product.STATUS_ACTIVE,
             "price": 11,
             "stock": 11,
+            "sku": 11,
             "options": [],
         }
         product = ProductService.create_product(**product_data)
