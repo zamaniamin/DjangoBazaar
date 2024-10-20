@@ -69,6 +69,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
             "product_id",
             "src",
             "alt",
+            "is_main",
             "images",
             "created_at",
             "updated_at",
