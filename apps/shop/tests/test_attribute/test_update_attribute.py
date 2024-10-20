@@ -82,6 +82,8 @@ class UpdateAttributeTest(CoreBaseTestCase):
             {
                 "id",
                 "attribute_name",
+                "created_at",
+                "updated_at",
             },
         )
         self.assertEqual(expected["attribute_name"], new_attribute_name)

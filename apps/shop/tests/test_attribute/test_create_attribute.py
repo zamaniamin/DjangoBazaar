@@ -53,7 +53,7 @@ class CreateAttributeTest(CoreBaseTestCase):
 
         # expected
         expected = response.json()
-        self.assertEqual(len(expected), 2)
+        self.assertEqual(len(expected), 4)
         self.assertEqual(expected["attribute_name"], payload["attribute_name"])
 
     def test_create_attribute_if_already_exist(self):

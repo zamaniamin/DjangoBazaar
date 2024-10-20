@@ -62,6 +62,8 @@ class ListAttributeTest(CoreBaseTestCase):
                 {
                     "id",
                     "attribute_name",
+                    "created_at",
+                    "updated_at",
                 },
             )
 
@@ -136,6 +138,8 @@ class RetrieveAttributeTest(CoreBaseTestCase):
             {
                 "id",
                 "attribute_name",
+                "created_at",
+                "updated_at",
             },
         )
 
