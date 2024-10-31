@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema_view, extend_schema
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -14,13 +14,22 @@ from apps.shop.serializers.option_serializers import OptionItemSerializer
 @extend_schema_view(
     create=extend_schema(tags=["Option"], summary="Create a new option"),
     retrieve=extend_schema(tags=["Option"], summary="Retrieve a single option"),
-    list=extend_schema(tags=["Option"], summary="Retrieve a list of options"),
+    list=extend_schema(
+        tags=["Option"],
+        summary="Retrieve a list of options",
+        parameters=[
+            OpenApiParameter(
+                name="option_name",
+                description="Filter options by name",
+                required=False,
+                type=str,
+            )
+        ],
+    ),
     update=extend_schema(tags=["Option"], summary="Update an option"),
     destroy=extend_schema(tags=["Option"], summary="Deletes an option"),
 )
 class OptionViewSet(viewsets.ModelViewSet):
-    # TODO write test for check options is order by created-at
-    queryset = Option.objects.all().order_by("-created_at")
     serializer_class = option_serializers.OptionSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
@@ -37,6 +46,15 @@ class OptionViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    def get_queryset(self):
+        # TODO write test for check options is order by created-at
+        queryset = Option.objects.all().order_by("-created_at")
+        # TODO write test for get option by `option_name`
+        option_name = self.request.query_params.get("option_name", None)
+        if option_name:
+            queryset = queryset.filter(option_name=option_name)
+        return queryset
 
 
 @extend_schema_view(
