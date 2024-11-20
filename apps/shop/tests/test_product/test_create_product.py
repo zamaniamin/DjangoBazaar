@@ -11,6 +11,10 @@ class CreateProductTest(ProductBaseTestCase):
     def setUp(self):
         self.set_admin_user_authorization()
 
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
     def test_create_product_by_regular_user(self):
         self.set_regular_user_authorization()
         response = self.client.post(reverse("product-list"))
