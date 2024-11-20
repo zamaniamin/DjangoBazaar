@@ -4,16 +4,15 @@ from rest_framework import serializers
 from apps.shop.models import (
     Product,
     ProductOption,
-    ProductOptionItem,
     ProductVariant,
     ProductMedia,
 )
 
 
-class ProductOptionItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductOptionItem
-        fields = ["id", "item_name"]
+# class ProductOptionItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductOptionItem
+#         fields = ["id", "item_name"]
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
