@@ -2,7 +2,7 @@ from apps.core.tests.base_test import CoreBaseTestCase
 
 
 class ProductBaseTestCase(CoreBaseTestCase):
-    def assertExpectedOptions(self, expected_options, payload_options):
+    def assertExpectedOptions(self, expected_options, payload_options: list):
         """
         Asserts the expected options in the response.
         """
