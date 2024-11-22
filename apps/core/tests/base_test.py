@@ -1,4 +1,5 @@
 import io
+import json
 from datetime import datetime
 
 from PIL import Image
@@ -67,3 +68,8 @@ class CoreBaseTestCase(APITestCase):
             files.append(file)
 
         return files
+
+    def post_json(self, url, data, **kwargs):
+        return self.client.post(
+            url, data=json.dumps(data), content_type="application/json", **kwargs
+        )
