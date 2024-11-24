@@ -1,10 +1,13 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.response import Response
 
 from apps.shop.models import Product, ProductOption
 from apps.shop.serializers.product_serializers import ProductOptionSerializer
+from apps.shop.services.product_service import ProductOptionService
 
 
 @extend_schema_view(
@@ -51,32 +54,37 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
-    # def create(self, request, *args, **kwargs):
-    #     # validate data
-    #     option_id = kwargs["option_pk"]
-    #     serializer = self.get_serializer(
-    #         data=request.data, context={"option_pk": option_id}
-    #     )
-    #     serializer.is_valid(raise_exception=True)
-    #
-    #     # check option is exist or not
-    #     # TODO can I remove this line?
-    #     get_object_or_404(Option, pk=option_id)
-    #
-    #     # get validated data
-    #     payload = serializer.validated_data
-    #     item_name = payload["item_name"]
-    #
-    #     try:
-    #         option_item = OptionItem.objects.create(
-    #             option_id=option_id, item_name=item_name
-    #         )
-    #     except IntegrityError:
-    #         return Response(
-    #             {"item_name": "item with this item name already exists."},
-    #             status=status.HTTP_400_BAD_REQUEST,
-    #         )
-    #
-    #     # return response
-    #     response_serializer = OptionItemSerializer(option_item)
-    #     return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        # validate data
+        product_id = kwargs["product_pk"]
+        serializer = self.get_serializer(
+            data=request.data, context={"product_pk": product_id}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        # check product is existed or not
+        product = get_object_or_404(Product, pk=product_id)
+
+        # get validated data
+        payload = serializer.validated_data
+        option_name = payload["option_name"]
+        items = payload["items"]
+
+        try:
+            ProductOptionService.create_option(product, option_name, items)
+        except ValidationError as e:
+            if e.code == "max_options_exceeded":
+                return Response(
+                    {"detail": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # return response: fetch the updated list of options after creation
+        product_options = ProductOption.objects.filter(product_id=product_id)
+        response_serializer = ProductOptionSerializer(product_options, many=True)
+
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
