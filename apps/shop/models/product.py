@@ -2,6 +2,7 @@ import os
 import sys
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
@@ -65,6 +66,14 @@ class ProductOption(models.Model):
 
     def __str__(self):
         return self.option_name
+
+    def save(self, *args, **kwargs):
+        if self.product.options.count() >= 3:
+            raise ValidationError(
+                "You cannot add more than 3 options for this product.",
+                code="max_options_exceeded",
+            )
+        super().save(*args, **kwargs)
 
 
 class ProductOptionItem(models.Model):
