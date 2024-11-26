@@ -75,7 +75,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         except ValidationError as e:
             if e.code == "max_options_exceeded":
                 return Response(
-                    {"detail": str(e)},
+                    {"detail": e.messages[0]},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response(
