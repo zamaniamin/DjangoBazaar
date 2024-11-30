@@ -69,7 +69,16 @@ class CoreBaseTestCase(APITestCase):
 
         return files
 
-    def post_json(self, url, data, **kwargs):
+    def post_json(self, url, data: dict = None, **kwargs):
+        if data is None:
+            data = {}
         return self.client.post(
+            url, data=json.dumps(data), content_type="application/json", **kwargs
+        )
+
+    def put_json(self, url, data: dict = None, **kwargs):
+        if data is None:
+            data = {}
+        return self.client.put(
             url, data=json.dumps(data), content_type="application/json", **kwargs
         )
