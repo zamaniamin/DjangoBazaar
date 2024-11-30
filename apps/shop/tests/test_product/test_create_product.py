@@ -25,6 +25,10 @@ class CreateProductTest(ProductBaseTestCase):
         response = self.client.post(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # ---------------------------
+    # --- Test Create Product ---
+    # ---------------------------
+
     def test_create_product(self):
         """
         Test create a product by assuming valid data.
