@@ -8,7 +8,6 @@ from apps.shop.views.cart_views.cart_view import CartViewSet, CartItemViewSet
 from apps.shop.views.category_views.category_view import CategoryViewSet
 from apps.shop.views.option_views.option_view import OptionViewSet, OptionItemViewSet
 from apps.shop.views.product_views.image_view import ProductImageViewSet
-from apps.shop.views.product_views.product_option_view import ProductOptionViewSet
 from apps.shop.views.product_views.product_view import ProductViewSet
 from apps.shop.views.product_views.variant_view import VariantViewSet
 
@@ -22,7 +21,6 @@ router.register("attributes", AttributeViewSet, basename="attribute")
 
 products_router = routers.NestedDefaultRouter(router, "products", lookup="product")
 products_router.register("images", ProductImageViewSet, basename="product-images")
-products_router.register("options", ProductOptionViewSet, basename="product-options")
 
 cart_items_router = routers.NestedDefaultRouter(router, "carts", lookup="cart")
 cart_items_router.register("items", CartItemViewSet, basename="cart-items")
