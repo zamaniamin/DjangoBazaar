@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, status
@@ -42,6 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     ACTION_SERIALIZERS = {
         "create": product_serializers.ProductCreateSerializer,
+        "update": product_serializers.ProductUpdateSerializer,
     }
 
     ACTION_PERMISSIONS = {
@@ -71,6 +73,33 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Return the serialized response
         return Response(
             serializer.to_representation(product), status=status.HTTP_201_CREATED
+        )
+
+    def update(self, request, *args, **kwargs):
+        # validate
+        partial = kwargs.pop("partial", False)
+        product = self.get_object()
+        serializer = self.get_serializer(product, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+
+        # update product
+        try:
+            product = ProductService.update_product(product, **payload)
+        except ValidationError as e:
+            if e.code == "max_options_exceeded":
+                return Response(
+                    {"detail": e.messages[0]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # return the serialized response
+        return Response(
+            serializer.to_representation(product), status=status.HTTP_200_OK
         )
 
     # ----------------
