@@ -22,16 +22,7 @@ class ProductService:
     media: list | None = None
 
     @classmethod
-    def create_product(cls, **data):
-        """
-        Create a new product with options and return the product object.
-
-        Note:
-            This method creates a new product instance, generates options, and optimizes queries
-            for retrieving the product with related options and variants.
-
-        """
-
+    def create_product(cls, **data) -> Product:
         # Extract relevant data
         cls.price = data.pop("price")
         cls.stock = data.pop("stock")
@@ -44,15 +35,12 @@ class ProductService:
 
         # Create options
         cls.__manage_options()
-        # cls.__create_product_options()
 
         # Return product object
         return cls.retrieve_product_details(cls.product.id)
 
     @classmethod
-    def update_product(cls, product: Product, **data):
-        cls.product = product
-
+    def update_product(cls, product: Product, **data) -> Product:
         # Extract relevant data
         cls.price = data.pop("price", 0.00)
         cls.stock = data.pop("stock", 0)
@@ -61,6 +49,7 @@ class ProductService:
         cls.options_data = data.pop("options", [])
 
         # Update the product instance fields
+        cls.product = product
         for attr, value in data.items():
             setattr(cls.product, attr, value)
 
@@ -75,16 +64,8 @@ class ProductService:
 
     @classmethod
     def __manage_options(cls):
-        # TODO check option exist or not.
-        # TODO Ensure the number of options does not exceed 3 .
-        # TODO if not exist add it.
-        # TODO if option exist:
-        #  - adding new items.
-        #  - removing the ones that are no longer present.
-        #  - update variants.
-        # todo get product
+        # todo update variants.
         if cls.options_data:
-            # options_to_create = []
             items_to_create = []
 
             for data in cls.options_data:
@@ -122,15 +103,7 @@ class ProductService:
                     # Remove items no longer present
                     option_object.items.filter(item_name__in=items_to_remove).delete()
 
-                # options_to_create.append(product_option)
-
-                # for item in option["items"]:
-                #     # Create a ProductOptionItem instance for each item
-                #     new_item = ProductOptionItem(option=product_option, item_name=item)
-                #     items_to_create.append(new_item)
-
-            # Bulk create the product options and items in the database
-            # ProductOption.objects.bulk_create(options_to_create)
+            # Bulk create the product option-items
             ProductOptionItem.objects.bulk_create(items_to_create)
 
             # generate and create product variants
@@ -188,48 +161,6 @@ class ProductService:
         ).prefetch_related("media")
 
         return prefetch_related_product_data.get(pk=product_id)
-
-    @classmethod
-    def __create_product_options(cls):
-        """
-        Create product options and associated items.
-
-        Explanation:
-        If cls.options_data is provided, it creates ProductOption and ProductOptionItem instances
-        based on the data provided. It then calls __create_product_variants to generate and create
-        product variants based on the product options.
-
-        Note:
-        This method assumes that cls.product, cls.options_data, and cls.__create_product_variants are set
-        appropriately before calling.
-
-        """
-        if cls.options_data:
-            options_to_create = []
-            items_to_create = []
-
-            for option in cls.options_data:
-                # Create a ProductOption instance for each option_name
-                new_option = ProductOption(
-                    product=cls.product, option_name=option["option_name"]
-                )
-                options_to_create.append(new_option)
-
-                for item in option["items"]:
-                    # Create a ProductOptionItem instance for each item
-                    new_item = ProductOptionItem(option=new_option, item_name=item)
-                    items_to_create.append(new_item)
-
-            # Bulk create the product options and items in the database
-            ProductOption.objects.bulk_create(options_to_create)
-            ProductOptionItem.objects.bulk_create(items_to_create)
-
-            # generate and create product variants
-            cls.__create_product_variants(bulk_create=True)
-        else:
-            # If no options_data is provided, set cls.options to None
-            cls.__create_product_variants()
-            cls.options = None
 
     @classmethod
     def __create_product_variants(cls, bulk_create: bool = False):
