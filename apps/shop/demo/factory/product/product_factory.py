@@ -164,12 +164,15 @@ class ProductFactoryHelper:
         else:
             return []
 
-    def unique_options(self):
-        return [
+    def unique_options(self, cont: int = 3):
+        options = [
             {"option_name": "color", "items": self.option_color_items[:2]},
             {"option_name": "size", "items": self.option_size_items[:2]},
             {"option_name": "material", "items": self.option_material_items[:2]},
         ]
+        if cont <= 3 or cont >= 1:
+            return options[:cont]
+        return options
 
     @classmethod
     def populate_images(cls, product_id):
