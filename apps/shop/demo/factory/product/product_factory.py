@@ -19,6 +19,7 @@ class ProductFactory:
         status: str = Product.STATUS_ACTIVE,
         is_variable: bool = False,
         random_options: bool = False,
+        count_of_options: int = 3,
         get_payload: bool = False,
         has_images: bool = False,
         stock: int = -1,
@@ -29,7 +30,7 @@ class ProductFactory:
             if random_options:
                 options = helper.random_options()
             else:
-                options = helper.unique_options()
+                options = helper.unique_options(count_of_options)
         else:
             options = []
 
