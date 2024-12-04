@@ -68,6 +68,8 @@ class ProductBaseTestCase(CoreBaseTestCase):
         """
         Asserts the expected variants in the response.
         """
+        # TODO add sku
+
         self.assertIsInstance(expected_variants, list)
 
         for variant in expected_variants:
