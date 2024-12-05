@@ -64,28 +64,30 @@ class ProductService:
 
     @classmethod
     def __manage_options(cls):
-        # todo update variants.
         if cls.options_data:
             items_to_create = []
+            options_to_retain = set()
 
             for data in cls.options_data:
                 option_name = data["option_name"]
                 option_items = data["items"]
 
-                # Create a ProductOption instance for each option_name
+                # Create or get a ProductOption instance for each option_name
                 option_object, created = ProductOption.objects.get_or_create(
                     product=cls.product, option_name=option_name
                 )
 
+                options_to_retain.add(option_object.id)  # Retain this option
+
                 if created:
+                    # If the option is newly created, add all items
                     for item in option_items:
-                        # Create a ProductOptionItem instance for each item
                         new_item = ProductOptionItem(
                             option=option_object, item_name=item
                         )
                         items_to_create.append(new_item)
-
                 else:
+                    # For existing options, update items
                     current_items = set(
                         option_object.items.values_list("item_name", flat=True)
                     )
@@ -93,18 +95,23 @@ class ProductService:
                     items_to_add = new_items_set - current_items
                     items_to_remove = current_items - new_items_set
 
+                    # Add new items
                     for item in items_to_add:
-                        # Create a ProductOptionItem instance for each item
                         new_item = ProductOptionItem(
                             option=option_object, item_name=item
                         )
                         items_to_create.append(new_item)
 
-                    # Remove items no longer present
+                    # Remove items that are no longer present
                     option_object.items.filter(item_name__in=items_to_remove).delete()
 
-            # Bulk create the product option-items
+            # Bulk create the new product option-items
             ProductOptionItem.objects.bulk_create(items_to_create)
+
+            # Remove options that are not in the current options_data
+            ProductOption.objects.filter(product=cls.product).exclude(
+                id__in=options_to_retain
+            ).delete()
 
         else:
             cls.options = None
@@ -179,7 +186,7 @@ class ProductService:
             new_variants_to_create.append(updated_variant)
 
         # Bulk create new and updated variants
-        ProductVariant.objects.bulk_create(
+        x = ProductVariant.objects.bulk_create(
             new_variants_to_create, ignore_conflicts=True
         )
 
