@@ -106,16 +106,123 @@ class ProductService:
             # Bulk create the product option-items
             ProductOptionItem.objects.bulk_create(items_to_create)
 
-            # generate and create product variants
-            cls.__create_product_variants(bulk_create=True)
         else:
-            # If no options_data is provided, set cls.options to None
-            cls.__create_product_variants()
             cls.options = None
+
+        cls.__manage_variants()
 
     @classmethod
     def __manage_variants(cls):
-        ...
+        # Fetch existing variants
+        existing_variants = list(
+            ProductVariant.objects.filter(product=cls.product).values(
+                "id", "option1_id", "option2_id", "option3_id", "price", "stock", "sku"
+            )
+        )
+
+        # Get the IDs of items related to product options
+        items_id = cls.__get_item_ids_by_product_id(cls.product.id)
+        new_variants_combinations = list(options_combination(*items_id))
+        new_variants_to_create = []
+
+        # Create a map of existing variants for easy lookup
+        existing_variants_map = {
+            (
+                variant["option1_id"],
+                variant["option2_id"],
+                variant["option3_id"],
+            ): variant
+            for variant in existing_variants
+        }
+
+        # Track variants to retain
+        variants_to_retain = set()
+
+        # Iterate over the new combinations and handle update or create
+        for variant in new_variants_combinations:
+            values_tuple = tuple(variant)
+            while len(values_tuple) < 3:
+                values_tuple += (None,)
+            option1, option2, option3 = values_tuple
+
+            existing_variant = existing_variants_map.get((option1, option2, option3))
+
+            if existing_variant:
+                # Retain the variant if it matches the new combination
+                variants_to_retain.add(existing_variant["id"])
+
+                # Update the existing variant with the same options
+                updated_variant = ProductVariant(
+                    id=existing_variant["id"],  # Keep the same ID to update
+                    product=cls.product,
+                    option1_id=option1,
+                    option2_id=option2,
+                    option3_id=option3,
+                    price=existing_variant[
+                        "price"
+                    ],  # Retain existing price, stock, and sku
+                    stock=existing_variant["stock"],
+                    sku=existing_variant["sku"],
+                )
+            else:
+                # Create a new variant for the new combination
+                updated_variant = ProductVariant(
+                    product=cls.product,
+                    option1_id=option1,
+                    option2_id=option2,
+                    option3_id=option3,
+                    price=cls.price,  # Set new price, stock, and sku for new variants
+                    stock=cls.stock,
+                    sku=cls.sku,
+                )
+
+            new_variants_to_create.append(updated_variant)
+
+        # Bulk create new and updated variants
+        ProductVariant.objects.bulk_create(
+            new_variants_to_create, ignore_conflicts=True
+        )
+
+        # Identify and delete old variants that are no longer valid
+        variant_ids_to_delete = (
+            set(variant["id"] for variant in existing_variants) - variants_to_retain
+        )
+
+        if variant_ids_to_delete:
+            ProductVariant.objects.filter(id__in=variant_ids_to_delete).delete()
+
+    @staticmethod
+    def __get_item_ids_by_product_id(product_id):
+        """
+        Get item_ids grouped by option_id for a given product_id.
+
+        Explanation: This method queries the ProductOptionItem table to retrieve item_ids associated with a given
+        product_id. It groups the item_ids by option_id and returns a list of lists where each sublist contains
+        item_ids for a specific option.
+
+        Args:
+        - product_id (int): The ID of the product for which to retrieve item_ids.
+
+        Returns:
+        List[List[int]]: A list of lists where each sublist contains item_ids for a specific option.
+
+        """
+        item_ids_by_option = []
+
+        # Query the ProductOptionItem table to retrieve item_ids
+        items = ProductOptionItem.objects.filter(
+            option__product_id=product_id
+        ).values_list("option_id", "id")
+
+        # Group item_ids by option_id
+        item_ids_dict = {}
+        for option_id, item_id in items:
+            item_ids_dict.setdefault(option_id, []).append(item_id)
+
+        # Append `item_ids` lists to the result list
+        item_ids_by_option.extend(item_ids_dict.values())
+
+        return item_ids_by_option
 
     @classmethod
     def create_product_images(cls, product_id, **images_data):
@@ -214,39 +321,6 @@ class ProductService:
             ProductVariant.objects.create(
                 product=cls.product, price=cls.price, stock=cls.stock, sku=cls.sku
             )
-
-    @staticmethod
-    def __get_item_ids_by_product_id(product_id):
-        """
-        Get item_ids grouped by option_id for a given product_id.
-
-        Explanation: This method queries the ProductOptionItem table to retrieve item_ids associated with a given
-        product_id. It groups the item_ids by option_id and returns a list of lists where each sublist contains
-        item_ids for a specific option.
-
-        Args:
-        - product_id (int): The ID of the product for which to retrieve item_ids.
-
-        Returns:
-        List[List[int]]: A list of lists where each sublist contains item_ids for a specific option.
-
-        """
-        item_ids_by_option = []
-
-        # Query the ProductOptionItem table to retrieve item_ids
-        items = ProductOptionItem.objects.filter(
-            option__product_id=product_id
-        ).values_list("option_id", "id")
-
-        # Group item_ids by option_id
-        item_ids_dict = {}
-        for option_id, item_id in items:
-            item_ids_dict.setdefault(option_id, []).append(item_id)
-
-        # Append `item_ids` lists to the result list
-        item_ids_by_option.extend(item_ids_dict.values())
-
-        return item_ids_by_option
 
     @classmethod
     def get_product_queryset(cls, request):
