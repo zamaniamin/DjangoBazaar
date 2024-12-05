@@ -323,7 +323,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         # request
         response = self.put_json(
             reverse("product-detail", kwargs={"pk": self.variable_product.id}),
-            self.new_payload_with_multi_options,
+            self.new_payload_with_one_option,
         )
 
         # expected product
@@ -344,10 +344,10 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
 
         # expected product options
         self.assertIsNotNone(expected["options"])
-        self.assertEqual(len(expected["options"]), 3)
+        self.assertEqual(len(expected["options"]), 1)
 
         # expected product variants
-        self.assertTrue(len(expected["variants"]) == 8)
+        self.assertTrue(len(expected["variants"]) == 2)
         self.assertExpectedVariants(
             expected["variants"],
             self.new_payload_with_one_option.get("price"),
