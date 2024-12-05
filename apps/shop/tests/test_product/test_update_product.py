@@ -15,7 +15,8 @@ class UpdateProductTest(ProductBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.payload = {
+        # TODO add sku field
+        cls.new_payload = {
             "name": "updated name",
             "slug": "new-slug",
             "description": "updated description",
@@ -25,8 +26,8 @@ class UpdateProductTest(ProductBaseTestCase):
             "options": [],
         }
         cls.options = ProductFactoryHelper().unique_options()
-        cls.payload_with_options = cls.payload.copy()
-        cls.payload_with_options["options"] = cls.options
+        cls.new_payload_with_options = cls.new_payload.copy()
+        cls.new_payload_with_options["options"] = cls.options
 
     def setUp(self):
         self.set_admin_user_authorization()
@@ -64,20 +65,26 @@ class UpdateProductTest(ProductBaseTestCase):
     # ---------------------------
 
     def test_update_product(self):
+        """
+        If a product variant already exists, its price, stock, and SKU will not be changed.
+        To update these fields, you must update the variant through the variants' endpoint.
+
+        If a product variant is new, the provided price, stock, and SKU will be used to create the new variant.
+        """
         # request
         response = self.put_json(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-            self.payload,
+            self.new_payload,
         )
 
         # expected product
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], self.payload.get("name"))
-        self.assertEqual(expected["description"], self.payload.get("description"))
-        self.assertEqual(expected["status"], self.payload.get("status"))
-        self.assertEqual(expected["slug"], self.payload.get("slug"))
+        self.assertEqual(expected["name"], self.new_payload.get("name"))
+        self.assertEqual(expected["description"], self.new_payload.get("description"))
+        self.assertEqual(expected["status"], self.new_payload.get("status"))
+        self.assertEqual(expected["slug"], self.new_payload.get("slug"))
 
         # expected product date and time
         self.assertExpectedDatetimeFormat(expected)
@@ -86,49 +93,12 @@ class UpdateProductTest(ProductBaseTestCase):
         self.assertIsNone(expected["options"])
 
         # expected product variants
-        # self.assertEqual(len(expected["variants"]), 1)
-        # self.assertExpectedVariants(
-        #     expected["variants"],
-        #     expected_price=self.payload.get("price"),
-        #     expected_stock=self.payload.get("stock"),
-        # )
-
-        # expected product media
-        self.assertIsNone(expected["images"])
-
-    def test_update_product_with_options(self):
-        # request
-        response = self.put_json(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-            self.payload_with_options,
+        self.assertEqual(len(expected["variants"]), 1)
+        self.assertExpectedVariants(
+            expected["variants"],
+            expected_price=self.simple_product_payload.get("price"),
+            expected_stock=self.simple_product_payload.get("stock"),
         )
-
-        # expected product
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], self.payload_with_options.get("name"))
-        self.assertEqual(
-            expected["description"], self.payload_with_options.get("description")
-        )
-        self.assertEqual(expected["status"], self.payload_with_options.get("status"))
-        self.assertEqual(expected["slug"], self.payload_with_options.get("slug"))
-
-        # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
-
-        # expected product options
-        self.assertIsNotNone(expected["options"])
-        self.assertEqual(len(expected["options"]), 3)
-        self.assertExpectedOptions(
-            expected["options"], self.payload_with_options.get("options")
-        )
-
-        # # expected product variants
-        # self.assertTrue(len(expected["variants"]) == 8)
-        # self.assertExpectedVariants(
-        #     expected["variants"], payload["price"], payload["stock"]
-        # )
 
         # expected product media
         self.assertIsNone(expected["images"])
@@ -147,24 +117,24 @@ class UpdateProductTest(ProductBaseTestCase):
         # request
         response = self.put_json(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-            data={"name": self.payload.get("name")},
+            data={"name": self.new_payload.get("name")},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # expected
         expected = response.json()
-        self.assertEqual(expected["name"], self.payload.get("name"))
+        self.assertEqual(expected["name"], self.new_payload.get("name"))
 
     def test_update_product_without_required_fields(self):
         response = self.put_json(
             reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-            data={"description": self.payload.get("description")},
+            data={"description": self.new_payload.get("description")},
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_nonexistent_product(self):
         response = self.put_json(
-            reverse("product-detail", kwargs={"pk": 999}), self.payload
+            reverse("product-detail", kwargs={"pk": 999}), self.new_payload
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -210,6 +180,186 @@ class UpdateProductTest(ProductBaseTestCase):
                 payload,
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_with_invalid_price(self):
+        invalid_options = [
+            {"name": "test", "price": -10},
+            {"name": "test", "price": None},
+            {"name": "test", "price": ""},
+        ]
+        for payload in invalid_options:
+            response = self.put_json(
+                reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+                payload,
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_with_invalid_stock(self):
+        invalid_options = [
+            {"name": "test", "stock": -10},
+            {"name": "test", "stock": None},
+            {"name": "test", "stock": ""},
+            {"name": "test", "stock": 1.2},
+        ]
+        for payload in invalid_options:
+            response = self.put_json(
+                reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+                payload,
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_field_updated_at(self):
+        ...
+        # product_data = {
+        #     "name": "test product",
+        #     "status": Product.STATUS_ACTIVE,
+        #     "price": 11,
+        #     "stock": 11,
+        #     "sku": 11,
+        #     "options": [],
+        # }
+        # product = ProductService.create_product(**product_data)
+        # self.assertIsNotNone(product.published_at)
+        #
+        # product_data["status"] = Product.STATUS_DRAFT
+        # product = ProductService.create_product(**product_data)
+        # self.assertIsNone(product.published_at)
+        #
+        # product_data["status"] = Product.STATUS_ARCHIVED
+        # product = ProductService.create_product(**product_data)
+        # self.assertIsNone(product.published_at)
+
+
+class UpdateProductOptionsTest(ProductBaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.new_payload = {
+            "name": "updated name",
+            "slug": "new-slug",
+            "description": "updated description",
+            "status": Product.STATUS_ARCHIVED,
+            "price": 1001,
+            "stock": 4002,
+            "options": [],
+        }
+
+        cls.option = ProductFactoryHelper().unique_options(1)
+        cls.new_payload_with_one_option = cls.new_payload.copy()
+        cls.new_payload_with_one_option["options"] = (
+            {"option_name": "material", "items": ["Cotton", "Nylon"]},
+        )
+
+        cls.options = ProductFactoryHelper().unique_options()
+        cls.new_payload_with_multi_options = cls.new_payload.copy()
+        cls.new_payload_with_multi_options["options"] = cls.options
+
+    def setUp(self):
+        self.set_admin_user_authorization()
+
+        # create sample product for test update
+        (
+            self.simple_product_payload,
+            self.simple_product,
+        ) = ProductFactory.create_product(get_payload=True)
+        (
+            self.variable_product_payload,
+            self.variable_product,
+        ) = ProductFactory.create_product(
+            is_variable=True, get_payload=True, count_of_options=2
+        )
+
+    # ---------------------------
+    # --- Test Add New Option ---
+    # ---------------------------
+
+    def test_update_simple_product_add_new_options(self):
+        # request
+        response = self.put_json(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id}),
+            self.new_payload_with_multi_options,
+        )
+
+        # expected product
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(
+            expected["name"], self.new_payload_with_multi_options.get("name")
+        )
+        self.assertEqual(
+            expected["description"],
+            self.new_payload_with_multi_options.get("description"),
+        )
+        self.assertEqual(
+            expected["status"], self.new_payload_with_multi_options.get("status")
+        )
+        self.assertEqual(
+            expected["slug"], self.new_payload_with_multi_options.get("slug")
+        )
+
+        # expected product date and time
+        self.assertExpectedDatetimeFormat(expected)
+
+        # expected product options
+        self.assertIsNotNone(expected["options"])
+        self.assertEqual(len(expected["options"]), 3)
+        self.assertExpectedOptions(
+            expected["options"], self.new_payload_with_multi_options.get("options")
+        )
+
+        # expected product variants
+        self.assertTrue(len(expected["variants"]) == 8)
+        self.assertExpectedVariants(
+            expected["variants"],
+            self.new_payload_with_multi_options.get("price"),
+            self.new_payload_with_multi_options.get("stock"),
+        )
+
+        # expected product media
+        self.assertIsNone(expected["images"])
+
+    def test_update_variable_product_add_new_option(self):
+        # request
+        response = self.put_json(
+            reverse("product-detail", kwargs={"pk": self.variable_product.id}),
+            self.new_payload_with_multi_options,
+        )
+
+        # expected product
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected = response.json()
+        self.assertIsInstance(expected["id"], int)
+        self.assertEqual(expected["name"], self.new_payload_with_one_option.get("name"))
+        self.assertEqual(
+            expected["description"], self.new_payload_with_one_option.get("description")
+        )
+        self.assertEqual(
+            expected["status"], self.new_payload_with_one_option.get("status")
+        )
+        self.assertEqual(expected["slug"], self.new_payload_with_one_option.get("slug"))
+
+        # expected product date and time
+        self.assertExpectedDatetimeFormat(expected)
+
+        # expected product options
+        self.assertIsNotNone(expected["options"])
+        self.assertEqual(len(expected["options"]), 3)
+
+        # expected product variants
+        self.assertTrue(len(expected["variants"]) == 8)
+        self.assertExpectedVariants(
+            expected["variants"],
+            self.new_payload_with_one_option.get("price"),
+            self.new_payload_with_one_option.get("stock"),
+        )
+
+        # expected product media
+        self.assertIsNone(expected["images"])
+
+    # ---------------------
+    # --- Test Payloads ---
+    # ---------------------
 
     def test_update_with_required_options(self):
         # request
@@ -347,34 +497,7 @@ class UpdateProductTest(ProductBaseTestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_with_invalid_price(self):
-        invalid_options = [
-            {"name": "test", "price": -10},
-            {"name": "test", "price": None},
-            {"name": "test", "price": ""},
-        ]
-        for payload in invalid_options:
-            response = self.put_json(
-                reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-                payload,
-            )
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_with_invalid_stock(self):
-        invalid_options = [
-            {"name": "test", "stock": -10},
-            {"name": "test", "stock": None},
-            {"name": "test", "stock": ""},
-            {"name": "test", "stock": 1.2},
-        ]
-        for payload in invalid_options:
-            response = self.put_json(
-                reverse("product-detail", kwargs={"pk": self.simple_product.id}),
-                payload,
-            )
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_with_max_3_options(self):
+    def test_update_variable_product_with_max_3_options(self):
         payload = {
             "name": "blob",
             "options": [
@@ -386,32 +509,12 @@ class UpdateProductTest(ProductBaseTestCase):
         }
 
         response = self.put_json(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id}), payload
+            reverse("product-detail", kwargs={"pk": self.variable_product.id}), payload
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_field_updated_at(self):
-        ...
-        # product_data = {
-        #     "name": "test product",
-        #     "status": Product.STATUS_ACTIVE,
-        #     "price": 11,
-        #     "stock": 11,
-        #     "sku": 11,
-        #     "options": [],
-        # }
-        # product = ProductService.create_product(**product_data)
-        # self.assertIsNotNone(product.published_at)
-        #
-        # product_data["status"] = Product.STATUS_DRAFT
-        # product = ProductService.create_product(**product_data)
-        # self.assertIsNone(product.published_at)
-        #
-        # product_data["status"] = Product.STATUS_ARCHIVED
-        # product = ProductService.create_product(**product_data)
-        # self.assertIsNone(product.published_at)
 
-
+# TODO test update when delete an option
 # TODO test update with invalid slug
 # TODO test update with existing options (for variable product)
 # TODO test `updated_at` is set correctly
