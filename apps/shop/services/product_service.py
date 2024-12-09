@@ -115,6 +115,7 @@ class ProductService:
 
         else:
             cls.options = None
+            ProductOption.objects.filter(product=cls.product).delete()
 
         cls.__manage_variants()
 
