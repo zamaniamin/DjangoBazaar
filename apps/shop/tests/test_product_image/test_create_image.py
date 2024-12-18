@@ -10,7 +10,7 @@ from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 from config import settings
 
 
-class CreateImageTest(ProductBaseTestCase):
+class ProductImageCreateTest(ProductBaseTestCase):
     files: list
 
     @classmethod
@@ -51,16 +51,14 @@ class CreateImageTest(ProductBaseTestCase):
     # --- Test Upload Product Image ---
     # ---------------------------------
 
-    def test_images_upload(self):
+    def test_multi_image_upload(self):
         # request
         payload = {"images": self.files}
-        response = self.client.post(
+        response = self.post_multipart(
             reverse(
-                "product-images-list",
-                kwargs={"product_pk": self.active_product.id},
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
             ),
             payload,
-            format="multipart",
         )
 
         # expected
@@ -74,6 +72,7 @@ class CreateImageTest(ProductBaseTestCase):
             self.assertEqual(image["product_id"], self.active_product.id)
             self.assertTrue(image["src"].strip())
             self.assertIsNone(image["alt"])
+            self.assertFalse(image["is_main"])
             self.assertDatetimeFormat(image["created_at"])
             self.assertDatetimeFormat(image["updated_at"])
 
