@@ -234,9 +234,13 @@ class ProductService:
 
     @classmethod
     def create_product_images(cls, product_id, **images_data):
+        is_main_flag = images_data.pop("is_main", False)
+
         images = [
-            ProductMedia(product_id=product_id, src=image_data)
-            for image_data in images_data["images"]
+            ProductMedia(
+                product_id=product_id, src=image_data, is_main=is_main_flag and i == 0
+            )
+            for i, image_data in enumerate(images_data["images"])
         ]
         return ProductMedia.objects.bulk_create(images)
 
