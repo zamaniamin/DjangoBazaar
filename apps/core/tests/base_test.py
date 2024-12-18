@@ -76,6 +76,11 @@ class CoreBaseTestCase(APITestCase):
             url, data=json.dumps(data), content_type="application/json", **kwargs
         )
 
+    def post_multipart(self, url, data: dict = None, **kwargs):
+        if data is None:
+            data = {}
+        return self.client.post(url, data, format="multipart", **kwargs)
+
     def put_json(self, url, data: dict = None, **kwargs):
         if data is None:
             data = {}
