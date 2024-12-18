@@ -10,18 +10,18 @@ from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 from config import settings
 
 
-class ProductImageCreateTest(ProductBaseTestCase):
+class ProductImageUploadTest(ProductBaseTestCase):
     files: list
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.active_product = ProductFactory.create_product()
         cls.files = cls.generate_list_photo_files()
         cls.file_count = len(cls.files)
 
     def setUp(self):
         self.set_admin_user_authorization()
+        self.active_product = ProductFactory.create_product()
 
     # -------------------------------
     # --- Test Access Permissions ---
@@ -51,7 +51,7 @@ class ProductImageCreateTest(ProductBaseTestCase):
     # --- Test Upload Product Image ---
     # ---------------------------------
 
-    def test_multi_image_upload(self):
+    def test_upload_multi_image(self):
         # request
         payload = {"images": self.files}
         response = self.post_multipart(
@@ -88,6 +88,115 @@ class ProductImageCreateTest(ProductBaseTestCase):
         expected_data = ProductImageSerializer(product_media, many=True).data
         actual_data = response.data
         self.assertEqual(actual_data, expected_data)
+
+    def test_upload_multi_image_with_is_main(self):
+        # request
+        payload = {"images": self.files, "is_main": True}
+        response = self.post_multipart(
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
+            ),
+            payload,
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected, list)
+        self.assertEqual(len(expected), self.file_count)
+
+        for i, image in enumerate(expected):
+            self.assertIsInstance(image["id"], int)
+            self.assertEqual(image["product_id"], self.active_product.id)
+            self.assertTrue(image["src"].strip())
+            self.assertIsNone(image["alt"])
+            if i == 0:
+                self.assertTrue(image["is_main"])
+            else:
+                self.assertFalse(image["is_main"])
+
+            self.assertDatetimeFormat(image["created_at"])
+            self.assertDatetimeFormat(image["updated_at"])
+
+            # check the fie was saved
+            file_path = os.path.abspath(str(settings.BASE_DIR) + image["src"])
+            self.assertTrue(os.path.exists(file_path))
+
+        # Check if the images have been added to the product
+        product_media = ProductMedia.objects.filter(product=self.active_product)
+        self.assertEqual(product_media.count(), self.file_count)
+
+        # Check if the response data matches the serialized ProductMedia
+        expected_data = ProductImageSerializer(product_media, many=True).data
+        actual_data = response.data
+        self.assertEqual(actual_data, expected_data)
+
+    def test_upload_one_image(self):
+        # request
+        payload = {"images": self.files[0]}
+        response = self.post_multipart(
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
+            ),
+            payload,
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected, list)
+        self.assertEqual(len(expected), 1)
+
+        for image in expected:
+            self.assertIsInstance(image["id"], int)
+            self.assertEqual(image["product_id"], self.active_product.id)
+            self.assertTrue(image["src"].strip())
+            self.assertIsNone(image["alt"])
+            self.assertFalse(image["is_main"])
+            self.assertDatetimeFormat(image["created_at"])
+            self.assertDatetimeFormat(image["updated_at"])
+
+            # check the fie was saved
+            file_path = os.path.abspath(str(settings.BASE_DIR) + image["src"])
+            self.assertTrue(os.path.exists(file_path))
+
+        # Check if the images have been added to the product
+        product_media = ProductMedia.objects.filter(product=self.active_product)
+        self.assertEqual(product_media.count(), 1)
+
+        # Check if the response data matches the serialized ProductMedia
+        expected_data = ProductImageSerializer(product_media, many=True).data
+        actual_data = response.data
+        self.assertEqual(actual_data, expected_data)
+
+    def test_upload_one_image_with_is_main(self):
+        # request
+        payload = {"images": self.files[0], "is_main": True}
+        response = self.post_multipart(
+            reverse(
+                "product-images-list", kwargs={"product_pk": self.active_product.id}
+            ),
+            payload,
+        )
+
+        # expected
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected = response.json()
+        self.assertIsInstance(expected, list)
+        self.assertEqual(len(expected), 1)
+
+        for image in expected:
+            self.assertIsInstance(image["id"], int)
+            self.assertEqual(image["product_id"], self.active_product.id)
+            self.assertTrue(image["src"].strip())
+            self.assertIsNone(image["alt"])
+            self.assertTrue(image["is_main"])
+            self.assertDatetimeFormat(image["created_at"])
+            self.assertDatetimeFormat(image["updated_at"])
+
+            # check the fie was saved
+            file_path = os.path.abspath(str(settings.BASE_DIR) + image["src"])
+            self.assertTrue(os.path.exists(file_path))
 
 
 # TODO test update image

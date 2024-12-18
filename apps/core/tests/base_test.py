@@ -56,7 +56,7 @@ class CoreBaseTestCase(APITestCase):
         return file
 
     @staticmethod
-    def generate_list_photo_files():
+    def generate_list_photo_files() -> list:
         files = []
 
         for i in range(1, 5):
