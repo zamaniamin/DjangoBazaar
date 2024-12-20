@@ -233,16 +233,16 @@ class ProductService:
         return item_ids_by_option
 
     @classmethod
-    def create_product_images(cls, product_id, **images_data):
+    def create_product_images(cls, product_id, **images_data) -> list[ProductMedia]:
         is_main_flag = images_data.pop("is_main", False)
 
         images = [
-            ProductMedia(
+            ProductMedia.objects.create(
                 product_id=product_id, src=image_data, is_main=is_main_flag and i == 0
             )
             for i, image_data in enumerate(images_data["images"])
         ]
-        return ProductMedia.objects.bulk_create(images)
+        return images
 
     @classmethod
     def upload_product_images(cls, product_id, **images_data):
