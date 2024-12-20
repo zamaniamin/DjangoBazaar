@@ -141,9 +141,8 @@ class ProductMedia(models.Model):
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     alt = models.CharField(max_length=250, blank=True, null=True)
     # TODO write test for `is_main` field
-    # TODO add `alt` and `is_main` field to API endpoints
+    # TODO add `alt` and `is_main` and `size` field to API endpoints
     is_main = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
