@@ -116,4 +116,5 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+# TODO remove product images after product was removed.
 # TODO add new variant to product and update the product options base on new items in the variant
