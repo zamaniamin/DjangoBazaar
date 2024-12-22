@@ -142,9 +142,18 @@ class ProductImage(AbstractImage):
         super(ProductImage, self).save(*args, **kwargs)
 
 
-# TODO use variant-media instead of color image or color code, use product pictures for colors show
+# class ProductVariantImage(AbstractImage):
+#     variant = models.ForeignKey(
+#         ProductVariant, on_delete=models.CASCADE, related_name="images"
+#     )
+#
+#     def get_related_id(self):
+#         return self.variant.id
+#
+#     def get_related_folder(self):
+#         return "variants"
 
+# TODO use `ProductVariantImage` instead of color image or color code, use variant image for color show
 # todo add product options api
-# todo add product colors api (under options menu, add meta fields 'meta_key=color_code' and 'meta_value=#ffffff')
 # todo add product categorize api
 # todo add product features api
