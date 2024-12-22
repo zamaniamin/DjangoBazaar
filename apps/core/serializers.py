@@ -2,7 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from jsonschema.exceptions import ValidationError
 from rest_framework import serializers, status
 
-from apps.core.models import User
+from apps.core.models.user import User
 from apps.core.services.token_service import TokenService
 
 

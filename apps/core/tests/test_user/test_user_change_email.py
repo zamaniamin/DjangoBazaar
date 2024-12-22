@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.core.demo.factory.user_factory import UserFactory
-from apps.core.models import UserVerification
+from apps.core.models.user import UserVerification
 from apps.core.services.token_service import TokenService
 
 

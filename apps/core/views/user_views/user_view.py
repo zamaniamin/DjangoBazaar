@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import serializers
-from apps.core.models import UserVerification
+from apps.core.models.user import UserVerification
 from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
