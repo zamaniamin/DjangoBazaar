@@ -401,8 +401,11 @@ class RetrieveProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-# TODO test_with_media
-# TODO test_with_options_media
+# TODO test with images
+# TODO test with options
+# TODO test with variants
+# TODO test with categories
+# TODO test with attributes
 
 # TODO pagination
 # TODO in each pagination should load 12 products
