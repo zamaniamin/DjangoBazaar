@@ -1,11 +1,9 @@
-import os
-import sys
-import uuid
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+
+from apps.core.models.image import AbstractImage
 
 
 class Product(models.Model):
@@ -125,26 +123,15 @@ class ProductVariant(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-def generate_upload_path(instance, filename):
-    unique_id = uuid.uuid4().hex
-    _, ext = os.path.splitext(filename)
-
-    # Add "test_" prefix to unique_id if running in test mode
-    if "test" in sys.argv:
-        return f"test/products/{instance.product.id}/{unique_id}{ext}"
-    else:
-        return f"products/{instance.product.id}/{unique_id}{ext}"
-
-
-class ProductImage(models.Model):
+class ProductImage(AbstractImage):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="media")
-    src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
-    alt = models.CharField(max_length=250, blank=True, null=True)
-    # TODO write test for `is_main` field
-    # TODO add `alt` and `is_main` and `size` field to API endpoints
     is_main = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    def get_related_id(self):
+        return self.product.id
+
+    def get_related_folder(self):
+        return "products"
 
     def save(self, *args, **kwargs):
         if self.is_main:
