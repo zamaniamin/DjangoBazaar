@@ -5,7 +5,7 @@ from apps.shop.models import (
     Product,
     ProductOption,
     ProductVariant,
-    ProductMedia,
+    ProductImage,
 )
 
 
@@ -62,7 +62,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
-        model = ProductMedia
+        model = ProductImage
         fields = [
             "id",
             "product_id",

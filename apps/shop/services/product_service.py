@@ -7,7 +7,7 @@ from apps.shop.models.product import (
     ProductOption,
     ProductOptionItem,
     ProductVariant,
-    ProductMedia,
+    ProductImage,
 )
 
 
@@ -233,11 +233,11 @@ class ProductService:
         return item_ids_by_option
 
     @classmethod
-    def create_product_images(cls, product_id, **images_data) -> list[ProductMedia]:
+    def create_product_images(cls, product_id, **images_data) -> list[ProductImage]:
         is_main_flag = images_data.pop("is_main", False)
 
         images = [
-            ProductMedia.objects.create(
+            ProductImage.objects.create(
                 product_id=product_id, src=image_data, is_main=is_main_flag and i == 0
             )
             for i, image_data in enumerate(images_data["images"])
@@ -249,7 +249,7 @@ class ProductService:
         cls.create_product_images(product_id, **images_data)
 
         # retrieve all images of current product
-        return ProductMedia.objects.filter(product_id=product_id)
+        return ProductImage.objects.filter(product_id=product_id)
 
     @staticmethod
     def retrieve_product_details(product_id):

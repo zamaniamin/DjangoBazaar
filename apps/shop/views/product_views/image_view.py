@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
-from apps.shop.models import ProductMedia
+from apps.shop.models import ProductImage
 from apps.shop.serializers.product_serializers import ProductImageSerializer
 from apps.shop.services.product_service import ProductService
 
@@ -65,7 +65,7 @@ class ProductImageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         product_pk = self.kwargs["product_pk"]
-        return ProductMedia.objects.filter(product_id=product_pk).all()
+        return ProductImage.objects.filter(product_id=product_pk).all()
 
     def create(self, request, *args, **kwargs):
         """Upload images for a specific product."""

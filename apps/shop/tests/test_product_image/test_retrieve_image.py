@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import ProductMedia
+from apps.shop.models import ProductImage
 from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 from config import settings
 
@@ -107,7 +107,7 @@ class ListImageTest(ProductBaseTestCase):
         self.assertTrue(os.path.exists(file_path))
 
         # Check if the images have been added to the product
-        product_media = ProductMedia.objects.filter(product=self.product)
+        product_media = ProductImage.objects.filter(product=self.product)
         self.assertEqual(product_media.count(), 1)
 
     def _test_retrieve_with_multi_images(self):
