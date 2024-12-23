@@ -1,12 +1,13 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets, serializers
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
 from apps.shop.models.category import Category
 from apps.shop.paginations import DefaultPagination
-from apps.shop.serializers.category_serializers import CategorySerializer
+from apps.shop.serializers.category_serializers import (
+    CategorySerializer,
+)
 
 
 @extend_schema_view(
@@ -17,10 +18,8 @@ from apps.shop.serializers.category_serializers import CategorySerializer
     destroy=extend_schema(tags=["Category"], summary="Deletes a category"),
 )
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().order_by("-created_at")  # descending order
     serializer_class = CategorySerializer
     permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
     pagination_class = DefaultPagination
     http_method_names = ["post", "get", "put", "delete"]
 
@@ -31,6 +30,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    def get_queryset(self):
+        return Category.objects.prefetch_related("image").order_by("-created_at")
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)

@@ -1,21 +1,29 @@
 from rest_framework import serializers
 
-from apps.shop.models.category import Category
+from apps.core.serializers.timestamped_serializer import TimestampedSerializer
+from apps.shop.models.category import Category, CategoryImage
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+class CategoryImageSerializer(TimestampedSerializer):
+    category_id = serializers.IntegerField(source="category.id", read_only=True)
+
+    class Meta:
+        model = CategoryImage
+        fields = ["id", "category_id", "src", "alt", "updated_at", "created_at"]
+
+
+class CategorySerializer(TimestampedSerializer):
+    image = CategoryImageSerializer(read_only=True)
 
     class Meta:
         model = Category
         fields = [
             "id",
             "name",
-            "parent",
             "slug",
             "description",
+            "parent",
             "image",
-            "created_at",
             "updated_at",
+            "created_at",
         ]
