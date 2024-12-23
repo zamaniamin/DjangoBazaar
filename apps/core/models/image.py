@@ -4,6 +4,8 @@ import uuid
 
 from django.db import models
 
+from apps.core.models.timestamped import TimestampedModel
+
 
 def generate_upload_path(instance, filename):
     """Generate dynamic upload path based on the related model"""
@@ -16,14 +18,14 @@ def generate_upload_path(instance, filename):
     return f"{folder}/{instance.get_related_id()}/{unique_id}{ext}"
 
 
-class AbstractImage(models.Model):
+class AbstractImage(TimestampedModel):
+    # name = models.CharField(max_length=500, blank=True, null=True)
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     alt = models.CharField(max_length=500, blank=True, null=True)
     # size = models.PositiveIntegerField(
     #     default=0, blank=True, null=True
     # )  # Size in bytes
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # type = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         abstract = True
