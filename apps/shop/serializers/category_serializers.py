@@ -6,6 +6,8 @@ from apps.shop.models.category import Category, CategoryImage
 
 class CategoryImageSerializer(TimestampedSerializer):
     category_id = serializers.IntegerField(source="category.id", read_only=True)
+    src = serializers.ImageField(required=True)
+    alt = serializers.CharField(required=False, allow_null=True, default=None)
 
     class Meta:
         model = CategoryImage

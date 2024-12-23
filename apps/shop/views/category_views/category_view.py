@@ -1,12 +1,14 @@
-from drf_spectacular.utils import extend_schema_view, extend_schema
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import viewsets, serializers
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
-from apps.shop.models.category import Category
+from apps.shop.models.category import Category, CategoryImage
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers.category_serializers import (
     CategorySerializer,
+    CategoryImageSerializer,
 )
 
 
@@ -53,3 +55,60 @@ class CategoryViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+
+@extend_schema_view(
+    create=extend_schema(
+        tags=["Category Image"],
+        summary="Upload an image",
+        parameters=[OpenApiParameter("category_pk", str, OpenApiParameter.PATH)],
+    ),
+    retrieve=extend_schema(
+        tags=["Category Image"],
+        summary="Get an image",
+        parameters=[
+            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
+    ),
+    list=extend_schema(
+        tags=["Category Image"],
+        summary="List images",
+        parameters=[OpenApiParameter("category_pk", str, OpenApiParameter.PATH)],
+    ),
+    update=extend_schema(
+        tags=["Category Image"],
+        summary="Modify an existing image",
+        parameters=[
+            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
+    ),
+    destroy=extend_schema(
+        tags=["Category Image"],
+        summary="Remove an existing image",
+        parameters=[
+            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("id", str, OpenApiParameter.PATH),
+        ],
+    ),
+)
+class CategoryImageViewSet(viewsets.ModelViewSet):
+    serializer_class = CategoryImageSerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+    http_method_names = ["post", "get", "put", "delete"]
+    ACTION_PERMISSIONS = {"list": [AllowAny()], "retrieve": [AllowAny()]}
+
+    def get_permissions(self):
+        return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
+
+    def get_queryset(self):
+        return CategoryImage.objects.filter(
+            category_id=self.kwargs["category_pk"]
+        ).all()
+
+    def perform_create(self, serializer):
+        category_id = self.kwargs["category_pk"]
+        category = Category.objects.get(id=category_id)
+        serializer.save(category=category)
