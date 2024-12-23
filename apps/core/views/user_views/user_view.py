@@ -8,8 +8,19 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from apps.core import serializers
 from apps.core.models.user import UserVerification
+from apps.core.serializers.user_serializer import (
+    UserSerializer,
+    UserCreateSerializer,
+    ActivationSerializer,
+    MeSerializer,
+    ResendActivationSerializer,
+    ChangeEmailSerializer,
+    ChangeEmailConformationSerializer,
+    ResetPasswordSerializer,
+    ResetPasswordConformationSerializer,
+    ChangePasswordSerializer,
+)
 from apps.core.services.email.email_service import EmailService
 from apps.core.services.token_service import TokenService
 
@@ -101,7 +112,7 @@ Please note that users cannot log in to their accounts until their email address
 )
 class UserViewSet(ModelViewSet):
     queryset = get_user_model().objects.all()
-    serializer_class = serializers.UserSerializer
+    serializer_class = UserSerializer
 
     ACTION_PERMISSIONS = {
         "create": [AllowAny()],
@@ -117,15 +128,15 @@ class UserViewSet(ModelViewSet):
     }
 
     ACTION_SERIALIZERS = {
-        "create": serializers.UserCreateSerializer,
-        "activation": serializers.ActivationSerializer,
-        "me": serializers.MeSerializer,
-        "resend_activation": serializers.ResendActivationSerializer,
-        "change_email": serializers.ChangeEmailSerializer,
-        "change_email_conformation": serializers.ChangeEmailConformationSerializer,
-        "reset_password": serializers.ResetPasswordSerializer,
-        "reset_password_conformation": serializers.ResetPasswordConformationSerializer,
-        "change_password": serializers.ChangePasswordSerializer,
+        "create": UserCreateSerializer,
+        "activation": ActivationSerializer,
+        "me": MeSerializer,
+        "resend_activation": ResendActivationSerializer,
+        "change_email": ChangeEmailSerializer,
+        "change_email_conformation": ChangeEmailConformationSerializer,
+        "reset_password": ResetPasswordSerializer,
+        "reset_password_conformation": ResetPasswordConformationSerializer,
+        "change_password": ChangePasswordSerializer,
     }
 
     def get_permissions(self):
