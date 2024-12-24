@@ -10,7 +10,6 @@ class CreateCategoryTest(CoreBaseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.view_name = "category-list"
         cls.image_file = cls.generate_single_photo_file()
 
     def setUp(self):
@@ -22,7 +21,7 @@ class CreateCategoryTest(CoreBaseTestCase):
 
     def create_category(self, payload):
         """Helper method to create category and return the response"""
-        return self.post_json(reverse(self.view_name), payload)
+        return self.post_json(reverse("category-list"), payload)
 
     def validate_category_response(self, response, payload, parent_category=None):
         """Helper method to validate the category response."""
