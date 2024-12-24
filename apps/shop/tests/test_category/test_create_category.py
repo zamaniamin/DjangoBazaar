@@ -7,11 +7,6 @@ from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
 class CreateCategoryTest(CoreBaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.image_file = cls.generate_single_photo_file()
-
     def setUp(self):
         self.set_admin_user_authorization()
 
