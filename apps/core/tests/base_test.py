@@ -30,18 +30,18 @@ class CoreBaseTestCase(APITestCase):
             cls.regular_user
         )
 
-    #def setUp(self):
-        # Runs before every test method.
+    # def setUp(self):
+    # Runs before every test method.
 
-        # The reason you cannot call `set_admin_user_authorization()` in the `setUpTestData()` method is that
-        # `setUpTestData()` is a class method and thus operates at the class level, not the instance level.
-        # The `self` parameter in `set_admin_user_authorization()` refers to an instance of the test case, which is not
-        # available within a class method.
+    # The reason you cannot call `set_admin_user_authorization()` in the `setUpTestData()` method is that
+    # `setUpTestData()` is a class method and thus operates at the class level, not the instance level.
+    # The `self` parameter in `set_admin_user_authorization()` refers to an instance of the test case, which is not
+    # available within a class method.
 
-        # In `setUpTestData()`, you only have access to `cls`, which is the class itself, not an instance.
-        # Instance methods (like `set_admin_user_authorization`) require an instance of the class to be called.
+    # In `setUpTestData()`, you only have access to `cls`, which is the class itself, not an instance.
+    # Instance methods (like `set_admin_user_authorization`) require an instance of the class to be called.
 
-        # self.set_admin_user_authorization()
+    # self.set_admin_user_authorization()
 
     def set_admin_user_authorization(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.admin_access_token}")
