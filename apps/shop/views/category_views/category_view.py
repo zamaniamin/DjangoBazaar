@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import viewsets, serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
@@ -109,6 +110,17 @@ class CategoryImageViewSet(viewsets.ModelViewSet):
         ).all()
 
     def perform_create(self, serializer):
+        category_id = self.kwargs["category_pk"]
+        category = Category.objects.get(id=category_id)
+
+        # Check if an image already exists for this category
+        if CategoryImage.objects.filter(category=category).exists():
+            raise ValidationError(
+                "An image already exists for this category. Please update the existing image."
+            )
+        serializer.save(category=category)
+
+    def perform_update(self, serializer):
         category_id = self.kwargs["category_pk"]
         category = Category.objects.get(id=category_id)
         serializer.save(category=category)
