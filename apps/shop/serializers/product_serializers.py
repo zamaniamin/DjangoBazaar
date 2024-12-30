@@ -1,3 +1,6 @@
+from urllib.parse import urlparse
+
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework import serializers
 
@@ -6,6 +9,7 @@ from apps.shop.models import (
     ProductOption,
     ProductVariant,
     ProductImage,
+    ProductVariantImage,
 )
 
 
@@ -23,6 +27,28 @@ class ProductOptionSerializer(serializers.ModelSerializer):
         fields = ["id", "option_name", "items"]
 
 
+class ProductVariantImageSerializer(serializers.ModelSerializer):
+    image_id = serializers.IntegerField(source="product_image.id")
+    src = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductVariantImage
+        fields = ["image_id", "src"]
+
+    def get_src(self, obj):
+        domain = self.context.get(
+            "request"
+        ).get_host()  # Get the domain name from the request
+        media_url = settings.MEDIA_URL  # The URL prefix for media files
+        src = obj.product_image.src  # Relative URL of the image
+
+        # Check if media_url already contains a domain
+        if not urlparse(media_url).scheme:
+            return f"http://{domain}{media_url}{src}"
+        else:
+            return f"{media_url}{src}"
+
+
 class ProductVariantSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
@@ -37,6 +63,11 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
+    images_id = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True, required=False
+    )
+    images = ProductVariantImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = ProductVariant
         fields = [
@@ -48,6 +79,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             "option1",
             "option2",
             "option3",
+            "images_id",
+            "images",
             "created_at",
             "updated_at",
         ]
