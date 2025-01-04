@@ -36,9 +36,11 @@ class ProductVariantImageSerializer(serializers.ModelSerializer):
         fields = ["image_id", "src"]
 
     def get_src(self, obj):
-        domain = self.context.get(
-            "request"
-        ).get_host()  # Get the domain name from the request
+        request = self.context.get("request")
+        if request is None:
+            return None  # Handle the case where request is None
+
+        domain = request.get_host()
         media_url = settings.MEDIA_URL  # The URL prefix for media files
         src = obj.product_image.src  # Relative URL of the image
 
