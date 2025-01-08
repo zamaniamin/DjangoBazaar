@@ -60,5 +60,9 @@ class VariantViewSet(
                 ProductVariantImage.objects.get_or_create(
                     variant=instance, product_image_id=image_id
                 )
+        else:
+            # Remove all existing images if no new images are provided
+            # todo add tests too
+            ProductVariantImage.objects.filter(variant=instance).delete()
 
         return Response(serializer.data)

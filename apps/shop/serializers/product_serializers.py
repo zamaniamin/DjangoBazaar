@@ -66,7 +66,10 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     images_id = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True, required=False
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        allow_null=True,
     )
     images = ProductVariantImageSerializer(many=True, read_only=True)
 
