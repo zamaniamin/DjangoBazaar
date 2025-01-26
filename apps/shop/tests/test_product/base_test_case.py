@@ -73,6 +73,7 @@ class ProductBaseTestCase(CoreBaseTestCase):
         self.assertIsInstance(expected_variants, list)
 
         for variant in expected_variants:
+            self.assertEqual(len(variant), 11)
             self.assertIsInstance(variant["id"], int)
             self.assertIsInstance(variant["product_id"], int)
 
