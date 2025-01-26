@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
 from apps.shop.models import (
@@ -230,6 +231,9 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, source="media", read_only=True)
 
+    price = serializers.SerializerMethodField(read_only=True)
+    total_stock = serializers.IntegerField(read_only=True)
+
     # TODO set these fields `variants_min_price`, `variants_max_price`, `variants_total_stock` at CRUD response body
     class Meta:
         model = Product
@@ -241,14 +245,21 @@ class ProductSerializer(serializers.ModelSerializer):
             "status",
             "options",
             "variants",
-            # "variants_min_price",
-            # "variants_max_price",
-            # "variants_total_stock",
+            "price",
+            "total_stock",
             "images",
             "created_at",
             "updated_at",
             "published_at",
         ]
+
+    def get_price(self, instance):
+        variants = instance.variants.all()
+        if variants.exists():
+            min_price = variants.aggregate(Min("price"))["price__min"]
+            max_price = variants.aggregate(Max("price"))["price__max"]
+            return {"min_price": min_price, "max_price": max_price}
+        return {"min_price": None, "max_price": None}
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -258,5 +269,13 @@ class ProductSerializer(serializers.ModelSerializer):
             representation["options"] = None
         if not representation["images"]:
             representation["images"] = None
+
+        # Calculate total stock from variants
+        variants = instance.variants.all()
+        if variants.exists():
+            total_stock = variants.aggregate(Sum("stock"))["stock__sum"]
+            representation["total_stock"] = total_stock
+        else:
+            representation["total_stock"] = 0
 
         return representation
