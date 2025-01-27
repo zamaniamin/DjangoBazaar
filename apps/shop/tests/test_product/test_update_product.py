@@ -47,7 +47,9 @@ class UpdateProductTest(ProductBaseTestCase):
     # ----------------------
 
     def send_request(self, payload: dict):
-        return self.put_json(reverse("product-detail", kwargs={"pk": self.simple_product.id}))
+        return self.put_json(
+            reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        )
 
     # ------------------------------
     # --- Test Access Permission ---
@@ -643,6 +645,7 @@ class PartialUpdateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertDatetimeFormat(expected["published_at"])
+
 
 # todo test_max_3_options
 # todo test with repetitive items
