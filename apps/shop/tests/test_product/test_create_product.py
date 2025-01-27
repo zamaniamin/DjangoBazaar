@@ -19,8 +19,8 @@ class CreateProductTest(ProductBaseTestCase):
         """Send a POST request to the server and return response."""
         return self.post_json(reverse("product-list"), payload)
 
-    def validate_product_response_body(
-        self, response, payload, options_len: int = None, variants_len=1
+    def validate_response_body(
+            self, response, payload, options_len: int = None, variants_len=1
     ):
         # expected status code
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -93,7 +93,7 @@ class CreateProductTest(ProductBaseTestCase):
             "options": [],
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(response, payload)
+        self.validate_response_body(response, payload)
 
     def test_create_with_options(self):
         """
@@ -112,7 +112,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(
+        self.validate_response_body(
             response, payload, options_len=3, variants_len=8
         )
 
@@ -129,7 +129,7 @@ class CreateProductTest(ProductBaseTestCase):
             "name": "test product",
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(response, payload)
+        self.validate_response_body(response, payload)
 
     def test_create_with_invalid_required_fields(self):
         """
@@ -215,7 +215,7 @@ class CreateProductTest(ProductBaseTestCase):
             "options": [{"option_name": "color", "items": ["red"]}],
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(response, payload, options_len=1)
+        self.validate_response_body(response, payload, options_len=1)
 
     def test_create_with_duplicate_options(self):
         """
@@ -253,7 +253,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(
+        self.validate_response_body(
             response, payload, options_len=2, variants_len=4
         )
 
@@ -271,7 +271,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.send_request(payload)
-        self.validate_product_response_body(response, payload, options_len=3)
+        self.validate_response_body(response, payload, options_len=3)
 
     def test_create_with_invalid_options(self):
         """
@@ -375,6 +375,5 @@ class CreateProductTest(ProductBaseTestCase):
         product_data["status"] = Product.STATUS_ARCHIVED
         product = ProductService.create_product(**product_data)
         self.assertIsNone(product.published_at)
-
 
 # TODO test invalid slug
