@@ -15,7 +15,8 @@ class CreateProductTest(ProductBaseTestCase):
     # --- Helper Methods ---
     # ----------------------
 
-    def post_product_data(self, payload):
+    def send_request(self, payload: dict):
+        """Send a POST request to the server and return response."""
         return self.post_json(reverse("product-list"), payload)
 
     def validate_product_response_body(
@@ -64,12 +65,12 @@ class CreateProductTest(ProductBaseTestCase):
 
     def test_create_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.post_product_data({})
+        response = self.send_request({})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.post_product_data({})
+        response = self.send_request({})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ---------------------------
@@ -91,7 +92,7 @@ class CreateProductTest(ProductBaseTestCase):
             "stock": 11,
             "options": [],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(response, payload)
 
     def test_create_with_options(self):
@@ -110,7 +111,7 @@ class CreateProductTest(ProductBaseTestCase):
                 {"option_name": "material", "items": ["Cotton", "Nylon"]},
             ],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(
             response, payload, options_len=3, variants_len=8
         )
@@ -120,14 +121,14 @@ class CreateProductTest(ProductBaseTestCase):
     # ---------------------
 
     def test_create_with_empty_payload(self):
-        response = self.post_product_data({})
+        response = self.send_request({})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_required_fields(self):
         payload = {
             "name": "test product",
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(response, payload)
 
     def test_create_with_invalid_required_fields(self):
@@ -154,7 +155,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"name": "1" * 256},
         ]
         for payload in invalid_payloads:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_without_required_fields(self):
@@ -164,7 +165,7 @@ class CreateProductTest(ProductBaseTestCase):
         payload = {
             "description": "test description",
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_valid_status(self):
@@ -182,7 +183,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"name": "Test", "status": 1},
         ]
         for payload in invalid_payloads:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             match payload["status"]:
                 case Product.STATUS_ACTIVE:
@@ -205,7 +206,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"name": "Test", "status": []},
         ]
         for payload in invalid_payloads:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_required_options(self):
@@ -213,7 +214,7 @@ class CreateProductTest(ProductBaseTestCase):
             "name": "Test Product",
             "options": [{"option_name": "color", "items": ["red"]}],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(response, payload, options_len=1)
 
     def test_create_with_duplicate_options(self):
@@ -229,7 +230,7 @@ class CreateProductTest(ProductBaseTestCase):
             "name": "test",
             "options": options + [{"option_name": "color", "items": ["black"]}],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # expected response body
@@ -251,7 +252,7 @@ class CreateProductTest(ProductBaseTestCase):
                 {"option_name": "size", "items": ["S", "L"]},
             ],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(
             response, payload, options_len=2, variants_len=4
         )
@@ -269,7 +270,7 @@ class CreateProductTest(ProductBaseTestCase):
                 {"option_name": "style", "items": []},
             ],
         }
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         self.validate_product_response_body(response, payload, options_len=3)
 
     def test_create_with_invalid_options(self):
@@ -310,7 +311,7 @@ class CreateProductTest(ProductBaseTestCase):
             },
         ]
         for payload in invalid_options:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_invalid_price(self):
@@ -320,7 +321,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"name": "test", "price": ""},
         ]
         for payload in invalid_options:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_invalid_stock(self):
@@ -331,7 +332,7 @@ class CreateProductTest(ProductBaseTestCase):
             {"name": "test", "stock": 1.2},
         ]
         for payload in invalid_options:
-            response = self.post_product_data(payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_max_3_options(self):
@@ -348,7 +349,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
 
-        response = self.post_product_data(payload)
+        response = self.send_request(payload)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # -------------------------
