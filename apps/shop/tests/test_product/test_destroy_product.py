@@ -8,28 +8,40 @@ from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
 class DestroyProductTest(ProductBaseTestCase):
     @classmethod
     def setUp(cls):
-        cls.active_product = ProductFactory.create_product()
+        cls.product = ProductFactory.create_product()
 
-    def test_delete_product_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.delete(
-            reverse("product-detail", kwargs={"pk": self.active_product.id})
+    # ----------------------
+    # --- Helper Methods ---
+    # ----------------------
+
+    def send_request(self):
+        """Send a DELETE request to the server and return response."""
+        return self.client.delete(
+            reverse("product-detail", kwargs={"pk": self.product.id})
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_delete_product_by_regular_user(self):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_delete_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.client.delete(
-            reverse("product-detail", kwargs={"pk": self.active_product.id})
-        )
+        response = self.send_request()
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_delete_product_by_anonymous_user(self):
+    def test_delete_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.client.put(
-            reverse("product-detail", kwargs={"pk": self.active_product.id})
-        )
+        response = self.send_request()
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # ---------------------------
+    # --- Test Delete Product ---
+    # ---------------------------
+
+    def test_delete(self):
+        self.set_admin_user_authorization()
+        response = self.send_request()
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
 # TODO test destroy a product deletes all related information too
