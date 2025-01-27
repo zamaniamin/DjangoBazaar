@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
+from apps.shop.models.category import Category
 
 
 class Product(models.Model):
@@ -32,6 +33,14 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name="products",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -151,6 +160,5 @@ class ProductVariantImage(models.Model):
     )
 
 
-# todo add product options api
 # todo add product categorize api
 # todo add product features api
