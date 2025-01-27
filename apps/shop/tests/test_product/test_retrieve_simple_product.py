@@ -124,7 +124,7 @@ class RetrieveSimpleProductTest(ProductBaseTestCase):
         self.assertEqual(expected["status"], self.simple_product_payload["status"])
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertIsNone(expected["options"])
@@ -164,7 +164,7 @@ class RetrieveSimpleProductTest(ProductBaseTestCase):
         self.assertEqual(expected["status"], self.variable_product_payload["status"])
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertEqual(len(expected["options"]), 3)

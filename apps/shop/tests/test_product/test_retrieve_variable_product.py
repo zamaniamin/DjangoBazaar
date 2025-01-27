@@ -39,7 +39,7 @@ class RetrieveVariableProductTest(ProductBaseTestCase):
         self.assertEqual(expected["status"], self.variable_product_payload["status"])
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         self.assertEqual(
             set(expected["price"].keys()),

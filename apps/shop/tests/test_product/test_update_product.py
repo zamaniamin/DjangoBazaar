@@ -42,22 +42,25 @@ class UpdateProductTest(ProductBaseTestCase):
             self.variable_product,
         ) = ProductFactory.create_product(is_variable=True, get_payload=True)
 
+    # ----------------------
+    # --- Helper Methods ---
+    # ----------------------
+
+    def send_request(self, payload: dict):
+        return self.put_json(reverse("product-detail", kwargs={"pk": self.simple_product.id}))
+
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------
 
-    def test_update_product_by_regular_user(self):
+    def test_update_by_regular_user(self):
         self.set_regular_user_authorization()
-        response = self.put_json(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id})
-        )
+        response = self.send_request({})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_product_by_anonymous_user(self):
+    def test_update_by_anonymous_user(self):
         self.set_anonymous_user_authorization()
-        response = self.put_json(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id})
-        )
+        response = self.send_request({})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # ---------------------------
@@ -87,7 +90,7 @@ class UpdateProductTest(ProductBaseTestCase):
         self.assertEqual(expected["slug"], self.new_payload.get("slug"))
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertIsNone(expected["options"])
@@ -299,7 +302,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         )
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertIsNotNone(expected["options"])
@@ -340,7 +343,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         self.assertEqual(expected["slug"], self.new_payload_with_one_option.get("slug"))
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertIsNotNone(expected["options"])
@@ -383,7 +386,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertEqual(len(expected["options"]), 1)
@@ -418,7 +421,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected["options"]), 3)
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         self.assertExpectedOptions(expected["options"], final_options)
         # self.assertExpectedVariants(expected["variants"])
@@ -448,7 +451,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
         self.assertEqual(expected["status"], Product.STATUS_DRAFT)
 
         # expected product date and time
-        self.assertExpectedDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(expected)
 
         # expected product options
         self.assertEqual(len(expected["options"]), 2)
@@ -640,7 +643,6 @@ class PartialUpdateProductTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertDatetimeFormat(expected["published_at"])
-
 
 # todo test_max_3_options
 # todo test with repetitive items
