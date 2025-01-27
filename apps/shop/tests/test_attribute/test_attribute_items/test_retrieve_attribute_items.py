@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class ListAttributeItemsTest(CoreBaseTestCase):
+class ListAttributeItemsTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -96,7 +96,7 @@ class ListAttributeItemsTest(CoreBaseTestCase):
         self.assertEqual(len(expected), 0)
 
 
-class RetrieveAttributeItemTest(CoreBaseTestCase):
+class RetrieveAttributeItemTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

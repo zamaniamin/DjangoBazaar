@@ -3,10 +3,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 
 
-class DestroyUserTest(CoreBaseTestCase):
+class DestroyUserTestMixin(APITestCaseMixin):
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------

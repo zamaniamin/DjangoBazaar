@@ -4,10 +4,10 @@ from rest_framework import status
 
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class CreateProductTest(ProductBaseTestCase):
+class CreateProductTest(ProductBaseTestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -20,7 +20,7 @@ class CreateProductTest(ProductBaseTestCase):
         return self.post_json(reverse("product-list"), payload)
 
     def validate_response_body(
-            self, response, payload, options_len: int = None, variants_len=1
+        self, response, payload, options_len: int = None, variants_len=1
     ):
         # expected status code
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -112,9 +112,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.send_request(payload)
-        self.validate_response_body(
-            response, payload, options_len=3, variants_len=8
-        )
+        self.validate_response_body(response, payload, options_len=3, variants_len=8)
 
     # ---------------------
     # --- Test Payloads ---
@@ -253,9 +251,7 @@ class CreateProductTest(ProductBaseTestCase):
             ],
         }
         response = self.send_request(payload)
-        self.validate_response_body(
-            response, payload, options_len=2, variants_len=4
-        )
+        self.validate_response_body(response, payload, options_len=2, variants_len=4)
 
     def test_create_and_remove_empty_options(self):
         """
@@ -375,5 +371,6 @@ class CreateProductTest(ProductBaseTestCase):
         product_data["status"] = Product.STATUS_ARCHIVED
         product = ProductService.create_product(**product_data)
         self.assertIsNone(product.published_at)
+
 
 # TODO test invalid slug

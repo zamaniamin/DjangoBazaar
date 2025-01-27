@@ -3,10 +3,10 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 
 
-class CreateCartTest(CoreBaseTestCase):
+class CreateCartTestMixin(APITestCaseMixin):
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------

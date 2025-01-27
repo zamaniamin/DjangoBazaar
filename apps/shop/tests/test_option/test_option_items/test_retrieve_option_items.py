@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class ListOptionItemsTest(CoreBaseTestCase):
+class ListOptionItemsTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -84,7 +84,7 @@ class ListOptionItemsTest(CoreBaseTestCase):
         self.assertEqual(len(expected), 0)
 
 
-class RetrieveOptionItemTest(CoreBaseTestCase):
+class RetrieveOptionItemTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

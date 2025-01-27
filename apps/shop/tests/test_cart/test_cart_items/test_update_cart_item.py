@@ -3,11 +3,11 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class UpdateCartItemTest(CoreBaseTestCase):
+class UpdateCartItemTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

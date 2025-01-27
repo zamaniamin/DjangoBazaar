@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class ListOptionTest(CoreBaseTestCase):
+class ListOptionTestMixin(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -90,7 +90,7 @@ class ListOptionTest(CoreBaseTestCase):
     # TODO add pagination test
 
 
-class RetrieveOptionTest(CoreBaseTestCase):
+class RetrieveOptionTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

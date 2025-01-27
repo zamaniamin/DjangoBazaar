@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class DestroyCartTest(CoreBaseTestCase):
+class DestroyCartTestMixin(APITestCaseMixin):
     def setUp(self):
         self.cart_id, self.cart_item = CartFactory.add_one_item(get_item=True)
 

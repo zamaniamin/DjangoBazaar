@@ -8,10 +8,10 @@ from apps.shop.demo.factory.product.product_factory import (
     ProductFactoryHelper,
 )
 from apps.shop.models import Product
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class UpdateProductTest(ProductBaseTestCase):
+class UpdateProductTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -235,7 +235,7 @@ class UpdateProductTest(ProductBaseTestCase):
         # self.assertIsNone(product.published_at)
 
 
-class UpdateProductOptionsTest(ProductBaseTestCase):
+class UpdateProductOptionsTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -523,7 +523,7 @@ class UpdateProductOptionsTest(ProductBaseTestCase):
 # TODO test update with invalid slug
 # TODO test update with existing options (for variable product)
 # TODO test `updated_at` is set correctly
-class PartialUpdateProductTest(ProductBaseTestCase):
+class PartialUpdateProductTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

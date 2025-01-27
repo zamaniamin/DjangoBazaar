@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class ListCartItemsTest(CoreBaseTestCase):
+class ListCartItemsTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(self):
         super().setUpTestData()
@@ -80,7 +80,7 @@ class ListCartItemsTest(CoreBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveCartItemTest(CoreBaseTestCase):
+class RetrieveCartItemTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

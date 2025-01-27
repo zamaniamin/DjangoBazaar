@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class ListAttributeTest(CoreBaseTestCase):
+class ListAttributeTestMixin(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -90,7 +90,7 @@ class ListAttributeTest(CoreBaseTestCase):
     # TODO add pagination test
 
 
-class RetrieveAttributeTest(CoreBaseTestCase):
+class RetrieveAttributeTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

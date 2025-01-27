@@ -1,10 +1,10 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 
 
-class RetrieveUserTest(CoreBaseTestCase):
+class RetrieveUserTestMixin(APITestCaseMixin):
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------

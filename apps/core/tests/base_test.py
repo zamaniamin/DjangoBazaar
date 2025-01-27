@@ -13,7 +13,8 @@ from apps.core.services.token_service import TokenService
 from config import settings
 
 
-class CoreBaseTestCase(APITestCase):
+# APITestCaseMixin
+class APITestCaseMixin(APITestCase):
     # regular_user = None
     # admin = None
 

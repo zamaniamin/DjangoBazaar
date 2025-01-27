@@ -2,10 +2,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class RetrieveVariableProductTest(ProductBaseTestCase):
+class RetrieveVariableProductTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

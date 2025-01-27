@@ -5,11 +5,11 @@ from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductImage
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 from config import settings
 
 
-class RetrieveImageTest(ProductBaseTestCase):
+class RetrieveImageTest(ProductBaseTestCaseMixin):
     files: list
 
     @classmethod
@@ -47,7 +47,7 @@ class RetrieveImageTest(ProductBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class ListImageTest(ProductBaseTestCase):
+class ListImageTest(ProductBaseTestCaseMixin):
     files: list
 
     @classmethod

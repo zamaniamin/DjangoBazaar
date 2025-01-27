@@ -3,13 +3,13 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
 
 
-class CreateCartItemsTest(CoreBaseTestCase):
+class CreateCartItemsTestMixin(APITestCaseMixin):
     simple_product = None
     variable_product = None
 

@@ -1,7 +1,7 @@
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 
 
-class ProductBaseTestCase(CoreBaseTestCase):
+class ProductBaseTestCaseMixin(APITestCaseMixin):
     def assertExpectedOptions(self, expected_options, payload_options: list):
         """
         Asserts the expected options in the response.

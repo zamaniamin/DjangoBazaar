@@ -3,11 +3,11 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class ListCartTest(CoreBaseTestCase):
+class ListCartTestMixin(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -91,7 +91,7 @@ class ListCartTest(CoreBaseTestCase):
             self.assertIn("total_price", cart)
 
 
-class RetrieveCartTest(CoreBaseTestCase):
+class RetrieveCartTestMixin(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

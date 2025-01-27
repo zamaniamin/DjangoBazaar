@@ -6,11 +6,11 @@ from rest_framework import status
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductImage
 from apps.shop.serializers.product_serializers import ProductImageSerializer
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 from config import settings
 
 
-class ProductImageUploadTest(ProductBaseTestCase):
+class ProductImageUploadTest(ProductBaseTestCaseMixin):
     files: list
 
     @classmethod

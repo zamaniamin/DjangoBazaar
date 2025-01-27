@@ -2,10 +2,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class DestroyProductTest(ProductBaseTestCase):
+class DestroyProductTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUp(cls):
         cls.product = ProductFactory.create_product()

@@ -4,10 +4,10 @@ from rest_framework.test import APITestCase
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCase
+from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class ListProductsTest(ProductBaseTestCase):
+class ListProductsTest(ProductBaseTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

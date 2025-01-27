@@ -2,11 +2,11 @@ from django.urls import reverse
 from django.utils.text import slugify
 from rest_framework import status
 
-from apps.core.tests.base_test import CoreBaseTestCase
+from apps.core.tests.base_test import APITestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class CreateCategoryTest(CoreBaseTestCase):
+class CreateCategoryTestMixin(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
