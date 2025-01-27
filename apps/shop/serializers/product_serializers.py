@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
+from apps.core.serializers.timestamped_serializer import TimestampedSerializer
 from apps.shop.models import (
     Product,
     ProductOption,
@@ -52,7 +53,7 @@ class ProductVariantImageSerializer(serializers.ModelSerializer):
             return f"{media_url}{src}"
 
 
-class ProductVariantSerializer(serializers.ModelSerializer):
+class ProductVariantSerializer(TimestampedSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
         source="option1.item_name", required=False, default=None, read_only=True
@@ -63,8 +64,6 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     option3 = serializers.CharField(
         source="option3.item_name", required=False, default=None, read_only=True
     )
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     images_id = serializers.ListField(
         child=serializers.IntegerField(),
@@ -92,13 +91,11 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
+class ProductImageSerializer(TimestampedSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     images = serializers.ListField(
         child=serializers.ImageField(), required=False, default=None, write_only=True
     )
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = ProductImage
@@ -221,9 +218,7 @@ class ProductUpdateSerializer(ProductCreateSerializer):
     pass
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+class ProductSerializer(TimestampedSerializer):
     published_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
     )
