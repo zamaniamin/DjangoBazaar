@@ -2,76 +2,53 @@ from django.urls import reverse
 from django.utils.text import slugify
 from rest_framework import status
 
+from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
+from apps.shop.tests.test_product.mixin import _ProductAssertMixin
 
 
-class CreateProductTest(ProductBaseTestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class CreateProductTest(APIPostTestCaseMixin, _ProductAssertMixin):
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
-
-    def send_request(self, payload: dict):
-        """Send a POST request to the server and return response."""
-        return self.post_json(reverse("product-list"), payload)
+    def api_path(self) -> str:
+        return reverse("product-list")
 
     def validate_response_body(
         self, response, payload, options_len: int = None, variants_len=1
     ):
-        # expected status code
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        super().validate_response_body(response, payload)
 
-        # expected response body
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], payload.get("name"))
-        self.assertEqual(expected["description"], payload.get("description"))
+        self.assertIsInstance(self.response["id"], int)
+        self.assertEqual(self.response["name"], payload.get("name"))
+        self.assertEqual(self.response["description"], payload.get("description"))
         self.assertEqual(
-            expected["status"], payload.get("status", Product.STATUS_DRAFT)
+            self.response["status"], payload.get("status", Product.STATUS_DRAFT)
         )
         self.assertEqual(
-            expected["slug"],
+            self.response["slug"],
             payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
         )
 
         # expected product date and time
-        self.assertExpectedProductDatetimeFormat(expected)
+        self.assertExpectedProductDatetimeFormat(self.response)
 
         # expected product options
         if options_len:
-            self.assertEqual(len(expected["options"]), options_len)
-            self.assertExpectedOptions(expected["options"], payload.get("options"))
+            self.assertEqual(len(self.response["options"]), options_len)
+            self.assertExpectedOptions(self.response["options"], payload.get("options"))
         else:
-            self.assertIsNone(expected["options"])
+            self.assertIsNone(self.response["options"])
 
         # expected product variants
-        self.assertEqual(len(expected["variants"]), variants_len)
+        self.assertEqual(len(self.response["variants"]), variants_len)
         self.assertExpectedVariants(
-            expected["variants"],
+            self.response["variants"],
             expected_price=payload.get("price"),
             expected_stock=payload.get("stock"),
         )
 
         # expected product media
-        self.assertIsNone(expected["images"])
-
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_create_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.send_request({})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.send_request({})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIsNone(self.response["images"])
 
     # ---------------------------
     # --- Test Create Product ---
