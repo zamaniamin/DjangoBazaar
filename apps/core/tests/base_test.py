@@ -14,8 +14,8 @@ from config import settings
 
 
 class CoreBaseTestCase(APITestCase):
-    regular_user = None
-    admin = None
+    # regular_user = None
+    # admin = None
 
     @classmethod
     def setUpTestData(cls):
