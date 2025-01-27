@@ -13,11 +13,7 @@ from apps.core.services.token_service import TokenService
 from config import settings
 
 
-# APITestCaseMixin
 class APITestCaseMixin(APITestCase):
-    # regular_user = None
-    # admin = None
-
     @classmethod
     def setUpTestData(cls):
         # Runs once per test class.
