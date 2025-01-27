@@ -3,7 +3,7 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.base_test import APITestCaseMixin
+from apps.core.tests.mixin import APITestCaseMixin
 
 
 class CreateCartTestMixin(APITestCaseMixin):

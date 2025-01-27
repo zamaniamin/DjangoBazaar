@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from rest_framework import status
 
-from apps.core.tests.base_test import APITestCaseMixin
+from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 

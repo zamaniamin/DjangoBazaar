@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.utils import json
 
-from apps.core.tests.base_test import APITestCaseMixin
+from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 

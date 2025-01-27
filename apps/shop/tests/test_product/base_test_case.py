@@ -1,4 +1,4 @@
-from apps.core.tests.base_test import APITestCaseMixin
+from apps.core.tests.mixin import APITestCaseMixin
 
 
 class ProductBaseTestCaseMixin(APITestCaseMixin):

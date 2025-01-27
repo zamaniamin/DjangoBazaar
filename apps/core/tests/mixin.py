@@ -2,6 +2,7 @@ import io
 import json
 import os
 import re
+from abc import ABC
 from datetime import datetime
 
 from PIL import Image
@@ -13,7 +14,7 @@ from apps.core.services.token_service import TokenService
 from config import settings
 
 
-class APITestCaseMixin(APITestCase):
+class APITestCaseMixin(ABC, APITestCase):
     @classmethod
     def setUpTestData(cls):
         # Runs once per test class.
@@ -26,6 +27,9 @@ class APITestCaseMixin(APITestCase):
         cls.regular_user_access_token = TokenService.jwt_get_access_token(
             cls.regular_user
         )
+
+    def send_request(self, *args, **kwargs):
+        pass
 
     # def setUp(self):
     # Runs before every test method.
