@@ -97,15 +97,13 @@ class ProductBaseTestCase(CoreBaseTestCase):
             self.assertDatetimeFormat(variant["created_at"])
             self.assertDatetimeFormat(variant["updated_at"])
 
-    def assertExpectedDatetimeFormat(
-        self, expected_product, published_at: str | None = ""
-    ):
+    def assertExpectedProductDatetimeFormat(self, expected_product):
         """
         Asserts the expected format for datetime strings.
         """
-        self.assertDatetimeFormat(expected_product["created_at"])
-        self.assertDatetimeFormat(expected_product["updated_at"])
-        if published_at is not None:
-            self.assertDatetimeFormat(expected_product["published_at"])
+        self.assertDatetimeFormat(expected_product.get("created_at"))
+        self.assertDatetimeFormat(expected_product.get("updated_at"))
+        if expected_product.get("published_at"):
+            self.assertDatetimeFormat(expected_product.get("published_at"))
         else:
-            self.assertIs(expected_product["published_at"], None)
+            self.assertIs(expected_product.get("published_at"), None)
