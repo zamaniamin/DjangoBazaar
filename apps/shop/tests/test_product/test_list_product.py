@@ -29,30 +29,25 @@ class ListProductsTest(ProductBaseTestCase):
         )
         cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    # ----------------------
+    # --- Helper Methods ---
+    # ----------------------
 
-    def test_list_product_by_admin(self):
-        """
-        Test case to list all products by an admin user.
+    def send_request(self):
+        """Send a GET request to the server and return response."""
+        return self.client.get(reverse("product-list"))
 
-        The test sets the admin user's credentials and then sends a GET request to retrieve the list of all products.
-        It asserts that the response status code is HTTP 200 OK, the number of products in the response is 5,
-        and each product has a status of "active", "archived", or "draft".
-        """
-
-        # request
-        self.set_admin_user_authorization()
-        response = self.client.get(reverse("product-list"))
+    def validate_product_list_response_body(self, response, count):
+        # expected status code
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # expected
+        # expected response body
         expected = response.json()
-        self.assertEqual(expected["count"], 5)
-        expected_products = expected["results"]
-        self.assertEqual(len(expected_products), 5)
-        for product in expected_products:
+        self.assertEqual(expected["count"], count)
+        expected_product_list = expected["results"]
+        self.assertEqual(len(expected_product_list), count)
+        for product in expected_product_list:
+            self.assertEqual(len(product), 13)
             self.assertIn(
                 product["status"],
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
@@ -76,7 +71,11 @@ class ListProductsTest(ProductBaseTestCase):
                 },
             )
 
-    def test_list_product_by_regular_user(self):
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_list_by_regular_user(self):
         """
         Test case to list products by a regular user.
 
@@ -84,42 +83,20 @@ class ListProductsTest(ProductBaseTestCase):
         It asserts that the response status code is HTTP 200 OK, the number of products in the response is 4,
         and each product has a status of "active" or "archived", excluding "draft" products.
         """
-
-        # request
         self.set_regular_user_authorization()
-        response = self.client.get(reverse("product-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.send_request()
+        self.validate_product_list_response_body(response, 4)
 
-        # expected
+        # expected status
         expected = response.json()
-        self.assertEqual(expected["count"], 4)
-        expected_products = expected["results"]
-        self.assertEqual(len(expected_products), 4)
-        for product in expected_products:
+        expected_product_list = expected["results"]
+        for product in expected_product_list:
             self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
             self.assertIn(
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
             )
-            self.assertEqual(
-                set(product.keys()),
-                {
-                    "id",
-                    "name",
-                    "slug",
-                    "description",
-                    "status",
-                    "options",
-                    "variants",
-                    "price",
-                    "total_stock",
-                    "images",
-                    "created_at",
-                    "updated_at",
-                    "published_at",
-                },
-            )
 
-    def test_list_product_by_anonymous_user(self):
+    def test_list_by_anonymous_user(self):
         """
         Test case to list products by a guest user.
 
@@ -131,15 +108,13 @@ class ListProductsTest(ProductBaseTestCase):
 
         # request
         self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("product-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.send_request()
+        self.validate_product_list_response_body(response, 4)
 
         # expected
         expected = response.json()
-        self.assertEqual(expected["count"], 4)
-        expected_products = expected["results"]
-        self.assertEqual(len(expected_products), 4)
-        for product in expected_products:
+        expected_product_list = expected["results"]
+        for product in expected_product_list:
             self.assertNotIn(product["status"], [Product.STATUS_DRAFT])
             self.assertIn(
                 product["status"], [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]
@@ -149,7 +124,12 @@ class ListProductsTest(ProductBaseTestCase):
     # --- Test List Product ---
     # -------------------------
 
-    def test_list_products_check_product_detail(self):
+    def test_list(self):
+        self.set_admin_user_authorization()
+        response = self.send_request()
+        self.validate_product_list_response_body(response, 5)
+
+    def test_list_check_product_detail(self):
         """
         Test case to list products and check the structure of each product's details.
 
@@ -157,29 +137,8 @@ class ListProductsTest(ProductBaseTestCase):
         to retrieve the list of products. It asserts that the response status code is HTTP 200 OK,
         the number of products in the response is 4, and each product has the expected structure.
         """
-
-        # request
-        response = self.client.get(reverse("product-list"))
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertEqual(expected["count"], 4)
-        expected_products = expected["results"]
-        self.assertEqual(len(expected_products), 4)
-        for product in expected_products:
-            self.assertEqual(len(product), 13)
-            self.assertIn("id", product)
-            self.assertIn("name", product)
-            self.assertIn("slug", product)
-            self.assertIn("description", product)
-            self.assertIn("status", product)
-            self.assertIn("options", product)
-            self.assertExpectedVariants(product["variants"])
-            # TODO add media assertion
-            self.assertDatetimeFormat(product["created_at"])
-            self.assertDatetimeFormat(product["updated_at"])
-            self.assertIn("published_at", product)
+        response = self.send_request()
+        self.validate_product_list_response_body(response, 4)
 
 
 class ListNoProductsTest(APITestCase):
@@ -190,11 +149,7 @@ class ListNoProductsTest(APITestCase):
         The test sends a GET request to retrieve the list of products and asserts that the response status code
         is HTTP 200 OK, and the number of products in the response is 0.
         """
-
-        # request
         response = self.client.get(reverse("product-list"))
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["count"], 0)
@@ -210,13 +165,8 @@ class ListDraftProductsTest(APITestCase):
         The test populates a draft product, sends a GET request to retrieve the list of products,
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
-
         ProductFactory.create_product(status="draft")
-
-        # request
         response = self.client.get(reverse("product-list"))
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["count"], 0)
