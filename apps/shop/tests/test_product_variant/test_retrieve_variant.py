@@ -1,97 +1,68 @@
 from django.urls import reverse
 from rest_framework import status
 
+from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class RetrieveVariantTest(ProductBaseTestCaseMixin):
-    product = None
-
+class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.product = ProductFactory.create_product(is_variable=True)
         cls.variant_id = cls.product.variants.first().id
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def api_path(self) -> str:
+        return reverse("variant-detail", kwargs={"pk": self.variant_id})
 
-    def test_retrieve_product_variant_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.get(
-            reverse("product-list-variants", kwargs={"pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
+        self.assertIsInstance(self.response, dict)
+        self.assertExpectedVariants([self.response])
 
-    def test_retrieve_product_variant_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(
-            reverse("product-list-variants", kwargs={"pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-    def test_retrieve_product_variant_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(
-            reverse("product-list-variants", kwargs={"pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_variant_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.get(
-            reverse("variant-detail", kwargs={"pk": self.variant_id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_variant_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(
-            reverse("variant-detail", kwargs={"pk": self.variant_id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_variant_by_anonymous_user(self):
-        self.set_admin_user_authorization()
-        response = self.client.get(
-            reverse("variant-detail", kwargs={"pk": self.variant_id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # -----------------------------
-    # --- Test Retrieve Variant ---
-    # -----------------------------
-
-    def test_retrieve_product_variants(self):
-        # request
-        response = self.client.get(
-            reverse("product-list-variants", kwargs={"pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertIsInstance(expected, list)
-        self.assertExpectedVariants(expected)
-
-    def test_retrieve_product_variants_if_product_not_exist(self):
-        response = self.client.get(reverse("product-list-variants", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
     def test_retrieve_variant(self):
-        # request
-        response = self.client.get(
-            reverse("variant-detail", kwargs={"pk": self.variant_id})
+        response = self.send_request()
+        self.validate_response_body(response)
+
+    def test_retrieve_if_variant_not_exist(self):
+        response = self.send_request(reverse("variant-detail", kwargs={"pk": 999}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.product = ProductFactory.create_product(is_variable=True)
+        cls.variant_id = cls.product.variants.first().id
+
+    def api_path(self) -> str:
+        return reverse("product-list-variants", kwargs={"pk": self.product.id})
+
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
+        self.assertIsInstance(self.response, list)
+        self.assertExpectedVariants(self.response)
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_retrieve(self):
+        response = self.send_request()
+        self.validate_response_body(response)
+
+    def test_retrieve_if_product_not_exist(self):
+        response = self.send_request(
+            reverse("product-list-variants", kwargs={"pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertIsInstance(expected, dict)
-        self.assertExpectedVariants([expected])
-
-    def test_retrieve_variant_if_variant_not_exist(self):
-        response = self.client.get(reverse("variant-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
