@@ -13,8 +13,15 @@ class DestroyProductTest(APIDeleteTestCaseMixin, _ProductAssertMixin):
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.product.id})
 
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
     def test_delete(self):
         response = self.send_request()
         self.expected_status_code(response)
+
 
 # TODO test destroy a product deletes all related information too
