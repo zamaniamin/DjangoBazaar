@@ -1,73 +1,39 @@
 import os
 
 from django.urls import reverse
-from rest_framework import status
 
+from apps.core.demo.factory.image.image_factory import ImageFactory
+from apps.core.tests.mixin import APIPostTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductImage
 from apps.shop.serializers.product_serializers import ProductImageSerializer
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 from config import settings
 
 
-class ProductImageUploadTest(ProductBaseTestCaseMixin):
+class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
     files: list
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.files = cls.generate_list_photo_files()
+        cls.files = ImageFactory.generate_list_photo_files()
         cls.file_count = len(cls.files)
 
     def setUp(self):
-        self.set_admin_user_authorization()
+        super().setUp()
         self.active_product = ProductFactory.create_product()
 
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-
-    def test_images_upload_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.post(
-            reverse(
-                "product-images-list",
-                kwargs={"product_pk": self.active_product.id},
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_images_upload_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.post(
-            reverse(
-                "product-images-list",
-                kwargs={"product_pk": self.active_product.id},
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # ---------------------------------
-    # --- Test Upload Product Image ---
-    # ---------------------------------
-
-    def test_upload_multi_image(self):
-        # request
-        payload = {"images": self.files}
-        response = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
+    def api_path(self) -> str:
+        return reverse(
+            "product-images-list", kwargs={"product_pk": self.active_product.id}
         )
 
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        expected = response.json()
-        self.assertIsInstance(expected, list)
-        self.assertEqual(len(expected), self.file_count)
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertIsInstance(self.response, list)
+        self.assertEqual(len(self.response), self.file_count)
 
-        for image in expected:
+        for image in self.response:
             self.assertIsInstance(image["id"], int)
             self.assertEqual(image["product_id"], self.active_product.id)
             self.assertTrue(image["src"].strip())
@@ -89,22 +55,26 @@ class ProductImageUploadTest(ProductBaseTestCaseMixin):
         actual_data = response.data
         self.assertEqual(actual_data, expected_data)
 
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_upload_multi_image(self):
+        payload = {"images": self.files}
+        response = self.send_multipart_request(payload)
+        self.validate_response_body(response, payload)
+
     def test_upload_multi_image_with_is_main(self):
-        # request
         payload = {"images": self.files, "is_main": True}
-        response = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
-        )
+        response = self.send_multipart_request(payload)
+        self.expected_status_code(response)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected, list)
         self.assertEqual(len(expected), self.file_count)
-
         for i, image in enumerate(expected):
             self.assertIsInstance(image["id"], int)
             self.assertEqual(image["product_id"], self.active_product.id)
@@ -114,7 +84,6 @@ class ProductImageUploadTest(ProductBaseTestCaseMixin):
                 self.assertTrue(image["is_main"])
             else:
                 self.assertFalse(image["is_main"])
-
             self.assertDatetimeFormat(image["created_at"])
             self.assertDatetimeFormat(image["updated_at"])
 
@@ -132,21 +101,14 @@ class ProductImageUploadTest(ProductBaseTestCaseMixin):
         self.assertEqual(actual_data, expected_data)
 
     def test_upload_one_image(self):
-        # request
         payload = {"images": self.files[0]}
-        response = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
-        )
+        response = self.send_multipart_request(payload)
+        self.expected_status_code(response)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected, list)
         self.assertEqual(len(expected), 1)
-
         for image in expected:
             self.assertIsInstance(image["id"], int)
             self.assertEqual(image["product_id"], self.active_product.id)
@@ -170,21 +132,14 @@ class ProductImageUploadTest(ProductBaseTestCaseMixin):
         self.assertEqual(actual_data, expected_data)
 
     def test_upload_one_image_with_is_main(self):
-        # request
         payload = {"images": self.files[0], "is_main": True}
-        response = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
-        )
+        response = self.send_multipart_request(payload)
+        self.expected_status_code(response)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         self.assertIsInstance(expected, list)
         self.assertEqual(len(expected), 1)
-
         for image in expected:
             self.assertIsInstance(image["id"], int)
             self.assertEqual(image["product_id"], self.active_product.id)
@@ -200,32 +155,20 @@ class ProductImageUploadTest(ProductBaseTestCaseMixin):
 
     def test_upload_one_main_image_with_existing_main_image(self):
         """test upload a main image for product, if there was a main image befor"""
-        # request, upload a main image
         payload = {"images": self.files[1], "is_main": True}
-        response = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
-        )
+        response = self.send_multipart_request(payload)
+        self.expected_status_code(response)
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected = response.json()
         old_main_image_id = expected[0]["id"]
 
         # request, upload second main image
         payload = {"images": self.files[0], "is_main": True}
-        response2 = self.post_multipart(
-            reverse(
-                "product-images-list", kwargs={"product_pk": self.active_product.id}
-            ),
-            payload,
-        )
+        response2 = self.send_multipart_request(payload)
         expected2 = response2.json()
         self.assertIsInstance(expected2, list)
         self.assertEqual(len(expected2), 2)
-
         for image in expected2:
             if image["id"] == old_main_image_id:
                 self.assertFalse(image["is_main"])
