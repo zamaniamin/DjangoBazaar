@@ -3,10 +3,10 @@ from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
+from apps.shop.tests.test_product.mixin import _ProductAssertMixin
 
 
-class FilterProductTest(ProductBaseTestCaseMixin):
+class FilterProductTest(_ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -37,7 +37,6 @@ class FilterProductTest(ProductBaseTestCaseMixin):
         self.assertEqual(len(expected), 4)
         self.assertEqual(expected["count"], 3)
         self.assertEqual(len(expected["results"]), 3)
-
 
 # TODO create a list of products and use them in test scenarios
 # TODO test base on user role
