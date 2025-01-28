@@ -70,9 +70,11 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         # expected product media
         self.assertIsNone(self.response["images"])
 
-    # ---------------------------
-    # --- Test Update Product ---
-    # ---------------------------
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
     def test_update(self):
         """
@@ -92,10 +94,6 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
 
         response = self.send_request(payload)
         self.validate_response_body(response, payload, options_len=3, variants_len=8)
-
-    # ---------------------
-    # --- Test Payloads ---
-    # ---------------------
 
     def test_update_with_empty_payload(self):
         response = self.send_request()
