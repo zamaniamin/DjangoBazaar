@@ -171,19 +171,64 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def _expected_status_code(self, response):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_access_permission_by_regular_user(self):
+    def check_access_permission_by_regular_user(
+        self, status_code: int = status.HTTP_403_FORBIDDEN
+    ):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_access_permission_by_anonymous_user(self):
+    def check_access_permission_by_anonymous_user(
+        self, status_code: int = status.HTTP_401_UNAUTHORIZED
+    ):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status_code)
+
+
+class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.response = None
+
+    def setUp(self):
+        self.authorization_as_admin_user()
+
+    @abstractmethod
+    def api_path(self) -> str:
+        pass
+        raise NotImplementedError("Please implement`api_path()` in your test class!")
+
+    def send_request(self):
+        """Send a GET request to the server and return response."""
+        return self.client.get(path=self.api_path())
+
+    @abstractmethod
+    def validate_response_body(self, response):
+        """Expected response body."""
+        self.response = response.json()
+        self.expected_status_code(response)
+
+    def expected_status_code(self, response):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def check_access_permission_by_regular_user(
+        self, status_code: int = status.HTTP_200_OK
+    ):
+        self.authorization_as_regular_user()
+        response = self.send_request()
+        self.assertEqual(response.status_code, status_code)
+        return response
+
+    def check_access_permission_by_anonymous_user(
+        self, status_code: int = status.HTTP_200_OK
+    ):
+        self.authorization_as_anonymous_user()
+        response = self.send_request()
+        self.assertEqual(response.status_code, status_code)
+        return response
 
 
 class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
