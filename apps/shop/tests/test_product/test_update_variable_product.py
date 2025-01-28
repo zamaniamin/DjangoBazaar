@@ -48,7 +48,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         return reverse("product-detail", kwargs={"pk": self.variable_product.id})
 
     def validate_response_body(
-        self, response, payload, options_len: int = None, variants_len=1
+            self, response, payload, options_len: int = None, variants_len=1
     ):
         super().validate_response_body(response, payload)
 
@@ -83,6 +83,12 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
 
         # expected product media
         self.assertIsNone(self.response["images"])
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
     def test_update_with_add_new_option(self):
         response = self.send_request(self.new_payload_with_one_option)
