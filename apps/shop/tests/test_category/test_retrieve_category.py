@@ -1,28 +1,28 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class ListCategoryTestMixin(APITestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class ListCategoryTest(APIGetTestCaseMixin):
+    def api_path(self) -> str:
+        return reverse("category-list")
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
 
-    def list_category(self):
-        """Helper method to list category and return the response"""
-        return self.client.get(reverse("category-list"))
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-    def validate_category_list_response(self, response):
-        """Helper method to validate the category list response."""
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
-        expected = response.json()
-        self.assertEqual(len(expected), 4)
+    def test_list(self):
+        CategoryFactory.create_categories_list()
+        response = self.send_request()
+        self.validate_response_body(response)
+        self.assertEqual(len(self.response), 4)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -32,7 +32,7 @@ class ListCategoryTestMixin(APITestCaseMixin):
                 "results",
             },
         )
-        categories_list = expected["results"]
+        categories_list = self.response["results"]
         self.assertIsInstance(categories_list, list)
         self.assertEqual(len(categories_list), 2)
         for category in categories_list:
@@ -50,40 +50,11 @@ class ListCategoryTestMixin(APITestCaseMixin):
                 },
             )
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_list_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.list_category()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_list_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.list_category()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # -----------------------------
-    # --- Test List Categories ----
-    # -----------------------------
-
-    def test_list(self):
-        # create a list of categories
-        CategoryFactory.create_categories_list()
-
-        # request
-        response = self.list_category()
-        self.validate_category_list_response(response)
-
     def test_list_empty(self):
-        # request
-        response = self.list_category()
+        response = self.send_request()
+        self.validate_response_body(response)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 4)
+        self.assertEqual(len(self.response), 4)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -93,50 +64,23 @@ class ListCategoryTestMixin(APITestCaseMixin):
                 "results",
             },
         )
-        self.assertIsInstance(expected["results"], list)
-        self.assertEqual(len(expected["results"]), 0)
+        self.assertIsInstance(self.response["results"], list)
+        self.assertEqual(len(self.response["results"]), 0)
 
     # TODO add pagination test
 
 
-class RetrieveOptionTestMixin(APITestCaseMixin):
+class RetrieveCategoryTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.view_name = "category-detail"
         cls.category = CategoryFactory.create_category()
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
+    def api_path(self) -> str:
+        return reverse("category-detail", kwargs={"pk": self.category.id})
 
-    def get_category(self):
-        return self.client.get(reverse(self.view_name, kwargs={"pk": self.category.id}))
-
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_retrieve_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.get_category()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.get_category()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # --------------------------------
-    # --- Test Retrieve a Category ---
-    # --------------------------------
-
-    def test_retrieve(self):
-        # request
-        response = self.get_category()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -151,6 +95,16 @@ class RetrieveOptionTestMixin(APITestCaseMixin):
             },
         )
 
-    def test_retrieve_category_if_not_exist(self):
-        response = self.client.get(reverse(self.view_name, kwargs={"pk": 999}))
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_retrieve(self):
+        response = self.send_request()
+        self.validate_response_body(response)
+
+    def test_retrieve_404(self):
+        response = self.client.get(reverse("category-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
