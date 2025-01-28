@@ -1,7 +1,7 @@
 from apps.core.tests.mixin import APIAssertMixin
 
 
-class _ProductAssertMixin(APIAssertMixin):
+class ProductAssertMixin(APIAssertMixin):
     def assertExpectedOptions(self, expected_options, payload_options: list):
         """
         Asserts the expected options in the response.

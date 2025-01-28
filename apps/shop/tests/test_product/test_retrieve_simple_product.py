@@ -4,10 +4,10 @@ from rest_framework import status
 from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
-from apps.shop.tests.test_product.mixin import _ProductAssertMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class RetrieveSimpleProductTest(APIGetTestCaseMixin, _ProductAssertMixin):
+class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

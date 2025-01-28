@@ -2,10 +2,10 @@ from django.urls import reverse
 
 from apps.core.tests.mixin import APIDeleteTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.mixin import _ProductAssertMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class DestroyProductTest(APIDeleteTestCaseMixin, _ProductAssertMixin):
+class DestroyProductTest(APIDeleteTestCaseMixin, ProductAssertMixin):
     def setUp(self):
         super().setUp()
         self.product = ProductFactory.create_product()

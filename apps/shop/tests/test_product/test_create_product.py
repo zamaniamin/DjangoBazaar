@@ -5,10 +5,10 @@ from rest_framework import status
 from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
-from apps.shop.tests.test_product.mixin import _ProductAssertMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class CreateProductTest(APIPostTestCaseMixin, _ProductAssertMixin):
+class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
 
     def api_path(self) -> str:
         return reverse("product-list")

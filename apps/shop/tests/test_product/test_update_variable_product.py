@@ -8,10 +8,10 @@ from apps.shop.demo.factory.product.product_factory import (
     ProductFactoryHelper,
 )
 from apps.shop.models import Product
-from apps.shop.tests.test_product.mixin import _ProductAssertMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class UpdateVariableProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
+class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

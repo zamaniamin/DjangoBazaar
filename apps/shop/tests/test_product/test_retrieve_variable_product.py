@@ -2,10 +2,10 @@ from django.urls import reverse
 
 from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.mixin import _ProductAssertMixin
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class RetrieveVariableProductTest(APIGetTestCaseMixin, _ProductAssertMixin):
+class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     @classmethod
     def setUpTestData(cls):
