@@ -177,6 +177,7 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_regular_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
 
     def check_access_permission_by_anonymous_user(
         self, status_code: int = status.HTTP_401_UNAUTHORIZED
@@ -184,6 +185,7 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_anonymous_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
 
 
 class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
@@ -269,6 +271,7 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_regular_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
 
     def check_access_permission_by_anonymous_user(
         self, status_code: int = status.HTTP_401_UNAUTHORIZED
@@ -276,6 +279,7 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_anonymous_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
 
 
 class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
@@ -305,6 +309,7 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_regular_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
 
     def check_access_permission_by_anonymous_user(
         self, status_code: int = status.HTTP_401_UNAUTHORIZED
@@ -312,3 +317,4 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.authorization_as_anonymous_user()
         response = self.send_request()
         self.assertEqual(response.status_code, status_code)
+        return response
