@@ -1,94 +1,69 @@
 from django.urls import reverse
 from django.utils.text import slugify
-from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIPostTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class CreateCategoryTestMixin(APITestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class CreateCategoryTest(APIPostTestCaseMixin, APIAssertMixin):
+    def api_path(self) -> str:
+        return reverse("category-list")
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
-
-    def create_category(self, payload):
-        """Helper method to create category and return the response"""
-        return self.post_json(reverse("category-list"), payload)
-
-    def validate_category_response(self, response, payload, parent_category=None):
-        """Helper method to validate the category response."""
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        expected = response.json()
-        self.assertEqual(len(expected), 8)
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], payload["name"])
+    def validate_response_body(self, response, payload, parent_category=None):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 8)
+        self.assertIsInstance(self.response["id"], int)
+        self.assertEqual(self.response["name"], payload["name"])
         self.assertEqual(
-            expected["slug"],
+            self.response["slug"],
             payload.get("slug", slugify(payload["name"], allow_unicode=True)),
         )
-        self.assertEqual(expected["description"], payload.get("description"))
+        self.assertEqual(self.response["description"], payload.get("description"))
         self.assertEqual(
-            expected["parent"], parent_category.id if parent_category else None
+            self.response["parent"], parent_category.id if parent_category else None
         )
-        self.assertDatetimeFormat(expected["created_at"])
-        self.assertDatetimeFormat(expected["updated_at"])
-        self.assertIsNone(expected["image"])
-
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+        self.assertDatetimeFormat(self.response["created_at"])
+        self.assertDatetimeFormat(self.response["updated_at"])
+        self.assertIsNone(self.response["image"])
 
     def test_create_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.create_category({})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_access_permission_by_regular_user()
 
     def test_create_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.create_category({})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # ----------------------------
-    # --- Test Create Category ---
-    # ----------------------------
+        self.check_access_permission_by_anonymous_user()
 
     def test_create(self):
         payload = {
             "name": "test category",
         }
-        response = self.create_category(payload)
-        self.validate_category_response(response, payload)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_create_with_all_fields(self):
         parent_category = CategoryFactory.create_category()
-
         payload = {
             "name": "test category",
             "slug": "test-custom-slug",
             "description": "any description",
             "parent": parent_category.id,
         }
-        response = self.create_category(payload)
-        self.validate_category_response(response, payload, parent_category)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload, parent_category)
 
     def test_create_with_persian_characters(self):
         payload = {
             "name": "دسته بندی",
         }
-        response = self.create_category(payload)
-        self.validate_category_response(response, payload)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_create_with_empty_parent(self):
         payload = {
             "name": "test category",
             "parent": "",
         }
-        response = self.create_category(payload)
-        self.validate_category_response(response, payload)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
 
 # TODO test create with invalid payloads
