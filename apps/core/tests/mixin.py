@@ -203,12 +203,12 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         pass
         raise NotImplementedError("Please implement`api_path()` in your test class!")
 
-    def send_request(self):
+    def send_request(self, path: str = None):
         """Send a GET request to the server and return response."""
-        return self.client.get(path=self.api_path())
+        return self.client.get(path=path if path else self.api_path())
 
     @abstractmethod
-    def validate_response_body(self, response):
+    def validate_response_body(self, response, payload: dict = None):
         """Expected response body."""
         self.response = response.json()
         self.expected_status_code(response)
