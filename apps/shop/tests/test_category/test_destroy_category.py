@@ -1,61 +1,38 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIDeleteTestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class DestroyCategoryTestMixin(APITestCaseMixin):
+class DestroyCategoryTestMixin(APIDeleteTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.view_name = "category-detail"
 
     def setUp(self):
-        self.set_admin_user_authorization()
+        super().setUp()
         self.category = CategoryFactory.create_category()
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
+    def api_path(self) -> str:
+        return reverse("category-detail", kwargs={"pk": self.category.id})
 
-    def delete_category(self):
-        """Helper method to delete category and return the response"""
-        return self.client.delete(
-            reverse(self.view_name, kwargs={"pk": self.category.id})
-        )
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-
-    def test_delete_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.delete_category()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_delete_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.delete_category()
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # ----------------------------
-    # --- Test Delete Category ---
-    # ----------------------------
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
     def test_delete(self):
-        # request for delete an category
-        response = self.delete_category()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-        # assert category is removed
+        response = self.send_request()
+        self.expected_status_code(response)
         response = self.client.get(
-            reverse(self.view_name, kwargs={"pk": self.category.id})
+            reverse("category-detail", kwargs={"pk": self.category.id})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_if_not_exist(self):
-        response = self.client.delete(reverse(self.view_name, kwargs={"pk": 999}))
+    def test_delete_404(self):
+        response = self.send_request(reverse("category-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_parent(self):
@@ -70,7 +47,9 @@ class DestroyCategoryTestMixin(APITestCaseMixin):
         child_2.save()
 
         # request
-        response = self.client.delete(reverse(self.view_name, kwargs={"pk": parent.id}))
+        response = self.client.delete(
+            reverse("category-detail", kwargs={"pk": parent.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # Reload the children from the database to get the latest state
