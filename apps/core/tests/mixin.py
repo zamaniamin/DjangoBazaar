@@ -100,13 +100,6 @@ class _APITestCaseMixin_(APITestCase):
             data = {}
         return self.client.post(url, data, format="multipart", **kwargs)
 
-    def put_json(self, url, data: dict = None, **kwargs):
-        if data is None:
-            data = {}
-        return self.client.put(
-            url, data=json.dumps(data), content_type="application/json", **kwargs
-        )
-
 
 class _APITestCaseAuthorizationMixin(APITestCase):
     @classmethod
@@ -177,6 +170,53 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
 
     def _expected_status_code(self, response):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    # ------------------------------
+    # --- Test Access Permission ---
+    # ------------------------------
+
+    def test_access_permission_by_regular_user(self):
+        self.authorization_as_regular_user()
+        response = self.send_request()
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_access_permission_by_anonymous_user(self):
+        self.authorization_as_anonymous_user()
+        response = self.send_request()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.response = None
+
+    def setUp(self):
+        self.authorization_as_admin_user()
+
+    @abstractmethod
+    def api_path(self) -> str:
+        raise NotImplementedError("Please implement`api_path()` in your test class!")
+
+    def send_request(self, path: str = None, payload: dict = None, **kwargs):
+        """Send a POST request to the server and return response."""
+        return self.client.put(
+            path=path if path else self.api_path(),
+            data=json.dumps(payload if payload else {}),
+            content_type="application/json",
+            **kwargs,
+        )
+
+    @abstractmethod
+    def validate_response_body(self, response, payload):
+        """Expected response body."""
+        self.response = response.json()
+        self._expected_status_code(response)
+
+    def _expected_status_code(self, response):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # ------------------------------
     # --- Test Access Permission ---
