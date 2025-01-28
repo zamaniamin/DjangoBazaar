@@ -48,7 +48,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         return reverse("product-detail", kwargs={"pk": self.variable_product.id})
 
     def validate_response_body(
-            self, response, payload, options_len: int = None, variants_len=1
+        self, response, payload, options_len: int = None, variants_len=1
     ):
         super().validate_response_body(response, payload)
 
