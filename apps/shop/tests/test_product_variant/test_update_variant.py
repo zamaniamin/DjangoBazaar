@@ -1,15 +1,10 @@
-import json
-
 from django.urls import reverse
-from rest_framework import status
 
+from apps.core.tests.mixin import APIUpdateTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 
 
-class UpdateVariantTest(ProductBaseTestCaseMixin):
-    product = None
-
+class UpdateVariantTest(APIUpdateTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -17,52 +12,34 @@ class UpdateVariantTest(ProductBaseTestCaseMixin):
         cls.product = ProductFactory.create_product(is_variable=True, has_images=True)
         cls.variant_id = cls.product.variants.first().id
 
-    def setUp(self):
-        self.set_admin_user_authorization()
+    def api_path(self) -> str:
+        return reverse("variant-detail", kwargs={"pk": self.variant_id})
 
-    def test_update_variant(self):
-        self.set_admin_user_authorization()
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertEqual(self.response["price"], payload.get("price"))
+        self.assertEqual(self.response["stock"], payload.get("stock"))
 
-        # request
+    def test_update(self):
         payload = {
             "price": 11,
             "stock": 111,
         }
-        response = self.client.put(
-            reverse("variant-detail", kwargs={"pk": self.variant_id}),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertEqual(expected["price"], 11)
-        self.assertEqual(expected["stock"], 111)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_update_assign_image(self):
-        # get image id and add it to images list
         product_image_id = self.product.media.first().id
         product_image_src = self.product.media.first().src
-        # images = list(self.product.media.all())
-
-        # request
         payload = {
             "price": 11,
             "stock": 111,
             "images_id": [product_image_id],
         }
-        response = self.put_json(
-            reverse("variant-detail", kwargs={"pk": self.variant_id}), payload
-        )
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertEqual(expected["price"], 11)
-        self.assertEqual(expected["stock"], 111)
-
-        for image in expected["images"]:
+        for image in self.response["images"]:
             self.assertEqual(image["image_id"], product_image_id)
             self.assertIn(str(product_image_src), image["src"])
 
