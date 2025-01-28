@@ -128,10 +128,10 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def api_path(self) -> str:
         raise NotImplementedError("Please implement`api_path()` in your test class!")
 
-    def send_request(self, payload: dict = None, **kwargs):
+    def send_request(self, payload: dict = None, path: str = None, **kwargs):
         """Send a POST request to the server and return response."""
         return self.client.post(
-            path=self.api_path(),
+            path=path if path else self.api_path(),
             data=json.dumps(payload if payload else {}),
             content_type="application/json",
             **kwargs,
