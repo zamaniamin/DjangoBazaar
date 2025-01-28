@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APIDeleteTestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class DestroyCategoryTestMixin(APIDeleteTestCaseMixin):
+class DestroyCategoryTest(APIDeleteTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

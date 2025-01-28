@@ -7,7 +7,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class UpdateOptionItemTestMixin(APITestCaseMixin):
+class UpdateOptionItemTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

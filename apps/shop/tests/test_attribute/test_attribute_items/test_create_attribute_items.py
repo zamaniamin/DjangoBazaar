@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class CreateAttributeItemsTestMixin(APIPostTestCaseMixin):
+class CreateAttributeItemsTest(APIPostTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

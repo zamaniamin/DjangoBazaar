@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIDeleteTestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class DestroyAttributeItemsTestMixin(APITestCaseMixin):
+class DestroyAttributeItemsTest(APIDeleteTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

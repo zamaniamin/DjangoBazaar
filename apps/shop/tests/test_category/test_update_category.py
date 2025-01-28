@@ -6,7 +6,7 @@ from apps.core.tests.mixin import APIUpdateTestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class UpdateCategoryTestMixin(APIUpdateTestCaseMixin):
+class UpdateCategoryTest(APIUpdateTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class ListOptionItemsTestMixin(APITestCaseMixin):
+class ListOptionItemsTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -84,7 +84,7 @@ class ListOptionItemsTestMixin(APITestCaseMixin):
         self.assertEqual(len(expected), 0)
 
 
-class RetrieveOptionItemTestMixin(APITestCaseMixin):
+class RetrieveOptionItemTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

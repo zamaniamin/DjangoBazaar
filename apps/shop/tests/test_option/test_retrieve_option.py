@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class ListOptionTestMixin(APITestCaseMixin):
+class ListOptionTest(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 

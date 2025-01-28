@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class DestroyOptionTestMixin(APITestCaseMixin):
+class DestroyOptionTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
