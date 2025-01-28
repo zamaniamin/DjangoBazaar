@@ -7,9 +7,7 @@ from apps.core.tests.mixin import APIPostTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class CategoryImageUploadTest(
-    APIPostTestCaseMixin, ImageTestCaseMixin, APIAssertMixin
-):
+class CategoryImageUploadTest(APIPostTestCaseMixin, ImageTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
