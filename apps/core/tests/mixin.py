@@ -166,9 +166,9 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def validate_response_body(self, response, payload):
         """Expected response body."""
         self.response = response.json()
-        self._expected_status_code(response)
+        self.expected_status_code(response)
 
-    def _expected_status_code(self, response):
+    def expected_status_code(self, response):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def check_access_permission_by_regular_user(
@@ -258,24 +258,24 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def validate_response_body(self, response, payload):
         """Expected response body."""
         self.response = response.json()
-        self._expected_status_code(response)
+        self.expected_status_code(response)
 
-    def _expected_status_code(self, response):
+    def expected_status_code(self, response):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_access_permission_by_regular_user(self):
+    def check_access_permission_by_regular_user(
+        self, status_code: int = status.HTTP_403_FORBIDDEN
+    ):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_access_permission_by_anonymous_user(self):
+    def check_access_permission_by_anonymous_user(
+        self, status_code: int = status.HTTP_401_UNAUTHORIZED
+    ):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status_code)
 
 
 class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
@@ -299,16 +299,16 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def expected_status_code(self, response):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_access_permission_by_regular_user(self):
+    def check_access_permission_by_regular_user(
+        self, status_code: int = status.HTTP_403_FORBIDDEN
+    ):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_access_permission_by_anonymous_user(self):
+    def check_access_permission_by_anonymous_user(
+        self, status_code: int = status.HTTP_401_UNAUTHORIZED
+    ):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status_code)
