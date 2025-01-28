@@ -1,11 +1,9 @@
-import io
 import json
 import os
 import re
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -64,29 +62,6 @@ class _APITestCaseMixin_(APITestCase):
         self.assertTrue(
             os.path.exists(full_file_path), f"File does not exist: {full_file_path}"
         )
-
-    @staticmethod
-    def generate_single_photo_file():
-        file = io.BytesIO()
-        image = Image.new("RGBA", size=(100, 100), color=(155, 0, 0))
-        image.save(file, "png")
-        file.name = "test.png"
-        file.seek(0)
-        return file
-
-    @staticmethod
-    def generate_list_photo_files() -> list:
-        files = []
-
-        for i in range(1, 5):
-            file = io.BytesIO()
-            image = Image.new("RGBA", size=(100, 100), color=(155 * i, 0, 0))
-            image.save(file, "png")
-            file.name = f"test_{i}.png"
-            file.seek(0)
-            files.append(file)
-
-        return files
 
     def post_json(self, url, data: dict = None, **kwargs):
         if data is None:
@@ -159,6 +134,15 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
             path=self.api_path(),
             data=json.dumps(payload if payload else {}),
             content_type="application/json",
+            **kwargs,
+        )
+
+    def send_multipart_request(self, payload: dict = None, path: str = None, **kwargs):
+        """Send a POST request to the server and return response."""
+        return self.client.post(
+            path=path if path else self.api_path(),
+            data=payload if payload else {},
+            format="multipart",
             **kwargs,
         )
 
