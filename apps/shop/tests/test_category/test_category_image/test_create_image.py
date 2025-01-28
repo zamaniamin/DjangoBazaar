@@ -1,78 +1,59 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.demo.factory.image.image_factory import ImageFactory
+from apps.core.tests.image_mixin import ImageTestCaseMixin
+from apps.core.tests.mixin import APIPostTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 
-class CategoryImageUploadTestMixin(APITestCaseMixin):
+class CategoryImageUploadTestMixin(
+    APIPostTestCaseMixin, ImageTestCaseMixin, APIAssertMixin
+):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.image_file = cls.generate_single_photo_file()
+        cls.image_file = ImageFactory.generate_single_photo_file()
 
     def setUp(self):
-        self.set_admin_user_authorization()
+        super().setUp()
         self.category = CategoryFactory.create_category()
 
-    # ----------------------
-    # --- Helper Methods ---
-    # ----------------------
+    def api_path(self) -> str:
+        return reverse("category-image-list", kwargs={"category_pk": self.category.id})
 
-    def upload_image(self, payload):
-        """Helper method to upload an image and return the response"""
-        return self.post_multipart(
-            reverse("category-image-list", kwargs={"category_pk": self.category.id}),
-            payload,
-        )
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertIsInstance(self.response, dict)
+        self.assertEqual(len(self.response), 6)
+        self.assertIsInstance(self.response["id"], int)
+        self.assertEqual(self.response["category_id"], self.category.id)
+        self.assertImageSrcPattern(self.response["src"])
+        self.assertEqual(self.response["alt"], payload.get("alt"))
+        self.assertDatetimeFormat(self.response["updated_at"])
+        self.assertDatetimeFormat(self.response["created_at"])
+        self.assertImageFileDirectory(self.response["src"])
 
-    def validate_image_response(self, response, payload: dict = None):
-        """Helper method to validate the image response."""
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-        expected = response.json()
-        self.assertIsInstance(expected, dict)
-        self.assertEqual(len(expected), 6)
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["category_id"], self.category.id)
-        self.assertImageSrcPattern(expected["src"])
-        self.assertEqual(expected["alt"], payload["alt"] if payload else None)
-        self.assertDatetimeFormat(expected["updated_at"])
-        self.assertDatetimeFormat(expected["created_at"])
-        self.assertImageFileDirectory(expected["src"])
-
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-
-    def test_upload_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.upload_image({})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_upload_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.upload_image({})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # -------------------------
-    # --- Test Upload Image ---
-    # -------------------------
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
     def test_upload_image(self):
         payload = {"src": self.image_file}
-        response = self.upload_image(payload)
-        self.validate_image_response(response)
+        response = self.send_multipart_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_upload_image_with_alt(self):
         payload = {
             "src": self.image_file,
             "alt": "test alt",
         }
-        response = self.upload_image(payload)
-        self.validate_image_response(response, payload)
+        response = self.send_multipart_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_upload_with_empty_src(self):
         payload = {"src": ""}
-        response = self.upload_image(payload)
+        response = self.send_multipart_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
