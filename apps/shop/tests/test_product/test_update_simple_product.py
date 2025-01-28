@@ -22,9 +22,6 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
             "description": "updated description",
             "status": Product.STATUS_ARCHIVED,
         }
-        cls.options = ProductFactoryHelper().unique_options()
-        cls.new_payload_with_options = cls.new_payload.copy()
-        cls.new_payload_with_options["options"] = cls.options
 
     def setUp(self):
         super().setUp()
@@ -86,6 +83,15 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         """
         response = self.send_request(payload=self.new_payload)
         self.validate_response_body(response, self.new_payload)
+
+    def test_update_with_add_new_options(self):
+        payload = self.new_payload.copy()
+        payload["options"] = ProductFactoryHelper().unique_options()
+        payload["price"] = self.simple_product_payload.get("price")
+        payload["stock"] = self.simple_product_payload.get("stock")
+
+        response = self.send_request(payload=payload)
+        self.validate_response_body(response, payload, options_len=3, variants_len=8)
 
     # ---------------------
     # --- Test Payloads ---
