@@ -1,12 +1,13 @@
 from django.urls import reverse
 from rest_framework import status
 
+from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
+from apps.shop.tests.test_product.mixin import _ProductAssertMixin
 
 
-class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
+class RetrieveSimpleProductTest(APIGetTestCaseMixin, _ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -16,10 +17,6 @@ class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
             cls.simple_product_payload,
             cls.simple_product,
         ) = ProductFactory.create_product(get_payload=True)
-        (
-            cls.variable_product_payload,
-            cls.variable_product,
-        ) = ProductFactory.create_product(get_payload=True, is_variable=True)
 
         # products with different status
         cls.active_product = ProductFactory.create_product()
@@ -28,30 +25,42 @@ class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
         )
         cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def api_path(self) -> str:
+        return reverse("product-detail", kwargs={"pk": self.simple_product.id})
 
-    def test_retrieve_product_by_admin(self):
-        """
-        Test case to retrieve product details by an admin user.
+    def validate_response_body(self, response):
+        super().validate_response_body(response)
 
-        The test sets the admin user's credentials and then sends GET requests for product details
-        for each of the active, archived, and draft products. It asserts that the response status code
-        is HTTP 200 OK for each request.
-        """
-        self.set_admin_user_authorization()
+        self.assertIsInstance(self.response["id"], int)
+        self.assertEqual(self.response["name"], self.simple_product_payload["name"])
+        self.assertEqual(
+            self.response["description"], self.simple_product_payload["description"]
+        )
+        self.assertEqual(self.response["status"], self.simple_product_payload["status"])
 
-        for product in [self.active_product, self.archived_product, self.draft_product]:
-            # request
-            response = self.client.get(
-                reverse("product-detail", kwargs={"pk": product.id})
-            )
+        # expected product date and time
+        self.assertExpectedProductDatetimeFormat(self.response)
 
-            # expected
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # expected product options
+        self.assertIsNone(self.response["options"])
 
-    def test_retrieve_product_by_regular_user(self):
+        # expected product variants
+        self.assertEqual(len(self.response["variants"]), 1)
+        self.assertExpectedVariants(
+            self.response["variants"],
+            expected_price=self.simple_product_payload["price"],
+            expected_stock=self.simple_product_payload["stock"],
+        )
+
+        # TODO add media assertion
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_retrieve_by_regular_user(self):
         """
         Test case to retrieve product details by a regular user.
 
@@ -59,21 +68,18 @@ class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
         for each of the active, archived, and draft products. It asserts that the response status code is
         HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.set_regular_user_authorization()
+        self.authorization_as_regular_user()
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
-            # request
-            response = self.client.get(
+            response = self.send_request(
                 reverse("product-detail", kwargs={"pk": product.id})
             )
-
-            # expected
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
-                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.expected_status_code(response)
             elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_retrieve_product_by_anonymous_user(self):
+    def test_retrieve_by_anonymous_user(self):
         """
         Test case to retrieve product details by a guest user.
 
@@ -81,23 +87,15 @@ class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
         for product details for each of the active, archived, and draft products. It asserts that the
         response status code is HTTP 200 OK for active and archived products, and HTTP 404 Not Found for draft products.
         """
-        self.set_anonymous_user_authorization()
-
+        self.authorization_as_anonymous_user()
         for product in [self.active_product, self.archived_product, self.draft_product]:
-            # request
-            response = self.client.get(
+            response = self.send_request(
                 reverse("product-detail", kwargs={"pk": product.id})
             )
-
-            # expected
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
-                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.expected_status_code(response)
             elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    # --------------------------------------
-    # --- Test Retrieve A Simple Product ---
-    # --------------------------------------
 
     def test_retrieve_product(self):
         """
@@ -107,81 +105,9 @@ class RetrieveSimpleProductTest(ProductBaseTestCaseMixin):
         - no options.
         - no media.
         """
+        response = self.send_request()
+        self.validate_response_body(response)
 
-        # request
-        response = self.client.get(
-            reverse("product-detail", kwargs={"pk": self.simple_product.id})
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], self.simple_product_payload["name"])
-        self.assertEqual(
-            expected["description"], self.simple_product_payload["description"]
-        )
-        self.assertEqual(expected["status"], self.simple_product_payload["status"])
-
-        # expected product date and time
-        self.assertExpectedProductDatetimeFormat(expected)
-
-        # expected product options
-        self.assertIsNone(expected["options"])
-
-        # expected product variants
-        self.assertEqual(len(expected["variants"]), 1)
-        self.assertExpectedVariants(
-            expected["variants"],
-            expected_price=self.simple_product_payload["price"],
-            expected_stock=self.simple_product_payload["stock"],
-        )
-
-        # TODO add media assertion
-
-    def test_retrieve_product_with_options(self):
-        """
-        Test retrieve a product with options:
-        - with price and stock.
-        - with options
-        - with variants.
-        - no media.
-        """
-
-        # request
-        response = self.client.get(
-            reverse("product-detail", kwargs={"pk": self.variable_product.id})
-        )
-
-        # expected product
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["name"], self.variable_product_payload["name"])
-        self.assertEqual(
-            expected["description"], self.variable_product_payload["description"]
-        )
-        self.assertEqual(expected["status"], self.variable_product_payload["status"])
-
-        # expected product date and time
-        self.assertExpectedProductDatetimeFormat(expected)
-
-        # expected product options
-        self.assertEqual(len(expected["options"]), 3)
-        self.assertExpectedOptions(
-            expected["options"], self.variable_product_payload["options"]
-        )
-
-        # expected product variants
-        self.assertTrue(len(expected["variants"]) == 8)
-        self.assertExpectedVariants(
-            expected["variants"],
-            self.variable_product_payload["price"],
-            self.variable_product_payload["stock"],
-        )
-
-        # TODO add media assertion
-
-    def test_retrieve_product_if_not_exist(self):
-        response = self.client.get(reverse("product-detail", kwargs={"pk": 999}))
+    def test_retrieve_404(self):
+        response = self.send_request(reverse("product-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
