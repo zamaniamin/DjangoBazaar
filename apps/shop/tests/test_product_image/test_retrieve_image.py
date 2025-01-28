@@ -3,95 +3,51 @@ import os
 from django.urls import reverse
 from rest_framework import status
 
+from apps.core.tests.mixin import APIGetTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import ProductImage
-from apps.shop.tests.test_product.base_test_case import ProductBaseTestCaseMixin
 from config import settings
 
 
-class RetrieveImageTest(ProductBaseTestCaseMixin):
-    files: list
+class RetrieveImageTest(APIGetTestCaseMixin):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.product = ProductFactory.create_product(has_images=True)
+        cls.media_id = cls.product.media.first().id
 
+    def api_path(self) -> str:
+        return reverse(
+            "product-images-detail",
+            kwargs={"product_pk": self.product.id, "pk": self.media_id},
+        )
+
+    def validate_response_body(self, response, payload: dict = None):
+        pass
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+
+class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.product = ProductFactory.create_product(has_images=True)
 
-    def setUp(self):
-        self.set_admin_user_authorization()
+    def api_path(self) -> str:
+        return reverse("product-images-list", kwargs={"product_pk": self.product.id})
 
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-
-    def test_retrieve_image_by_regular_user(self):
-        self.set_regular_user_authorization()
-        media_id = self.product.media.first().id
-        response = self.client.get(
-            reverse(
-                "product-images-detail",
-                kwargs={"product_pk": self.product.id, "pk": media_id},
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_image_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        media_id = self.product.media.first().id
-        response = self.client.get(
-            reverse(
-                "product-images-detail",
-                kwargs={"product_pk": self.product.id, "pk": media_id},
-            )
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class ListImageTest(ProductBaseTestCaseMixin):
-    files: list
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.product = ProductFactory.create_product(has_images=True)
-
-    def setUp(self):
-        self.set_admin_user_authorization()
-
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-
-    def test_list_images_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_list_images_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # --------------------------------
-    # --- Test List Product Images ---
-    # --------------------------------
-
-    def test_list_with_one_image(self):
-        # request
-        response = self.client.get(
-            reverse("product-images-list", kwargs={"product_pk": self.product.id}),
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
 
         # expected
-        expected = response.json()
-        image = expected[0]
-        self.assertIsInstance(expected, list)
-        self.assertEqual(len(expected), 1)
+        image = self.response[0]
+        self.assertIsInstance(self.response, list)
+        self.assertEqual(len(self.response), 4)
 
         self.assertIsInstance(image["id"], int)
         self.assertEqual(image["product_id"], self.product.id)
@@ -108,13 +64,22 @@ class ListImageTest(ProductBaseTestCaseMixin):
 
         # Check if the images have been added to the product
         product_media = ProductImage.objects.filter(product=self.product)
-        self.assertEqual(product_media.count(), 1)
+        self.assertEqual(product_media.count(), 4)
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_list_with_one_image(self):
+        response = self.send_request()
+        self.validate_response_body(response)
 
     def _test_retrieve_with_multi_images(self):
         # TODO fix this test
-        # request
         active_product = ProductFactory.create_product(has_images=True)
-        response = self.client.get(
+        response = self.send_request(
             reverse("product-images-list", kwargs={"product_pk": active_product.id}),
         )
 
