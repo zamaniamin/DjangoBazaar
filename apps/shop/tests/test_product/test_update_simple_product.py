@@ -81,7 +81,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
 
         If a product variant is new, the provided price, stock, and SKU will be used to create the new variant.
         """
-        response = self.send_request(payload=self.new_payload)
+        response = self.send_request(self.new_payload)
         self.validate_response_body(response, self.new_payload)
 
     def test_update_with_add_new_options(self):
@@ -90,7 +90,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         payload["price"] = self.simple_product_payload.get("price")
         payload["stock"] = self.simple_product_payload.get("stock")
 
-        response = self.send_request(payload=payload)
+        response = self.send_request(payload)
         self.validate_response_body(response, payload, options_len=3, variants_len=8)
 
     # ---------------------
@@ -103,19 +103,19 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
 
     def test_update_with_required_fields(self):
         payload = {"name": self.new_payload.get("name")}
-        response = self.send_request(payload=payload)
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["name"], self.new_payload.get("name"))
 
     def test_update_without_required_fields(self):
         payload = {"description": self.new_payload.get("description")}
-        response = self.send_request(payload=payload)
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_nonexistent_product(self):
         response = self.send_request(
-            path=reverse("product-detail", kwargs={"pk": 999}), payload=self.new_payload
+            self.new_payload, reverse("product-detail", kwargs={"pk": 999})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -131,7 +131,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
             {"name": "Test", "status": 1},
         ]
         for payload in payloads:
-            response = self.send_request(payload=payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
             match payload["status"]:
@@ -153,7 +153,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
         ]
 
         for payload in payloads:
-            response = self.send_request(payload=payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_invalid_price(self):
@@ -163,7 +163,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
             {"name": "test", "price": ""},
         ]
         for payload in invalid_options:
-            response = self.send_request(payload=payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_invalid_stock(self):
@@ -174,7 +174,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, _ProductAssertMixin):
             {"name": "test", "stock": 1.2},
         ]
         for payload in invalid_options:
-            response = self.send_request(payload=payload)
+            response = self.send_request(payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
