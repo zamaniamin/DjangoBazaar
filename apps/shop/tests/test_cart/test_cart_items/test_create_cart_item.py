@@ -60,7 +60,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         response = self.send_request(self.payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_item_by_anonymous_user(self):
+    def test_access_permission_by_anonymous_user(self):
         self.authorization_as_anonymous_user()
         response = self.send_request(self.payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
