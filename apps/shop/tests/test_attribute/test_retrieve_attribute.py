@@ -1,49 +1,21 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class ListAttributeTest(APITestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class ListAttributeTest(APIGetTestCaseMixin):
+    def api_path(self) -> str:
+        return reverse("attribute-list")
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
-
-    def test_list_attributes_by_admin(self):
-        response = self.client.get(reverse("attribute-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_list_attributes_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(reverse("attribute-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_list_attributes_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("attribute-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # -----------------------------
-    # --- Test List Attributes ----
-    # -----------------------------
-
-    def test_attribute_list(self):
-        # create a list of attributes
-        AttributeFactory.create_attribute_list()
-
-        # request
-        response = self.client.get(reverse("attribute-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 4)
+    def validate_response_body(
+        self, response, payload: dict = None, results_len: int = 0
+    ):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 4)
         self.assertEqual(
-            set(response.data.keys()),
+            set(self.response.keys()),
             {
                 "count",
                 "next",
@@ -51,11 +23,9 @@ class ListAttributeTest(APITestCaseMixin):
                 "results",
             },
         )
-
-        attribute_list = expected["results"]
+        attribute_list = self.response["results"]
         self.assertIsInstance(attribute_list, list)
-        self.assertEqual(len(attribute_list), 2)
-
+        self.assertEqual(len(attribute_list), results_len)
         for attribute in attribute_list:
             self.assertEqual(
                 set(attribute.keys()),
@@ -67,74 +37,38 @@ class ListAttributeTest(APITestCaseMixin):
                 },
             )
 
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_list(self):
+        AttributeFactory.create_attribute_list()
+        response = self.send_request()
+        self.validate_response_body(response, results_len=2)
+
     def test_list_is_empty(self):
-        # request
-        response = self.client.get(reverse("attribute-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 4)
-        self.assertEqual(
-            set(response.data.keys()),
-            {
-                "count",
-                "next",
-                "previous",
-                "results",
-            },
-        )
-        self.assertIsInstance(expected["results"], list)
-        self.assertEqual(len(expected["results"]), 0)
-
-    # TODO add pagination test
+        response = self.send_request()
+        self.validate_response_body(response)
 
 
-class RetrieveAttributeTest(APITestCaseMixin):
+# TODO add pagination test
+
+
+class RetrieveAttributeTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.attribute = AttributeFactory.create_attribute()
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def api_path(self) -> str:
+        return reverse("attribute-detail", kwargs={"pk": self.attribute.id})
 
-    def test_retrieve_attribute_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_attribute_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_attribute_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # ----------------------------------
-    # --- Test Retrieve An Attribute ---
-    # ----------------------------------
-
-    def test_retrieve_attribute(self):
-        # request
-        response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
         self.assertEqual(
-            set(response.data.keys()),
+            set(self.response.keys()),
             {
                 "id",
                 "attribute_name",
@@ -143,6 +77,16 @@ class RetrieveAttributeTest(APITestCaseMixin):
             },
         )
 
-    def test_retrieve_attribute_404(self):
-        response = self.client.get(reverse("attribute-detail", kwargs={"pk": 999}))
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_retrieve(self):
+        response = self.send_request()
+        self.validate_response_body(response)
+
+    def test_retrieve_404(self):
+        response = self.send_request(reverse("attribute-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
