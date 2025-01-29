@@ -1,53 +1,29 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIDeleteTestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class DestroyAttributeTest(APITestCaseMixin):
+class DestroyAttributeTest(APIDeleteTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.attribute = AttributeFactory.create_attribute()
         cls.attribute_item = AttributeFactory.add_one_attribute_item(cls.attribute.id)
 
-    def setUp(self):
-        self.set_admin_user_authorization()
+    def api_path(self) -> str:
+        return reverse("attribute-detail", kwargs={"pk": self.attribute.id})
 
-    # -------------------------------
-    # --- Test Access Permissions ---
-    # -------------------------------
-    def test_delete_attribute_by_admin(self):
-        response = self.client.delete(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-    def test_delete_attribute_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.delete(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
-    def test_delete_attribute_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.delete(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # -----------------------------
-    # --- Test Delete Attribute ---
-    # -----------------------------
-
-    def test_delete_attribute(self):
-        # request for delete an attribute
-        response = self.client.delete(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    def test_delete(self):
+        response = self.send_request()
+        self.expected_status_code(response)
 
         # assert attribute is removed
         response = self.client.get(
@@ -67,6 +43,6 @@ class DestroyAttributeTest(APITestCaseMixin):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_attribute_if_not_exist(self):
-        response = self.client.delete(reverse("attribute-detail", kwargs={"pk": 999}))
+    def test_delete_404(self):
+        response = self.send_request(reverse("attribute-detail", kwargs={"pk": 999}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
