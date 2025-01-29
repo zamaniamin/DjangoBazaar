@@ -90,7 +90,7 @@ class ListOptionTest(APITestCaseMixin):
     # TODO add pagination test
 
 
-class RetrieveOptionTestMixin(APITestCaseMixin):
+class RetrieveOptionTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

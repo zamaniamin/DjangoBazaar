@@ -6,7 +6,7 @@ from rest_framework import status
 from apps.core.tests.mixin import APITestCaseMixin
 
 
-class CreateCartTestMixin(APITestCaseMixin):
+class CreateCartTest(APITestCaseMixin):
     # ------------------------------
     # --- Test Access Permission ---
     # ------------------------------

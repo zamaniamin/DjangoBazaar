@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class ListCartItemsTestMixin(APITestCaseMixin):
+class ListCartItemsTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(self):
         super().setUpTestData()
@@ -80,7 +80,7 @@ class ListCartItemsTestMixin(APITestCaseMixin):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveCartItemTestMixin(APITestCaseMixin):
+class RetrieveCartItemTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class DestroyAttributeTestMixin(APITestCaseMixin):
+class DestroyAttributeTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

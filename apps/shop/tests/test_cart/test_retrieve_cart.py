@@ -7,7 +7,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class ListCartTestMixin(APITestCaseMixin):
+class ListCartTest(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -91,7 +91,7 @@ class ListCartTestMixin(APITestCaseMixin):
             self.assertIn("total_price", cart)
 
 
-class RetrieveCartTestMixin(APITestCaseMixin):
+class RetrieveCartTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

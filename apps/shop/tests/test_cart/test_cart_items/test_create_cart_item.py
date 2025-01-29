@@ -9,7 +9,7 @@ from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
 
 
-class CreateCartItemsTestMixin(APITestCaseMixin):
+class CreateCartItemsTest(APITestCaseMixin):
     simple_product = None
     variable_product = None
 

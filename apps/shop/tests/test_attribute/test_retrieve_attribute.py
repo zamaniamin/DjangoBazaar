@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class ListAttributeTestMixin(APITestCaseMixin):
+class ListAttributeTest(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
@@ -90,7 +90,7 @@ class ListAttributeTestMixin(APITestCaseMixin):
     # TODO add pagination test
 
 
-class RetrieveAttributeTestMixin(APITestCaseMixin):
+class RetrieveAttributeTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

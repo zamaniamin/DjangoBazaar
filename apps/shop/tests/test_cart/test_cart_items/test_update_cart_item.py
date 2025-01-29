@@ -7,7 +7,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class UpdateCartItemTestMixin(APITestCaseMixin):
+class UpdateCartItemTest(APITestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -157,6 +157,5 @@ class UpdateCartItemTestMixin(APITestCaseMixin):
 
         # expected
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
 
 # TODO test update with invalid payload

@@ -5,7 +5,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class DestroyCartTestMixin(APITestCaseMixin):
+class DestroyCartTest(APITestCaseMixin):
     def setUp(self):
         self.cart_id, self.cart_item = CartFactory.add_one_item(get_item=True)
 

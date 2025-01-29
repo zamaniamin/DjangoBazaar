@@ -6,7 +6,7 @@ from apps.core.tests.mixin import APITestCaseMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class CreateAttributeTestMixin(APITestCaseMixin):
+class CreateAttributeTest(APITestCaseMixin):
     def setUp(self):
         self.set_admin_user_authorization()
 
