@@ -1,18 +1,13 @@
-import json
-
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models import Product
 
 
-class CreateCartItemsTest(APITestCaseMixin):
-    simple_product = None
-    variable_product = None
-
+class CreateCartItemsTest(APIPostTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -30,58 +25,18 @@ class CreateCartItemsTest(APITestCaseMixin):
         cls.payload = {"variant": cls.simple_product_variant.id, "quantity": 1}
 
     def setUp(self):
+        super().setUp()
         self.cart_id = CartFactory.create_cart()
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def api_path(self) -> str:
+        return reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
 
-    def test_create_item_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_item_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_item_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    # -----------------------------
-    # --- Test Create Cart Item ---
-    # -----------------------------
-
-    def test_create_item(self):
-        # request
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        expected = response.json()
-        self.assertIsInstance(expected["id"], int)
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertIsInstance(self.response["id"], int)
 
         # expected variant
-        variant = expected["variant"]
+        variant = self.response["variant"]
         price = float(self.simple_product_variant.price)
         self.assertIsInstance(variant, dict)
         self.assertEqual(len(variant), 7)
@@ -94,36 +49,42 @@ class CreateCartItemsTest(APITestCaseMixin):
         self.assertEqual(variant["option3"], self.simple_product_variant.option3)
 
         # expected image
-        self.assertIsInstance(expected["image"], str)
+        self.assertIsInstance(self.response["image"], str)
 
         # expected quantity and item_total
-        self.assertEqual(expected["quantity"], 1)
-        self.assertAlmostEqual(expected["item_total"], round(price, 2), places=2)
+        self.assertEqual(self.response["quantity"], 1)
+        self.assertAlmostEqual(self.response["item_total"], round(price, 2), places=2)
+
+    def test_access_permission_by_regular_user(self):
+        self.authorization_as_regular_user()
+        response = self.send_request(self.payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_item_by_anonymous_user(self):
+        self.authorization_as_anonymous_user()
+        response = self.send_request(self.payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create(self):
+        response = self.send_request(self.payload)
+        self.validate_response_body(response, self.payload)
 
     def test_create_item_if_already_exist(self):
-        # create a cart and an item
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
-
-        # make request
         payload = {"variant": cart_item.variant_id, "quantity": 1}
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": cart_id}),
-            json.dumps(payload),
-            content_type="application/json",
+        response = self.send_request(
+            payload, reverse("cart-items-list", kwargs={"cart_pk": cart_id})
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_cart_total_price(self):
-        # make request
         total_price: float = 0
         for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
-            response = self.client.post(
-                reverse("cart-items-list", kwargs={"cart_pk": self.cart_id}),
-                json.dumps(payload),
-                content_type="application/json",
+            response = self.send_request(
+                payload, reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
             )
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.expected_status_code(response)
             expected = response.json()
             total_price += expected["item_total"]
 
@@ -133,140 +94,99 @@ class CreateCartItemsTest(APITestCaseMixin):
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
-    # -----------------------
-    # --- Invalid Cart pk ---
-    # -----------------------
-
-    def test_create_item_with_invalid_cart_pk(self):
-        response = self.client.post(
-            reverse("cart-items-list", kwargs={"cart_pk": 7}),
-            json.dumps(self.payload),
-            content_type="application/json",
+    def test_create_with_invalid_cart_pk(self):
+        response = self.send_request(
+            self.payload, reverse("cart-items-list", kwargs={"cart_pk": 7})
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_item_if_uuid_not_exist(self):
-        response = self.client.post(
+    def test_create_if_uuid_not_exist(self):
+        response = self.send_request(
+            self.payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750"},
             ),
-            json.dumps(self.payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # --------------------------------------------
-    # --- Test if product status is not active ---
-    # --------------------------------------------
-
-    def test_create_item_with_draft_product(self):
-        # create a product and get its variant
+    def test_create_with_draft_product(self):
         product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
         product_variant = product.variants.first()
-
-        # make request
         payload = {"variant": product_variant.id, "quantity": 1}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_item_with_archived_product(self):
-        # create a product and get its variant
+    def test_create_with_archived_product(self):
         product = ProductFactory.create_product(status=Product.STATUS_ARCHIVED)
         product_variant = product.variants.first()
-
-        # make requesst
         payload = {"variant": product_variant.id, "quantity": 1}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # ---------------------------------------------
-    # --- Test if variant stock is out of stock ---
-    # ---------------------------------------------
-
-    def test_create_item_if_variant_not_in_stock(self):
-        # create a product and get its variant
+    def test_create_if_variant_not_in_stock(self):
         product = ProductFactory.create_product(stock=0)
         product_variant = product.variants.first()
-
-        # make request
         payload = {"variant": product_variant.id, "quantity": 1}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_item_quantity_bigger_than_stock(self):
-        # create a product and get its variant
+    def test_create_quantity_bigger_than_stock(self):
         product = ProductFactory.create_product(stock=3)
         product_variant = product.variants.first()
-
-        # make request
         payload = {"variant": product_variant.id, "quantity": 4}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # -----------------------
-    # --- Invalid Payload ---
-    # -----------------------
-
-    def test_create_item_if_variant_not_exist(self):
-        # make request
+    def test_create_if_variant_not_exist(self):
         payload = {"variant": 9999, "quantity": 1}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_item_without_image(self):
-        # create a product and get its variant
+    def test_create_without_image(self):
         product = ProductFactory.create_product()
         product_variant = product.variants.first()
-
-        # make request
         payload = {"variant": product_variant.id, "quantity": 1}
-        response = self.client.post(
+        response = self.send_request(
+            payload,
             reverse(
                 "cart-items-list",
                 kwargs={"cart_pk": self.cart_id},
             ),
-            json.dumps(payload),
-            content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.expected_status_code(response)
 
-    def test_create_item_invalid_variant_id(self):
+    def test_create_invalid_variant_id(self):
         invalid_payloads = [
             {"variant": -1, "quantity": 1},
             {"variant": 0, "quantity": 1},
@@ -279,16 +199,13 @@ class CreateCartItemsTest(APITestCaseMixin):
             {"quantity": 1},
             {},
         ]
-
-        # make requests
         for invalid_payload in invalid_payloads:
-            response = self.client.post(
+            response = self.send_request(
+                invalid_payload,
                 reverse(
                     "cart-items-list",
                     kwargs={"cart_pk": self.cart_id},
                 ),
-                json.dumps(invalid_payload),
-                content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -304,15 +221,12 @@ class CreateCartItemsTest(APITestCaseMixin):
             {"variant": 1},
             {},
         ]
-
-        # make requests
         for invalid_payload in invalid_payloads:
-            response = self.client.post(
+            response = self.send_request(
+                invalid_payload,
                 reverse(
                     "cart-items-list",
                     kwargs={"cart_pk": self.cart_id},
                 ),
-                json.dumps(invalid_payload),
-                content_type="application/json",
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
