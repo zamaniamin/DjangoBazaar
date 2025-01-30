@@ -30,7 +30,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             json.dumps(payload),
             content_type="application/json",
         )
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
     def test_access_permission_by_anonymous_user(self):
         self.authorization_as_anonymous_user()
@@ -40,7 +40,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             json.dumps(payload),
             content_type="application/json",
         )
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
     def test_update(self):
         payload = {"quantity": 3}
@@ -49,7 +49,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             json.dumps(payload),
             content_type="application/json",
         )
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
     def test_update_quantity(self):
         new_quantity = self.cart_item.quantity + 1
@@ -61,7 +61,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             json.dumps(payload),
             content_type="application/json",
         )
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
         expected_cart_item = response.json()
         self.assertIn("id", expected_cart_item)
         self.assertIn("variant", expected_cart_item)
