@@ -32,19 +32,18 @@ class CreateAttributeItemTest(APIPostTestCaseMixin):
         response = self.send_request(self.payload)
         self.validate_response_body(response, self.payload)
 
-    def test_create_one_item_if_already_exist(self):
-        # create an attribute item
+    def test_create_if_already_exist(self):
         AttributeFactory.add_one_attribute_item(self.attribute.id)
         response = self.send_request(self.payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_item_if_item_name_is_empty(self):
+    def test_create_if_name_is_empty(self):
         payload = {"item_name": ""}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_item_if_attribute_not_exist(self):
+    def test_create_if_attribute_not_exist(self):
         response = self.send_request(
             self.payload, reverse("attribute-items-list", kwargs={"attribute_pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
