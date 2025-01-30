@@ -9,19 +9,10 @@ class ListCategoryTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse("category-list")
 
-    def validate_response_body(self, response, payload: dict = None):
+    def validate_response_body(
+        self, response, payload: dict = None, results_len: int = 0
+    ):
         super().validate_response_body(response, payload)
-
-    def test_access_permission_by_regular_user(self):
-        self.check_access_permission_by_regular_user()
-
-    def test_access_permission_by_anonymous_user(self):
-        self.check_access_permission_by_anonymous_user()
-
-    def test_list(self):
-        CategoryFactory.create_categories_list()
-        response = self.send_request()
-        self.validate_response_body(response)
         self.assertEqual(len(self.response_body), 4)
         self.assertEqual(
             set(response.data.keys()),
@@ -34,7 +25,7 @@ class ListCategoryTest(APIGetTestCaseMixin):
         )
         categories_list = self.response_body["results"]
         self.assertIsInstance(categories_list, list)
-        self.assertEqual(len(categories_list), 2)
+        self.assertEqual(len(categories_list), results_len)
         for category in categories_list:
             self.assertEqual(
                 set(category.keys()),
@@ -50,22 +41,20 @@ class ListCategoryTest(APIGetTestCaseMixin):
                 },
             )
 
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_list(self):
+        CategoryFactory.create_categories_list()
+        response = self.send_request()
+        self.validate_response_body(response, results_len=2)
+
     def test_list_empty(self):
         response = self.send_request()
         self.validate_response_body(response)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(self.response_body), 4)
-        self.assertEqual(
-            set(response.data.keys()),
-            {
-                "count",
-                "next",
-                "previous",
-                "results",
-            },
-        )
-        self.assertIsInstance(self.response_body["results"], list)
-        self.assertEqual(len(self.response_body["results"]), 0)
 
     # TODO add pagination test
 
@@ -106,5 +95,5 @@ class RetrieveCategoryTest(APIGetTestCaseMixin):
         self.validate_response_body(response)
 
     def test_retrieve_404(self):
-        response = self.client.get(reverse("category-detail", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.send_request(reverse("category-detail", kwargs={"pk": 999}))
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
