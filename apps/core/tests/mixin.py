@@ -177,7 +177,7 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.response = None
+        cls.response = None  # TODO rename this to `response_body`
 
     def setUp(self):
         self.authorization_as_admin_user()
@@ -197,8 +197,10 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.response = response.json()
         self.expected_status_code(response)
 
-    def expected_status_code(self, response):
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    # TODO check all test status with this method
+    # TODO rename this method to `assertStatusCode()`
+    def expected_status_code(self, response, status_code: int = status.HTTP_200_OK):
+        self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(
         self, status_code: int = status.HTTP_200_OK
