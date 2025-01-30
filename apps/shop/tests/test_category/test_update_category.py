@@ -69,11 +69,11 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
     def test_update_cant_be_parent_of_itself(self):
         payload = {"parent": self.category.id}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_if_not_exist(self):
+    def test_update_if_category_not_exist(self):
         payload = {"name": "new category"}
-        response = self.client.put(
-            reverse("category-detail", kwargs={"pk": 999}), payload
+        response = self.send_request(
+            payload, reverse("category-detail", kwargs={"pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
