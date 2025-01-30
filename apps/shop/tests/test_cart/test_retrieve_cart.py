@@ -3,48 +3,40 @@ import uuid
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 
-class ListCartTest(APITestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class ListCartTest(APIGetTestCaseMixin):
+    def api_path(self) -> str:
+        return reverse("cart-list")
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
 
-    def test_list_carts_by_admin(self):
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_list_carts_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_access_permission_by_regular_user(self):
+        self.authorization_as_regular_user()
+        response = self.send_request()
+        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_list_carts_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.authorization_as_anonymous_user()
+        response = self.send_request()
+        self.expected_status_code(response, status.HTTP_401_UNAUTHORIZED)
 
-    # -----------------------
-    # --- Test List Carts ---
-    # -----------------------
+    def test_list(self):
+        response = self.send_request()
+        self.expected_status_code(response)
 
     def test_empty_list(self):
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.send_request()
+        self.expected_status_code(response)
         self.assertEqual(len(response.json()), 0)
 
-    def test_list_carts_without_items(self):
-        # test list one cart
+    def test_list_without_items(self):
         CartFactory.create_cart()
-        response = self.client.get(reverse("cart-list"))
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.send_request()
+        self.expected_status_code(response)
         expected = response.json()
         self.assertEqual(len(expected), 1)
         self.assertIn("items", expected[0])
@@ -52,24 +44,18 @@ class ListCartTest(APITestCaseMixin):
 
         # test list two carts
         CartFactory.create_cart()
-        response = self.client.get(reverse("cart-list"))
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.send_request(reverse("cart-list"))
+        self.expected_status_code(response)
         expected = response.json()
         self.assertEqual(len(expected), 2)
         for cart in expected:
             self.assertIn("items", cart)
             self.assertIn("total_price", cart)
 
-    def test_list_carts_with_items(self):
+    def test_list_with_items(self):
         CartFactory.add_multiple_items()
-
-        # make request
-        response = self.client.get(reverse("cart-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
+        response = self.send_request(reverse("cart-list"))
+        self.expected_status_code(response)
         expected = response.json()
         self.assertEqual(len(expected), 1)
         for cart in expected:
@@ -91,75 +77,21 @@ class ListCartTest(APITestCaseMixin):
             self.assertIn("total_price", cart)
 
 
-class RetrieveCartTest(APITestCaseMixin):
+class RetrieveCartTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.cart_id = CartFactory.add_multiple_items()
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def api_path(self) -> str:
+        return reverse("cart-detail", kwargs={"pk": self.cart_id})
 
-    def test_retrieve_cart_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_cart_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_cart_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # ----------------------------
-    # --- Test Retrieve a Cart ---
-    # ----------------------------
-
-    def test_retrieve_cart_with_one_item(self):
-        cart_id = CartFactory.add_one_item()
-
-        # make request
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 3)
-        self.assertIsInstance(uuid.UUID(expected["id"]), uuid.UUID)
-        self.assertIsInstance(expected["items"], list)
-        item = expected["items"][0]
-        self.assertIn("id", item)
-        self.assertIn("variant", item)
-        self.assertIn("id", item["variant"])
-        self.assertIn("product_id", item["variant"])
-        self.assertIn("price", item["variant"])
-        self.assertIn("stock", item["variant"])
-        self.assertIn("option1", item["variant"])
-        self.assertIn("option2", item["variant"])
-        self.assertIn("option3", item["variant"])
-        self.assertIn("image", item)
-        self.assertIn("quantity", item)
-        self.assertIn("item_total", item)
-        self.assertIn("total_price", expected)
-
-    def test_retrieve_cart_with_multi_items(self):
-        cart_id = CartFactory.add_multiple_items()
-
-        # make request
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 3)
-        self.assertIsInstance(uuid.UUID(expected["id"]), uuid.UUID)
-        self.assertIsInstance(expected["items"], list)
-        for item in expected["items"]:
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 3)
+        self.assertIsInstance(uuid.UUID(self.response["id"]), uuid.UUID)
+        self.assertIsInstance(self.response["items"], list)
+        for item in self.response["items"]:
             self.assertIn("id", item)
             self.assertIn("variant", item)
             self.assertIn("id", item["variant"])
@@ -172,13 +104,26 @@ class RetrieveCartTest(APITestCaseMixin):
             self.assertIn("image", item)
             self.assertIn("quantity", item)
             self.assertIn("item_total", item)
-        self.assertIn("total_price", expected)
+        self.assertIn("total_price", self.response)
 
-    def test_retrieve_cart_with_invalid_pk(self):
-        # test pk as string
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": "11"}))
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_retrieve_with_one_item(self):
+        cart_id = CartFactory.add_one_item()
+        response = self.send_request(reverse("cart-detail", kwargs={"pk": cart_id}))
+        self.validate_response_body(response)
+
+    def test_retrieve_with_multi_items(self):
+        cart_id = CartFactory.add_multiple_items()
+        response = self.send_request(reverse("cart-detail", kwargs={"pk": cart_id}))
+        self.validate_response_body(response)
+
+    def test_retrieve_with_invalid_pk(self):
+        response = self.send_request(reverse("cart-detail", kwargs={"pk": "11"}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        # test pk as int
-        response = self.client.get(reverse("cart-detail", kwargs={"pk": 11}))
+        response = self.send_request(reverse("cart-detail", kwargs={"pk": 11}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
