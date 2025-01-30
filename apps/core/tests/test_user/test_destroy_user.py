@@ -1,34 +1,24 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIDeleteTestCaseMixin
 
 
-class DestroyUserTestMixin(APITestCaseMixin):
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+class DestroyUserTest(APIDeleteTestCaseMixin):
+    def api_path(self) -> str:
+        return reverse("user-detail", kwargs={"pk": self.regular_user.id})
 
-    def test_delete_user_by_admin(self):
-        self.set_admin_user_authorization()
-        response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_delete(self):
+        response = self.send_request(
+
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.expected_status_code(response)
         with self.assertRaises(ObjectDoesNotExist):
             get_user_model().objects.get(id=self.regular_user.id)
-
-    def test_delete_user_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_delete_user_by_anonymous_user(self):
-        response = self.client.delete(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
