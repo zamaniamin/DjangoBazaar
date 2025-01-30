@@ -48,4 +48,4 @@ class UpdateOptionTest(APIUpdateTestCaseMixin):
                 kwargs={"pk": 999},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
