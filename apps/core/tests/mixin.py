@@ -172,6 +172,15 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
             **kwargs,
         )
 
+    def send_patch_request(self, payload: dict = None, path: str = None, **kwargs):
+        """Send a PATCH request to the server and return response."""
+        return self.client.patch(
+            path=path if path else self.api_path(),
+            data=json.dumps(payload if payload else {}),
+            content_type="application/json",
+            **kwargs,
+        )
+
     @abstractmethod
     def validate_response_body(self, response, payload):
         """Expected response body."""
