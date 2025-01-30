@@ -1,5 +1,3 @@
-import json
-
 from django.urls import reverse
 
 from apps.core.tests.mixin import APIUpdateTestCaseMixin
@@ -28,11 +26,7 @@ class PartialUpdateProfileTest(APIUpdateTestCaseMixin):
     def test_access_permission_by_regular_user(self):
         self.authorization_as_regular_user()
         payload = {"first_name": "member f name"}
-        response = self.client.patch(
-            self.api_path(),
-            json.dumps(payload),
-            content_type="application/json",
-        )
+        response = self.send_patch_request(payload)
         self.validate_response_body(response, payload)
 
     def test_access_permission_by_anonymous_user(self):
@@ -43,9 +37,5 @@ class PartialUpdateProfileTest(APIUpdateTestCaseMixin):
             "first_name": "admin f name",
             "last_name": "admin l name",
         }
-        response = self.client.patch(
-            self.api_path(),
-            json.dumps(payload),
-            content_type="application/json",
-        )
+        response = self.send_patch_request(payload)
         self.validate_response_body(response, payload)
