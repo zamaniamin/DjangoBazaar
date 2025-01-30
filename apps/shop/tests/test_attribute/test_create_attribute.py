@@ -27,7 +27,6 @@ class CreateAttributeTest(APIPostTestCaseMixin):
             "attribute_name": "test attribute",
         }
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.validate_response_body(response, payload)
 
     def test_create_if_already_exist(self):
@@ -36,9 +35,9 @@ class CreateAttributeTest(APIPostTestCaseMixin):
             "attribute_name": AttributeFactory.attribute_name,
         }
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_name_is_empty(self):
         payload = {"attribute_name": ""}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
