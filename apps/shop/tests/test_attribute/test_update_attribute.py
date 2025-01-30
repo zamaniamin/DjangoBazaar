@@ -43,8 +43,8 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin):
         response = self.send_request(payload)
         self.validate_response_body(response, payload)
 
-    def test_update_404(self):
+    def test_update_if_attribute_not_exist(self):
         response = self.send_request(
             path=reverse("attribute-detail", kwargs={"pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
