@@ -99,25 +99,25 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
 
     def test_update_with_empty_payload(self):
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_required_fields(self):
         payload = {"name": self.new_payload.get("name")}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertHTTPStatusCode(response)
         expected = response.json()
         self.assertEqual(expected["name"], self.new_payload.get("name"))
 
     def test_update_without_required_fields(self):
         payload = {"description": self.new_payload.get("description")}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_update_nonexistent_product(self):
         response = self.send_request(
             self.new_payload, reverse("product-detail", kwargs={"pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_update_with_valid_status(self):
         payloads = [
@@ -132,7 +132,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         ]
         for payload in payloads:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertHTTPStatusCode(response)
 
             match payload["status"]:
                 case Product.STATUS_ACTIVE:
@@ -154,7 +154,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
 
         for payload in payloads:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_invalid_price(self):
         invalid_options = [
@@ -164,7 +164,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_invalid_stock(self):
         invalid_options = [
@@ -175,7 +175,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
 
 # TODO test_update_check_updated_at
