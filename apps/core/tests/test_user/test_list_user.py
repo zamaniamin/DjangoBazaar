@@ -1,24 +1,17 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIGetTestCaseMixin, APIAssertMixin
 
 
-class ListUserTestMixin(APITestCaseMixin):
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+class ListUserTest(APIGetTestCaseMixin, APIAssertMixin):
+    def api_path(self) -> str:
+        return reverse("user-list")
 
-    def test_list_users_by_admin(self):
-        # request
-        self.set_admin_user_authorization()
-        response = self.client.get(reverse("user-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 2)
-        for user in expected:
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 2)
+        for user in self.response:
             self.assertEqual(len(user), 7)
             self.assertIsInstance(user["id"], int)
             self.assertIsInstance(user["email"], str)
@@ -31,11 +24,16 @@ class ListUserTestMixin(APITestCaseMixin):
                 or self.assertDatetimeFormat(user["last_login"])
             )
 
-    def test_list_users_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.get(reverse("user-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_access_permission_by_regular_user(self):
+        self.authorization_as_regular_user()
+        response = self.send_request()
+        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
 
-    def test_list_users_by_anonymous_user(self):
-        response = self.client.get(reverse("user-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_access_permission_by_anonymous_user(self):
+        self.authorization_as_regular_user()
+        response = self.send_request()
+        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
+
+    def test_list(self):
+        response = self.send_request()
+        self.validate_response_body(response)
