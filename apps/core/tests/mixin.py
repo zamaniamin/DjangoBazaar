@@ -129,11 +129,11 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def validate_response_body(self, response, payload: dict = None):
         """Expected response body."""
         self.response_body = response.json()
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
 
     # TODO check all test status with this method
     # TODO rename this method to `assertStatusCode()`
-    def expected_status_code(self, response, status_code: int = status.HTTP_200_OK):
+    def assertStatusCode(self, response, status_code: int = status.HTTP_200_OK):
         self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(

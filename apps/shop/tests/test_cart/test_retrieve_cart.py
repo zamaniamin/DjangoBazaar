@@ -17,26 +17,26 @@ class ListCartTest(APIGetTestCaseMixin):
     def test_access_permission_by_regular_user(self):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
+        self.assertStatusCode(response, status.HTTP_403_FORBIDDEN)
 
     def test_list_carts_by_anonymous_user(self):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.expected_status_code(response, status.HTTP_401_UNAUTHORIZED)
+        self.assertStatusCode(response, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
 
     def test_empty_list(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
         self.assertEqual(len(response.json()), 0)
 
     def test_list_without_items(self):
         CartFactory.create_cart()
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 1)
         self.assertIn("items", expected[0])
@@ -45,7 +45,7 @@ class ListCartTest(APIGetTestCaseMixin):
         # test list two carts
         CartFactory.create_cart()
         response = self.send_request(reverse("cart-list"))
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 2)
         for cart in expected:
@@ -55,7 +55,7 @@ class ListCartTest(APIGetTestCaseMixin):
     def test_list_with_items(self):
         CartFactory.add_multiple_items()
         response = self.send_request(reverse("cart-list"))
-        self.expected_status_code(response)
+        self.assertStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 1)
         for cart in expected:

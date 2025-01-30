@@ -27,12 +27,12 @@ class ListUserTest(APIGetTestCaseMixin, APIAssertMixin):
     def test_access_permission_by_regular_user(self):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
+        self.assertStatusCode(response, status.HTTP_403_FORBIDDEN)
 
     def test_access_permission_by_anonymous_user(self):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.expected_status_code(response, status.HTTP_403_FORBIDDEN)
+        self.assertStatusCode(response, status.HTTP_403_FORBIDDEN)
 
     def test_list(self):
         response = self.send_request()
