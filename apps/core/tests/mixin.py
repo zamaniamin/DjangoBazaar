@@ -138,7 +138,7 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     ):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
     def check_access_permission_by_anonymous_user(
@@ -146,7 +146,7 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     ):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
 
@@ -191,19 +191,31 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(
-        self, status_code: int = status.HTTP_403_FORBIDDEN
+        self,
+        status_code: int = status.HTTP_403_FORBIDDEN,
+        payload: dict = None,
+        PATCH: bool = False,
     ):
         self.authorization_as_regular_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        if PATCH:
+            response = self.send_patch_request(payload)
+        else:
+            response = self.send_request(payload)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
     def check_access_permission_by_anonymous_user(
-        self, status_code: int = status.HTTP_401_UNAUTHORIZED
+        self,
+        status_code: int = status.HTTP_401_UNAUTHORIZED,
+        payload: dict = None,
+        PATCH: bool = False,
     ):
         self.authorization_as_anonymous_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        if PATCH:
+            response = self.send_patch_request(payload)
+        else:
+            response = self.send_request(payload)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
 
@@ -234,7 +246,7 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     ):
         self.authorization_as_regular_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
     def check_access_permission_by_anonymous_user(
@@ -242,5 +254,5 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     ):
         self.authorization_as_anonymous_user()
         response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        self.assertHTTPStatusCode(response, status_code)
         return response
