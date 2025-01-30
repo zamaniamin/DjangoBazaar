@@ -16,9 +16,7 @@ class DestroyUserTest(APIDeleteTestCaseMixin):
         self.check_access_permission_by_anonymous_user()
 
     def test_delete(self):
-        response = self.send_request(
-
-        )
+        response = self.send_request()
         self.expected_status_code(response)
         with self.assertRaises(ObjectDoesNotExist):
             get_user_model().objects.get(id=self.regular_user.id)
