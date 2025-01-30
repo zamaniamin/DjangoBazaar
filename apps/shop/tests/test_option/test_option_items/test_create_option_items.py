@@ -1,102 +1,46 @@
-import json
-
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class CreateOptionItemsTest(APITestCaseMixin):
+class CreateOptionItemsTest(APIPostTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.option = OptionFactory.create_option()
         cls.payload = {"item_name": OptionFactory.item_name}
 
-    def setUp(self):
-        self.set_admin_user_authorization()
+    def api_path(self) -> str:
+        return reverse("option-items-list", kwargs={"option_pk": self.option.id})
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertEqual(self.response["item_name"], payload.get("item_name"))
 
-    def test_create_item_by_admin(self):
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
 
-    def test_create_item_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
 
-    def test_create_item_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_create(self):
+        response = self.send_request(self.payload)
+        self.validate_response_body(response, self.payload)
 
-    # -------------------------
-    # --- Test Create Items ---
-    # -------------------------
-
-    def test_create_one_item(self):
-        # request
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-
-        # expected
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        expected = response.json()
-        self.assertIsInstance(expected["item_name"], str)
-
-    def test_create_one_item_if_already_exist(self):
-        # create an option item
+    def test_create_if_already_exist(self):
         OptionFactory.add_one_option_item(self.option.id)
-
-        # request
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(self.payload),
-            content_type="application/json",
-        )
-
-        # expected
+        response = self.send_request(self.payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_item_if_item_name_is_empty(self):
-        # request
+    def test_create_if_item_name_is_empty(self):
         payload = {"item_name": ""}
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": self.option.id}),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # expected
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_one_item_if_option_not_exist(self):
-        # request
-        response = self.client.post(
-            reverse("option-items-list", kwargs={"option_pk": 999}),
-            json.dumps(self.payload),
-            content_type="application/json",
+    def test_create_if_option_not_exist(self):
+        response = self.send_request(
+            self.payload, reverse("option-items-list", kwargs={"option_pk": 999})
         )
-
-        # expected
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
