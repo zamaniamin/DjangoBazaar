@@ -91,4 +91,4 @@ class RetrieveOptionTest(APIGetTestCaseMixin):
 
     def test_retrieve_404(self):
         response = self.send_request(reverse("option-detail", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
