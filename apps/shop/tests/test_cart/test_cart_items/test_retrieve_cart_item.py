@@ -51,7 +51,7 @@ class ListCartItemsTest(APIGetTestCaseMixin):
 
     def test_list_with_invalid_cart_id(self):
         response = self.send_request(reverse("cart-items-list", kwargs={"cart_pk": 11}))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
 
 class RetrieveCartItemTest(APIGetTestCaseMixin):
@@ -104,4 +104,4 @@ class RetrieveCartItemTest(APIGetTestCaseMixin):
         response = self.client.get(
             reverse("cart-items-detail", kwargs={"cart_pk": 11, "pk": cart_item.id})
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
