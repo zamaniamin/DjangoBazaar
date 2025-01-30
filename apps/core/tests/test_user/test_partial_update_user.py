@@ -1,5 +1,3 @@
-import json
-
 from django.urls import reverse
 
 from apps.core.tests.mixin import APIUpdateTestCaseMixin, APIAssertMixin
@@ -31,8 +29,5 @@ class UpdateUserTest(APIUpdateTestCaseMixin, APIAssertMixin):
 
     def test_partial_update(self):
         payload = {"first_name": "test F name"}
-        response = self.client.patch(
-            self.api_path(),
-            json.dumps(payload),
-            content_type="application/json",
-        )
+        response = self.send_patch_request(payload)
+        self.validate_response_body(response, payload)
