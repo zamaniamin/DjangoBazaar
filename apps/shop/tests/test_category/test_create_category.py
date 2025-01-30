@@ -11,20 +11,21 @@ class CreateCategoryTest(APIPostTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload, parent_category=None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 8)
-        self.assertIsInstance(self.response["id"], int)
-        self.assertEqual(self.response["name"], payload["name"])
+        self.assertEqual(len(self.response_body), 8)
+        self.assertIsInstance(self.response_body["id"], int)
+        self.assertEqual(self.response_body["name"], payload["name"])
         self.assertEqual(
-            self.response["slug"],
+            self.response_body["slug"],
             payload.get("slug", slugify(payload["name"], allow_unicode=True)),
         )
-        self.assertEqual(self.response["description"], payload.get("description"))
+        self.assertEqual(self.response_body["description"], payload.get("description"))
         self.assertEqual(
-            self.response["parent"], parent_category.id if parent_category else None
+            self.response_body["parent"],
+            parent_category.id if parent_category else None,
         )
-        self.assertDatetimeFormat(self.response["created_at"])
-        self.assertDatetimeFormat(self.response["updated_at"])
-        self.assertIsNone(self.response["image"])
+        self.assertDatetimeFormat(self.response_body["created_at"])
+        self.assertDatetimeFormat(self.response_body["updated_at"])
+        self.assertIsNone(self.response_body["image"])
 
     def test_create_by_regular_user(self):
         self.check_access_permission_by_regular_user()

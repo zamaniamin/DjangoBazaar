@@ -27,7 +27,7 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
                 "item_name",
             },
         )
-        self.assertEqual(self.response["item_name"], payload.get("item_name"))
+        self.assertEqual(self.response_body["item_name"], payload.get("item_name"))
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

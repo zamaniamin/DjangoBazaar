@@ -38,37 +38,39 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
     ):
         super().validate_response_body(response, payload)
 
-        self.assertIsInstance(self.response["id"], int)
-        self.assertEqual(self.response["name"], payload.get("name"))
-        self.assertEqual(self.response["description"], payload.get("description"))
+        self.assertIsInstance(self.response_body["id"], int)
+        self.assertEqual(self.response_body["name"], payload.get("name"))
+        self.assertEqual(self.response_body["description"], payload.get("description"))
         self.assertEqual(
-            self.response["status"], payload.get("status", Product.STATUS_DRAFT)
+            self.response_body["status"], payload.get("status", Product.STATUS_DRAFT)
         )
         self.assertEqual(
-            self.response["slug"],
+            self.response_body["slug"],
             payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
         )
 
         # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response)
+        self.assertExpectedProductDatetimeFormat(self.response_body)
 
         # expected product options
         if options_len:
-            self.assertEqual(len(self.response["options"]), options_len)
-            self.assertExpectedOptions(self.response["options"], payload.get("options"))
+            self.assertEqual(len(self.response_body["options"]), options_len)
+            self.assertExpectedOptions(
+                self.response_body["options"], payload.get("options")
+            )
         else:
-            self.assertIsNone(self.response["options"])
+            self.assertIsNone(self.response_body["options"])
 
         # expected product variants
-        self.assertEqual(len(self.response["variants"]), variants_len)
+        self.assertEqual(len(self.response_body["variants"]), variants_len)
         self.assertExpectedVariants(
-            self.response["variants"],
+            self.response_body["variants"],
             expected_price=self.simple_product_payload.get("price"),
             expected_stock=self.simple_product_payload.get("stock"),
         )
 
         # expected product media
-        self.assertIsNone(self.response["images"])
+        self.assertIsNone(self.response_body["images"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

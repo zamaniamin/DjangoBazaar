@@ -22,15 +22,15 @@ class CategoryImageUploadTest(APIPostTestCaseMixin, ImageTestCaseMixin, APIAsser
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertIsInstance(self.response, dict)
-        self.assertEqual(len(self.response), 6)
-        self.assertIsInstance(self.response["id"], int)
-        self.assertEqual(self.response["category_id"], self.category.id)
-        self.assertImageSrcPattern(self.response["src"])
-        self.assertEqual(self.response["alt"], payload.get("alt"))
-        self.assertDatetimeFormat(self.response["updated_at"])
-        self.assertDatetimeFormat(self.response["created_at"])
-        self.assertImageFileDirectory(self.response["src"])
+        self.assertIsInstance(self.response_body, dict)
+        self.assertEqual(len(self.response_body), 6)
+        self.assertIsInstance(self.response_body["id"], int)
+        self.assertEqual(self.response_body["category_id"], self.category.id)
+        self.assertImageSrcPattern(self.response_body["src"])
+        self.assertEqual(self.response_body["alt"], payload.get("alt"))
+        self.assertDatetimeFormat(self.response_body["updated_at"])
+        self.assertDatetimeFormat(self.response_body["created_at"])
+        self.assertImageFileDirectory(self.response_body["src"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

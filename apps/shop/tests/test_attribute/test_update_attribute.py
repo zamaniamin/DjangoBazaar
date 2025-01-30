@@ -28,7 +28,9 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin):
                 "updated_at",
             },
         )
-        self.assertEqual(self.response["attribute_name"], payload["attribute_name"])
+        self.assertEqual(
+            self.response_body["attribute_name"], payload["attribute_name"]
+        )
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

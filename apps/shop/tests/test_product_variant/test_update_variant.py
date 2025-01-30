@@ -17,8 +17,8 @@ class UpdateVariantTest(APIUpdateTestCaseMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertEqual(self.response["price"], payload.get("price"))
-        self.assertEqual(self.response["stock"], payload.get("stock"))
+        self.assertEqual(self.response_body["price"], payload.get("price"))
+        self.assertEqual(self.response_body["stock"], payload.get("stock"))
 
     def test_update(self):
         payload = {
@@ -39,7 +39,7 @@ class UpdateVariantTest(APIUpdateTestCaseMixin):
         response = self.send_request(payload)
         self.validate_response_body(response, payload)
 
-        for image in self.response["images"]:
+        for image in self.response_body["images"]:
             self.assertEqual(image["image_id"], product_image_id)
             self.assertIn(str(product_image_src), image["src"])
 

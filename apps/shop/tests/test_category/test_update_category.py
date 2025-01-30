@@ -47,7 +47,7 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
         payload = {"name": new_category_name}
         response = self.send_request(payload)
         self.validate_response_body(response, payload)
-        self.assertEqual(self.response["name"], new_category_name)
+        self.assertEqual(self.response_body["name"], new_category_name)
 
     def test_update_all_fields(self):
         payload = {
@@ -58,13 +58,13 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
         }
         response = self.send_request(payload)
         self.validate_response_body(response, payload)
-        self.assertEqual(self.response["name"], payload["name"])
+        self.assertEqual(self.response_body["name"], payload["name"])
         self.assertEqual(
-            self.response["slug"],
+            self.response_body["slug"],
             payload.get("slug", slugify(payload["name"], allow_unicode=True)),
         )
-        self.assertEqual(self.response["description"], payload["description"])
-        self.assertEqual(self.response["parent"], payload["parent"])
+        self.assertEqual(self.response_body["description"], payload["description"])
+        self.assertEqual(self.response_body["parent"], payload["parent"])
 
     def test_update_cant_be_parent_of_itself(self):
         payload = {"parent": self.category.id}

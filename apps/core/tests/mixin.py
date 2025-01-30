@@ -49,11 +49,10 @@ class APIAssertMixin(APITestCase):
 
 
 class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.response = None
+        cls.response_body = None
 
     def setUp(self):
         self.authorization_as_admin_user()
@@ -83,7 +82,7 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     @abstractmethod
     def validate_response_body(self, response, payload):
         """Expected response body."""
-        self.response = response.json()
+        self.response_body = response.json()
         self.expected_status_code(response)
 
     def expected_status_code(self, response):
@@ -107,7 +106,6 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
 
 
 class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -132,7 +130,6 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.assertStatusCode(response)
 
     # TODO check all test status with this method
-    # TODO rename this method to `assertStatusCode()`
     def assertStatusCode(self, response, status_code: int = status.HTTP_200_OK):
         self.assertEqual(response.status_code, status_code)
 
@@ -154,11 +151,10 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
 
 
 class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.response = None
+        cls.response_body = None
 
     def setUp(self):
         self.authorization_as_admin_user()
@@ -179,7 +175,7 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     @abstractmethod
     def validate_response_body(self, response, payload):
         """Expected response body."""
-        self.response = response.json()
+        self.response_body = response.json()
         self.expected_status_code(response)
 
     def expected_status_code(self, response):
@@ -203,11 +199,10 @@ class APIUpdateTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
 
 
 class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.response = None
+        cls.response_body = None
 
     def setUp(self):
         self.authorization_as_admin_user()

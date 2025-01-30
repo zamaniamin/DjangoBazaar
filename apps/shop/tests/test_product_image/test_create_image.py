@@ -30,10 +30,10 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertIsInstance(self.response, list)
-        self.assertEqual(len(self.response), self.file_count)
+        self.assertIsInstance(self.response_body, list)
+        self.assertEqual(len(self.response_body), self.file_count)
 
-        for image in self.response:
+        for image in self.response_body:
             self.assertIsInstance(image["id"], int)
             self.assertEqual(image["product_id"], self.active_product.id)
             self.assertTrue(image["src"].strip())

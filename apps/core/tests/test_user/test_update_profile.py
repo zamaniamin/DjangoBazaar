@@ -11,7 +11,7 @@ class UpdateProfileTest(APIUpdateTestCaseMixin):
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
         self.assertEqual(
-            set(self.response.keys()),
+            set(self.response_body.keys()),
             {
                 "id",
                 "email",

@@ -11,8 +11,10 @@ class CreateAttributeTest(APIPostTestCaseMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 4)
-        self.assertEqual(self.response["attribute_name"], payload["attribute_name"])
+        self.assertEqual(len(self.response_body), 4)
+        self.assertEqual(
+            self.response_body["attribute_name"], payload["attribute_name"]
+        )
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

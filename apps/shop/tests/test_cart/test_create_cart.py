@@ -12,11 +12,11 @@ class CreateCartTest(APIPostTestCaseMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 3)
-        self.assertIsInstance(uuid.UUID(self.response["id"]), uuid.UUID)
-        self.assertIsInstance(self.response["items"], list)
-        self.assertEqual(len(self.response["items"]), 0)
-        self.assertEqual(self.response["total_price"], 0)
+        self.assertEqual(len(self.response_body), 3)
+        self.assertIsInstance(uuid.UUID(self.response_body["id"]), uuid.UUID)
+        self.assertIsInstance(self.response_body["items"], list)
+        self.assertEqual(len(self.response_body["items"]), 0)
+        self.assertEqual(self.response_body["total_price"], 0)
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user(status.HTTP_201_CREATED)

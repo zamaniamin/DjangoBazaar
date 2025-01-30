@@ -11,16 +11,16 @@ class UpdateUserTest(APIUpdateTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 7)
-        self.assertEqual(self.response["id"], self.regular_user.id)
-        self.assertEqual(self.response["email"], self.regular_user.email)
-        self.assertEqual(self.response["first_name"], payload["first_name"])
-        self.assertEqual(self.response["last_name"], self.regular_user.last_name)
-        self.assertEqual(self.response["is_active"], self.regular_user.is_active)
-        self.assertDatetimeFormat(self.response["date_joined"])
+        self.assertEqual(len(self.response_body), 7)
+        self.assertEqual(self.response_body["id"], self.regular_user.id)
+        self.assertEqual(self.response_body["email"], self.regular_user.email)
+        self.assertEqual(self.response_body["first_name"], payload["first_name"])
+        self.assertEqual(self.response_body["last_name"], self.regular_user.last_name)
+        self.assertEqual(self.response_body["is_active"], self.regular_user.is_active)
+        self.assertDatetimeFormat(self.response_body["date_joined"])
         self.assertTrue(
-            self.response["last_login"] is None
-            or self.assertDatetimeFormat(self.response["last_login"])
+            self.response_body["last_login"] is None
+            or self.assertDatetimeFormat(self.response_body["last_login"])
         )
 
     def test_access_permission_by_regular_user(self):

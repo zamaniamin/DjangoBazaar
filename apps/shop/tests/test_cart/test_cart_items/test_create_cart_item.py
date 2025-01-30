@@ -33,10 +33,10 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertIsInstance(self.response["id"], int)
+        self.assertIsInstance(self.response_body["id"], int)
 
         # expected variant
-        variant = self.response["variant"]
+        variant = self.response_body["variant"]
         price = float(self.simple_product_variant.price)
         self.assertIsInstance(variant, dict)
         self.assertEqual(len(variant), 7)
@@ -49,11 +49,13 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertEqual(variant["option3"], self.simple_product_variant.option3)
 
         # expected image
-        self.assertIsInstance(self.response["image"], str)
+        self.assertIsInstance(self.response_body["image"], str)
 
         # expected quantity and item_total
-        self.assertEqual(self.response["quantity"], 1)
-        self.assertAlmostEqual(self.response["item_total"], round(price, 2), places=2)
+        self.assertEqual(self.response_body["quantity"], 1)
+        self.assertAlmostEqual(
+            self.response_body["item_total"], round(price, 2), places=2
+        )
 
     def test_access_permission_by_regular_user(self):
         self.authorization_as_regular_user()

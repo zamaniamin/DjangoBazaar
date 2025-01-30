@@ -17,7 +17,7 @@ class CreateOptionItemsTest(APIPostTestCaseMixin):
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
-        self.assertEqual(self.response["item_name"], payload.get("item_name"))
+        self.assertEqual(self.response_body["item_name"], payload.get("item_name"))
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
