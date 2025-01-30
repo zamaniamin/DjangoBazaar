@@ -46,12 +46,10 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse("attribute-items-list", kwargs={"attribute_pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_attribute_dont_have_item(self):
-        # create an attribute without items
         attribute = AttributeFactory.create_attribute("material")
-
         response = self.send_request(
             reverse("attribute-items-list", kwargs={"attribute_pk": attribute.id})
         )
@@ -101,7 +99,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
                 kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_if_item_not_exist(self):
         response = self.send_request(
@@ -110,4 +108,4 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
