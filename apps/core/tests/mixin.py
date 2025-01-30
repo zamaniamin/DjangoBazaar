@@ -91,19 +91,19 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(
-        self, status_code: int = status.HTTP_403_FORBIDDEN
+        self, status_code: int = status.HTTP_403_FORBIDDEN, payload: dict = None
     ):
         self.authorization_as_regular_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        response = self.send_request(payload)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
     def check_access_permission_by_anonymous_user(
-        self, status_code: int = status.HTTP_401_UNAUTHORIZED
+        self, status_code: int = status.HTTP_401_UNAUTHORIZED, payload: dict = None
     ):
         self.authorization_as_anonymous_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status_code)
+        response = self.send_request(payload)
+        self.assertHTTPStatusCode(response, status_code)
         return response
 
 
