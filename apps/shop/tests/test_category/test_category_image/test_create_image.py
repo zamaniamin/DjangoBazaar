@@ -54,4 +54,4 @@ class CategoryImageUploadTest(APIPostTestCaseMixin, ImageTestCaseMixin, APIAsser
     def test_upload_with_empty_src(self):
         payload = {"src": ""}
         response = self.send_multipart_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
