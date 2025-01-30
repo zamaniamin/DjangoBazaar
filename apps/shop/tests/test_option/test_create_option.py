@@ -1,86 +1,41 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.utils import json
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class CreateOptionTest(APITestCaseMixin):
-    def setUp(self):
-        self.set_admin_user_authorization()
+class CreateOptionTest(APIPostTestCaseMixin):
+    def api_path(self) -> str:
+        return reverse("option-list")
 
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 4)
+        self.assertEqual(self.response["option_name"], payload["option_name"])
 
-    def test_create_option_by_admin(self):
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_create(self):
         payload = {
             "option_name": "test option",
         }
-        response = self.client.post(
-            reverse("option-list"),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
-    def test_create_options_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.post(reverse("option-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_options_by_anonymous_user(self):
-        self.set_anonymous_user_authorization()
-        response = self.client.post(reverse("option-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # -----------------------------
-    # --- Test Create An Option ---
-    # -----------------------------
-
-    def test_create_option(self):
-        # request
-        payload = {
-            "option_name": "test option",
-        }
-        response = self.client.post(
-            reverse("option-list"),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 4)
-        self.assertEqual(expected["option_name"], payload["option_name"])
-
-    def test_create_option_if_already_exist(self):
-        # create an option item
+    def test_create_if_already_exist(self):
         OptionFactory.create_option()
-
-        # request
         payload = {
             "option_name": OptionFactory.option_name_color,
         }
-        response = self.client.post(
-            reverse("option-list"),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # expected
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_option_if_option_name_is_empty(self):
-        # request
+    def test_create_if_option_name_is_empty(self):
         payload = {"option_name": ""}
-        response = self.client.post(
-            reverse("option-list"),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-
-        # expected
+        response = self.send_request(payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
