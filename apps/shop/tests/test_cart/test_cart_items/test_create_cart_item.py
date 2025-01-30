@@ -58,26 +58,28 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         )
 
     def test_access_permission_by_regular_user(self):
-        self.authorization_as_regular_user()
-        response = self.send_request(self.payload)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.check_access_permission_by_regular_user(
+            status.HTTP_201_CREATED, self.payload
+        )
+        self.validate_response_body(response, self.payload)
 
     def test_access_permission_by_anonymous_user(self):
-        self.authorization_as_anonymous_user()
-        response = self.send_request(self.payload)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.check_access_permission_by_anonymous_user(
+            status.HTTP_201_CREATED, self.payload
+        )
+        self.validate_response_body(response, self.payload)
 
     def test_create(self):
         response = self.send_request(self.payload)
         self.validate_response_body(response, self.payload)
 
-    def test_create_item_if_already_exist(self):
+    def test_create_if_item_already_exist(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         payload = {"variant": cart_item.variant_id, "quantity": 1}
         response = self.send_request(
             payload, reverse("cart-items-list", kwargs={"cart_pk": cart_id})
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_cart_total_price(self):
         total_price: float = 0
@@ -92,7 +94,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
 
         # expected
         response = self.client.get(reverse("cart-detail", kwargs={"pk": self.cart_id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertHTTPStatusCode(response, status.HTTP_200_OK)
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
@@ -100,7 +102,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         response = self.send_request(
             self.payload, reverse("cart-items-list", kwargs={"cart_pk": 7})
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_uuid_not_exist(self):
         response = self.send_request(
@@ -110,7 +112,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750"},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_create_with_draft_product(self):
         product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
@@ -123,7 +125,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_archived_product(self):
         product = ProductFactory.create_product(status=Product.STATUS_ARCHIVED)
@@ -136,7 +138,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_variant_not_in_stock(self):
         product = ProductFactory.create_product(stock=0)
@@ -149,7 +151,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_quantity_bigger_than_stock(self):
         product = ProductFactory.create_product(stock=3)
@@ -162,7 +164,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_variant_not_exist(self):
         payload = {"variant": 9999, "quantity": 1}
@@ -173,7 +175,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_without_image(self):
         product = ProductFactory.create_product()
@@ -209,7 +211,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                     kwargs={"cart_pk": self.cart_id},
                 ),
             )
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_item_invalid_quantity(self):
         invalid_payloads = [
@@ -231,4 +233,4 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                     kwargs={"cart_pk": self.cart_id},
                 ),
             )
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
