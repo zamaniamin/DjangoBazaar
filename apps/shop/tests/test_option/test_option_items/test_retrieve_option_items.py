@@ -41,7 +41,7 @@ class ListOptionItemsTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse("option-items-list", kwargs={"option_pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_option_dont_have_item(self):
         option = OptionFactory.create_option("material")
@@ -88,7 +88,7 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
                 kwargs={"option_pk": 999, "pk": self.option_item.id},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_item_if_item_not_exist(self):
         response = self.send_request(
@@ -97,4 +97,4 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
                 kwargs={"option_pk": self.option.id, "pk": 999},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
