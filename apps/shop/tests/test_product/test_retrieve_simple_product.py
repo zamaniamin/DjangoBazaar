@@ -82,7 +82,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertHTTPStatusCode(response)
             elif product.status == Product.STATUS_DRAFT:
-                self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+                self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_by_anonymous_user(self):
         """
@@ -100,7 +100,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertHTTPStatusCode(response)
             elif product.status == Product.STATUS_DRAFT:
-                self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+                self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_product(self):
         """
@@ -115,4 +115,4 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def test_retrieve_404(self):
         response = self.send_request(reverse("product-detail", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
