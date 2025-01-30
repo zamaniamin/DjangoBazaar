@@ -21,33 +21,36 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)
-        self.assertEqual(len(self.response), 13)
-        self.assertIsInstance(self.response["id"], int)
-        self.assertEqual(self.response["name"], self.variable_product_payload["name"])
+        self.assertEqual(len(self.response_body), 13)
+        self.assertIsInstance(self.response_body["id"], int)
+        self.assertEqual(
+            self.response_body["name"], self.variable_product_payload["name"]
+        )
 
         # TODO add slug
         self.assertEqual(
-            self.response["description"], self.variable_product_payload["description"]
+            self.response_body["description"],
+            self.variable_product_payload["description"],
         )
         self.assertEqual(
-            self.response["status"], self.variable_product_payload["status"]
+            self.response_body["status"], self.variable_product_payload["status"]
         )
 
         # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response)
+        self.assertExpectedProductDatetimeFormat(self.response_body)
 
         self.assertEqual(
-            set(self.response["price"].keys()),
+            set(self.response_body["price"].keys()),
             {"min_price", "max_price"},
         )
 
-        self.assertIsInstance(self.response["total_stock"], int)
-        self.assertEqual(len(self.response["options"]), 3)
+        self.assertIsInstance(self.response_body["total_stock"], int)
+        self.assertEqual(len(self.response_body["options"]), 3)
 
         # expected product variants
-        self.assertEqual(len(self.response["variants"]), 8)
+        self.assertEqual(len(self.response_body["variants"]), 8)
         self.assertExpectedVariants(
-            self.response["variants"],
+            self.response_body["variants"],
             expected_price=self.variable_product_payload["price"],
             expected_stock=self.variable_product_payload["stock"],
         )

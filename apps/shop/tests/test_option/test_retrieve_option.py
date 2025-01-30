@@ -13,7 +13,7 @@ class ListOptionTest(APIGetTestCaseMixin):
         self, response, payload: dict = None, result_len: int = 0
     ):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 4)
+        self.assertEqual(len(self.response_body), 4)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -24,7 +24,7 @@ class ListOptionTest(APIGetTestCaseMixin):
             },
         )
 
-        option_list = self.response["results"]
+        option_list = self.response_body["results"]
         self.assertIsInstance(option_list, list)
         self.assertEqual(len(option_list), result_len)
 
@@ -70,7 +70,7 @@ class RetrieveOptionTest(APIGetTestCaseMixin):
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
         self.assertEqual(
-            set(self.response.keys()),
+            set(self.response_body.keys()),
             {
                 "id",
                 "option_name",

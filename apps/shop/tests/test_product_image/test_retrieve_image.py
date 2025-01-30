@@ -45,8 +45,8 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
         super().validate_response_body(response, payload)
 
         # expected
-        image = self.response[0]
-        self.assertIsInstance(self.response, list)
+        image = self.response_body[0]
+        self.assertIsInstance(self.response_body, list)
         # self.assertEqual(len(self.response), 4)
 
         self.assertIsInstance(image["id"], int)

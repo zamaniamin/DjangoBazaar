@@ -22,8 +22,8 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
         self, response, payload: dict = None, item_list_len: int = 0
     ):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), item_list_len)
-        for item in self.response:
+        self.assertEqual(len(self.response_body), item_list_len)
+        for item in self.response_body:
             self.assertEqual(
                 set(item.keys()),
                 {
@@ -77,7 +77,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
         self.assertEqual(
-            set(self.response.keys()),
+            set(self.response_body.keys()),
             {
                 "id",
                 "item_name",

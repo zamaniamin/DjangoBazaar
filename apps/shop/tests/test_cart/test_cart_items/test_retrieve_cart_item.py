@@ -16,8 +16,8 @@ class ListCartItemsTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), len(self.cart_items))
-        for item in self.response:
+        self.assertEqual(len(self.response_body), len(self.cart_items))
+        for item in self.response_body:
             self.assertIn("id", item)
             self.assertIn("variant", item)
             variant = item["variant"]
@@ -68,7 +68,7 @@ class RetrieveCartItemTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        expected_cart_item = self.response
+        expected_cart_item = self.response_body
         self.assertIn("id", expected_cart_item)
         self.assertIn("variant", expected_cart_item)
         variant = expected_cart_item["variant"]

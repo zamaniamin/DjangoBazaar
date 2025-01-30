@@ -13,9 +13,9 @@ class ListAttributeTest(APIGetTestCaseMixin):
         self, response, payload: dict = None, results_len: int = 0
     ):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 4)
+        self.assertEqual(len(self.response_body), 4)
         self.assertEqual(
-            set(self.response.keys()),
+            set(self.response_body.keys()),
             {
                 "count",
                 "next",
@@ -23,7 +23,7 @@ class ListAttributeTest(APIGetTestCaseMixin):
                 "results",
             },
         )
-        attribute_list = self.response["results"]
+        attribute_list = self.response_body["results"]
         self.assertIsInstance(attribute_list, list)
         self.assertEqual(len(attribute_list), results_len)
         for attribute in attribute_list:
@@ -68,7 +68,7 @@ class RetrieveAttributeTest(APIGetTestCaseMixin):
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
         self.assertEqual(
-            set(self.response.keys()),
+            set(self.response_body.keys()),
             {
                 "id",
                 "attribute_name",

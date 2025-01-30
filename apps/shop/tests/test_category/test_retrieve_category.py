@@ -22,7 +22,7 @@ class ListCategoryTest(APIGetTestCaseMixin):
         CategoryFactory.create_categories_list()
         response = self.send_request()
         self.validate_response_body(response)
-        self.assertEqual(len(self.response), 4)
+        self.assertEqual(len(self.response_body), 4)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -32,7 +32,7 @@ class ListCategoryTest(APIGetTestCaseMixin):
                 "results",
             },
         )
-        categories_list = self.response["results"]
+        categories_list = self.response_body["results"]
         self.assertIsInstance(categories_list, list)
         self.assertEqual(len(categories_list), 2)
         for category in categories_list:
@@ -54,7 +54,7 @@ class ListCategoryTest(APIGetTestCaseMixin):
         response = self.send_request()
         self.validate_response_body(response)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(self.response), 4)
+        self.assertEqual(len(self.response_body), 4)
         self.assertEqual(
             set(response.data.keys()),
             {
@@ -64,8 +64,8 @@ class ListCategoryTest(APIGetTestCaseMixin):
                 "results",
             },
         )
-        self.assertIsInstance(self.response["results"], list)
-        self.assertEqual(len(self.response["results"]), 0)
+        self.assertIsInstance(self.response_body["results"], list)
+        self.assertEqual(len(self.response_body["results"]), 0)
 
     # TODO add pagination test
 

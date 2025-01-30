@@ -28,26 +28,31 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.simple_product.id})
 
-    def validate_response_body(self, response):
-        super().validate_response_body(response)
+    def validate_response_body(self, response, payload: dict = None):
+        super().validate_response_body(response, payload)
 
-        self.assertIsInstance(self.response["id"], int)
-        self.assertEqual(self.response["name"], self.simple_product_payload["name"])
+        self.assertIsInstance(self.response_body["id"], int)
         self.assertEqual(
-            self.response["description"], self.simple_product_payload["description"]
+            self.response_body["name"], self.simple_product_payload["name"]
         )
-        self.assertEqual(self.response["status"], self.simple_product_payload["status"])
+        self.assertEqual(
+            self.response_body["description"],
+            self.simple_product_payload["description"],
+        )
+        self.assertEqual(
+            self.response_body["status"], self.simple_product_payload["status"]
+        )
 
         # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response)
+        self.assertExpectedProductDatetimeFormat(self.response_body)
 
         # expected product options
-        self.assertIsNone(self.response["options"])
+        self.assertIsNone(self.response_body["options"])
 
         # expected product variants
-        self.assertEqual(len(self.response["variants"]), 1)
+        self.assertEqual(len(self.response_body["variants"]), 1)
         self.assertExpectedVariants(
-            self.response["variants"],
+            self.response_body["variants"],
             expected_price=self.simple_product_payload["price"],
             expected_stock=self.simple_product_payload["stock"],
         )

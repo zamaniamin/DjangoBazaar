@@ -18,8 +18,8 @@ class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertIsInstance(self.response, dict)
-        self.assertExpectedVariants([self.response])
+        self.assertIsInstance(self.response_body, dict)
+        self.assertExpectedVariants([self.response_body])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -48,8 +48,8 @@ class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertIsInstance(self.response, list)
-        self.assertExpectedVariants(self.response)
+        self.assertIsInstance(self.response_body, list)
+        self.assertExpectedVariants(self.response_body)
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

@@ -10,8 +10,8 @@ class ListUserTest(APIGetTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 2)
-        for user in self.response:
+        self.assertEqual(len(self.response_body), 2)
+        for user in self.response_body:
             self.assertEqual(len(user), 7)
             self.assertIsInstance(user["id"], int)
             self.assertIsInstance(user["email"], str)

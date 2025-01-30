@@ -111,7 +111,7 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.response = None  # TODO rename this to `response_body`
+        cls.response_body = None
 
     def setUp(self):
         self.authorization_as_admin_user()
@@ -128,7 +128,7 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     @abstractmethod
     def validate_response_body(self, response, payload: dict = None):
         """Expected response body."""
-        self.response = response.json()
+        self.response_body = response.json()
         self.expected_status_code(response)
 
     # TODO check all test status with this method

@@ -35,8 +35,8 @@ class ListProductsTest(APIGetTestCaseMixin):
     def validate_response_body(self, response, count: int = 0):
         super().validate_response_body(response)
 
-        self.assertEqual(self.response["count"], count)
-        expected_product_list = self.response["results"]
+        self.assertEqual(self.response_body["count"], count)
+        expected_product_list = self.response_body["results"]
         self.assertEqual(len(expected_product_list), count)
         for product in expected_product_list:
             self.assertEqual(len(product), 13)
@@ -118,8 +118,8 @@ class ListNoProductsTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response):
         super().validate_response_body(response)
-        self.assertEqual(self.response["count"], 0)
-        expected_products = self.response["results"]
+        self.assertEqual(self.response_body["count"], 0)
+        expected_products = self.response_body["results"]
         self.assertEqual(len(expected_products), 0)
 
     def test_access_permission_by_regular_user(self):

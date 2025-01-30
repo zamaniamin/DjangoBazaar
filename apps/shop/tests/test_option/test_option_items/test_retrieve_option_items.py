@@ -17,8 +17,8 @@ class ListOptionItemsTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), len(self.option_items))
-        for item in self.response:
+        self.assertEqual(len(self.response_body), len(self.option_items))
+        for item in self.response_body:
             self.assertEqual(
                 set(item.keys()),
                 {

@@ -10,16 +10,16 @@ class RetrieveUserTest(APIGetTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 7)
-        self.assertIsInstance(self.response["id"], int)
-        self.assertIsInstance(self.response["email"], str)
-        self.assertIsInstance(self.response["first_name"], str)
-        self.assertIsInstance(self.response["last_name"], str)
-        self.assertIsInstance(self.response["is_active"], bool)
-        self.assertDatetimeFormat(self.response["date_joined"])
+        self.assertEqual(len(self.response_body), 7)
+        self.assertIsInstance(self.response_body["id"], int)
+        self.assertIsInstance(self.response_body["email"], str)
+        self.assertIsInstance(self.response_body["first_name"], str)
+        self.assertIsInstance(self.response_body["last_name"], str)
+        self.assertIsInstance(self.response_body["is_active"], bool)
+        self.assertDatetimeFormat(self.response_body["date_joined"])
         self.assertTrue(
-            self.response["last_login"] is None
-            or self.assertDatetimeFormat(self.response["last_login"])
+            self.response_body["last_login"] is None
+            or self.assertDatetimeFormat(self.response_body["last_login"])
         )
 
     def test_access_permission_by_regular_user(self):

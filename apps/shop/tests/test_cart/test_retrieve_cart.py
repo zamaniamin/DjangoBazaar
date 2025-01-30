@@ -88,10 +88,10 @@ class RetrieveCartTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response), 3)
-        self.assertIsInstance(uuid.UUID(self.response["id"]), uuid.UUID)
-        self.assertIsInstance(self.response["items"], list)
-        for item in self.response["items"]:
+        self.assertEqual(len(self.response_body), 3)
+        self.assertIsInstance(uuid.UUID(self.response_body["id"]), uuid.UUID)
+        self.assertIsInstance(self.response_body["items"], list)
+        for item in self.response_body["items"]:
             self.assertIn("id", item)
             self.assertIn("variant", item)
             self.assertIn("id", item["variant"])
@@ -104,7 +104,7 @@ class RetrieveCartTest(APIGetTestCaseMixin):
             self.assertIn("image", item)
             self.assertIn("quantity", item)
             self.assertIn("item_total", item)
-        self.assertIn("total_price", self.response)
+        self.assertIn("total_price", self.response_body)
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
