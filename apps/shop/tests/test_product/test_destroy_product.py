@@ -21,7 +21,7 @@ class DestroyProductTest(APIDeleteTestCaseMixin, ProductAssertMixin):
 
     def test_delete(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
 
 # TODO test destroy a product deletes all related information too

@@ -23,7 +23,7 @@ class DestroyOptionTest(APIDeleteTestCaseMixin):
 
     def test_delete(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # assert option is removed
         response = self.client.get(self.api_path())

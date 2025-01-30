@@ -216,8 +216,10 @@ class APIDeleteTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
         """Send a DELETE request to the server and return response."""
         return self.client.delete(path=path if path else self.api_path())
 
-    def expected_status_code(self, response):
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    def assertHTTPStatusCode(
+        self, response, status_code: int = status.HTTP_204_NO_CONTENT
+    ):
+        self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(
         self, status_code: int = status.HTTP_403_FORBIDDEN

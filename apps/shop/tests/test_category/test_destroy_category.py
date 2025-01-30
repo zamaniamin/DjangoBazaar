@@ -25,7 +25,7 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
 
     def test_delete(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
         response = self.client.get(
             reverse("category-detail", kwargs={"pk": self.category.id})
         )

@@ -17,6 +17,6 @@ class DestroyUserTest(APIDeleteTestCaseMixin):
 
     def test_delete(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
         with self.assertRaises(ObjectDoesNotExist):
             get_user_model().objects.get(id=self.regular_user.id)

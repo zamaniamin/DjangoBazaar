@@ -26,7 +26,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
 
     def test_delete(self):
         response = self.send_request()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # check that option item was deleted
         response = self.client.get(self.api_path())
