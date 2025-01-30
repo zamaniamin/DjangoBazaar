@@ -1,55 +1,38 @@
-import json
-
 from django.urls import reverse
-from rest_framework import status
 
-from apps.core.tests.mixin import APITestCaseMixin
+from apps.core.tests.mixin import APIUpdateTestCaseMixin, APIAssertMixin
 
 
-class UpdateUserTestMixin(APITestCaseMixin):
-    # ------------------------------
-    # --- Test Access Permission ---
-    # ------------------------------
+class UpdateUserTest(APIUpdateTestCaseMixin, APIAssertMixin):
+    def api_path(self) -> str:
+        return reverse("user-detail", kwargs={"pk": self.regular_user.id})
 
-    def test_update_user_by_admin(self):
-        # request
-        self.set_admin_user_authorization()
+    def validate_response_body(self, response, payload):
+        super().validate_response_body(response, payload)
+        self.assertEqual(len(self.response), 7)
+        self.assertIsInstance(self.response["id"], int)
+        self.assertEqual(self.response["email"], payload["email"])
+        self.assertEqual(self.response["first_name"], payload["first_name"])
+        self.assertEqual(self.response["last_name"], payload["last_name"])
+        self.assertEqual(self.response["is_active"], payload["is_active"])
+        self.assertDatetimeFormat(self.response["date_joined"])
+        self.assertTrue(
+            self.response["last_login"] is None
+            or self.assertDatetimeFormat(self.response["last_login"])
+        )
+
+    def test_access_permission_by_regular_user(self):
+        self.check_access_permission_by_regular_user()
+
+    def test_access_permission_by_anonymous_user(self):
+        self.check_access_permission_by_anonymous_user()
+
+    def test_update_user(self):
         payload = {
             "email": self.regular_user.email,
             "first_name": "F name",
             "last_name": "L name",
             "is_active": True,
         }
-        response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id}),
-            json.dumps(payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # expected
-        expected = response.json()
-        self.assertEqual(len(expected), 7)
-        self.assertIsInstance(expected["id"], int)
-        self.assertEqual(expected["email"], payload["email"])
-        self.assertEqual(expected["first_name"], payload["first_name"])
-        self.assertEqual(expected["last_name"], payload["last_name"])
-        self.assertEqual(expected["is_active"], payload["is_active"])
-        self.assertDatetimeFormat(expected["date_joined"])
-        self.assertTrue(
-            expected["last_login"] is None
-            or self.assertDatetimeFormat(expected["last_login"])
-        )
-
-    def test_update_user_by_regular_user(self):
-        self.set_regular_user_authorization()
-        response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_update_user_by_anonymous_user(self):
-        response = self.client.put(
-            reverse("user-detail", kwargs={"pk": self.regular_user.id})
-        )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
