@@ -97,7 +97,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
 
     def test_create_with_empty_payload(self):
         response = self.send_request({})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_required_fields(self):
         payload = {
@@ -131,7 +131,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_payloads:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_without_required_fields(self):
         """
@@ -141,7 +141,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
             "description": "test description",
         }
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_valid_status(self):
         """
@@ -159,7 +159,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_payloads:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertHTTPStatusCode(response)
             match payload["status"]:
                 case Product.STATUS_ACTIVE:
                     self.assertEqual(response.data["status"], Product.STATUS_ACTIVE)
@@ -182,7 +182,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_payloads:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_required_options(self):
         payload = {
@@ -206,7 +206,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
             "options": options + [{"option_name": "color", "items": ["black"]}],
         }
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertHTTPStatusCode(response)
 
         # expected response body
         expected = response.json()
@@ -285,7 +285,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_invalid_price(self):
         invalid_options = [
@@ -295,7 +295,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_invalid_stock(self):
         invalid_options = [
@@ -306,7 +306,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_max_3_options(self):
         """
