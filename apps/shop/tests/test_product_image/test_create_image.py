@@ -69,7 +69,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
     def test_upload_multi_image_with_is_main(self):
         payload = {"images": self.files, "is_main": True}
         response = self.send_multipart_request(payload)
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # expected
         expected = response.json()
@@ -103,7 +103,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
     def test_upload_one_image(self):
         payload = {"images": self.files[0]}
         response = self.send_multipart_request(payload)
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # expected
         expected = response.json()
@@ -134,7 +134,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
     def test_upload_one_image_with_is_main(self):
         payload = {"images": self.files[0], "is_main": True}
         response = self.send_multipart_request(payload)
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # expected
         expected = response.json()
@@ -157,7 +157,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
         """test upload a main image for product, if there was a main image befor"""
         payload = {"images": self.files[1], "is_main": True}
         response = self.send_multipart_request(payload)
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
         # expected
         expected = response.json()

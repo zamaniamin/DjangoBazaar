@@ -83,10 +83,12 @@ class APIPostTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
     def validate_response_body(self, response, payload):
         """Expected response body."""
         self.response_body = response.json()
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
-    def expected_status_code(self, response):
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def assertHTTPStatusCode(
+        self, response, status_code: int = status.HTTP_201_CREATED
+    ):
+        self.assertEqual(response.status_code, status_code)
 
     def check_access_permission_by_regular_user(
         self, status_code: int = status.HTTP_403_FORBIDDEN

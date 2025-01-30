@@ -86,7 +86,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             response = self.send_request(
                 payload, reverse("cart-items-list", kwargs={"cart_pk": self.cart_id})
             )
-            self.expected_status_code(response)
+            self.assertHTTPStatusCode(response)
             expected = response.json()
             total_price += expected["item_total"]
 
@@ -186,7 +186,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 kwargs={"cart_pk": self.cart_id},
             ),
         )
-        self.expected_status_code(response)
+        self.assertHTTPStatusCode(response)
 
     def test_create_invalid_variant_id(self):
         invalid_payloads = [
