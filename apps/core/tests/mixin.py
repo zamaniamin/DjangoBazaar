@@ -118,7 +118,6 @@ class APIGetTestCaseMixin(ABC, _APITestCaseAuthorizationMixin):
 
     @abstractmethod
     def api_path(self) -> str:
-        pass
         raise NotImplementedError("Please implement`api_path()` in your test class!")
 
     def send_request(self, path: str = None):
