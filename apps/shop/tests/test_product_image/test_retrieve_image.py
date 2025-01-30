@@ -23,7 +23,7 @@ class RetrieveImageTest(APIGetTestCaseMixin):
         )
 
     def validate_response_body(self, response, payload: dict = None):
-        pass
+        super().validate_response_body(response, payload)
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -84,7 +84,7 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
         )
 
         # expected
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertHTTPStatusCode(response, status.HTTP_200_OK)
         expected = response.json()
         self.assertIsInstance(expected, list)
         self.assertEqual(len(expected), 8)
