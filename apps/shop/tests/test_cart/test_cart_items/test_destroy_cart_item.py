@@ -18,22 +18,18 @@ class DestroyCartItemsTest(APIDeleteTestCaseMixin):
         )
 
     def test_access_permission_by_regular_user(self):
-        self.authorization_as_regular_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.check_access_permission_by_regular_user(status.HTTP_204_NO_CONTENT)
 
     def test_access_permission_by_anonymous_user(self):
-        self.authorization_as_anonymous_user()
-        response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.check_access_permission_by_anonymous_user(status.HTTP_204_NO_CONTENT)
 
     def test_delete(self):
         response = self.send_request()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertHTTPStatusCode(response)
 
         # test cart item is removed
         response = self.client.get(self.api_path())
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_invalid_cart_pk(self):
         response = self.send_request(
@@ -42,4 +38,4 @@ class DestroyCartItemsTest(APIDeleteTestCaseMixin):
                 kwargs={"cart_pk": 7, "pk": self.cart_item.id},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
