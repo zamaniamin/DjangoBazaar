@@ -171,7 +171,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         ]
         for payload in invalid_options:
             response = self.send_request(payload)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_update_variable_product_with_max_3_options(self):
         payload = {
@@ -184,4 +184,4 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
             ],
         }
         response = self.send_request(payload)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
