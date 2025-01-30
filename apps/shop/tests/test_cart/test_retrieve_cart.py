@@ -15,14 +15,10 @@ class ListCartTest(APIGetTestCaseMixin):
         super().validate_response_body(response, payload)
 
     def test_access_permission_by_regular_user(self):
-        self.authorization_as_regular_user()
-        response = self.send_request()
-        self.assertHTTPStatusCode(response, status.HTTP_403_FORBIDDEN)
+        self.check_access_permission_by_regular_user(status.HTTP_403_FORBIDDEN)
 
     def test_list_carts_by_anonymous_user(self):
-        self.authorization_as_anonymous_user()
-        response = self.send_request()
-        self.assertHTTPStatusCode(response, status.HTTP_401_UNAUTHORIZED)
+        self.check_access_permission_by_anonymous_user(status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
         response = self.send_request()
@@ -124,6 +120,6 @@ class RetrieveCartTest(APIGetTestCaseMixin):
 
     def test_retrieve_with_invalid_pk(self):
         response = self.send_request(reverse("cart-detail", kwargs={"pk": "11"}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
         response = self.send_request(reverse("cart-detail", kwargs={"pk": 11}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
