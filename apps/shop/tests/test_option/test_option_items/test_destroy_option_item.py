@@ -30,7 +30,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
 
         # check that option item was deleted
         response = self.client.get(self.api_path())
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_invalid_option_pk(self):
         response = self.send_request(
@@ -39,7 +39,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
                 kwargs={"option_pk": 999, "pk": self.option_item.id},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_invalid_item_pk(self):
         response = self.send_request(
@@ -48,4 +48,4 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
                 kwargs={"option_pk": self.option.id, "pk": 999},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
