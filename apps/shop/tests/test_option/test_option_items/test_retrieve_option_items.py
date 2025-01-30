@@ -50,7 +50,7 @@ class ListOptionItemsTest(APIGetTestCaseMixin):
         )
 
         # expected
-        self.assertStatusCode(response)
+        self.assertHTTPStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 0)
 
@@ -79,7 +79,7 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
 
     def test_retrieve(self):
         response = self.send_request()
-        self.assertStatusCode(response)
+        self.assertHTTPStatusCode(response)
 
     def test_retrieve_items_if_option_not_exist(self):
         response = self.send_request(

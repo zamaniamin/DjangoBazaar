@@ -47,7 +47,7 @@ class ListCartItemsTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse("cart-items-list", kwargs={"cart_pk": cart_id})
         )
-        self.assertStatusCode(response)
+        self.assertHTTPStatusCode(response)
 
     def test_list_with_invalid_cart_id(self):
         response = self.send_request(reverse("cart-items-list", kwargs={"cart_pk": 11}))

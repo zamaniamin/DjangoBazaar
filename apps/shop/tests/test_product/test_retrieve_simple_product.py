@@ -80,7 +80,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
                 reverse("product-detail", kwargs={"pk": product.id})
             )
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
-                self.assertStatusCode(response)
+                self.assertHTTPStatusCode(response)
             elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -98,7 +98,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
                 reverse("product-detail", kwargs={"pk": product.id})
             )
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
-                self.assertStatusCode(response)
+                self.assertHTTPStatusCode(response)
             elif product.status == Product.STATUS_DRAFT:
                 self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
