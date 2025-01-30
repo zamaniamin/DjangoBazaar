@@ -41,7 +41,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
                 },
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_if_attribute_not_exist(self):
         response = self.send_request(
@@ -50,7 +50,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
                 kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_if_item_not_exist(self):
         response = self.send_request(
@@ -59,4 +59,4 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
