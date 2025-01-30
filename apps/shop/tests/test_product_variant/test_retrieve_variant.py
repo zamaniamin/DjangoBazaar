@@ -33,7 +33,7 @@ class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def test_retrieve_if_variant_not_exist(self):
         response = self.send_request(reverse("variant-detail", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
 
 class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
@@ -65,4 +65,4 @@ class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
         response = self.send_request(
             reverse("product-list-variants", kwargs={"pk": 999})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
