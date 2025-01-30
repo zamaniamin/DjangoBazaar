@@ -34,7 +34,6 @@ class ListProductsTest(APIGetTestCaseMixin):
 
     def validate_response_body(self, response, count: int = 0):
         super().validate_response_body(response)
-
         self.assertEqual(self.response_body["count"], count)
         expected_product_list = self.response_body["results"]
         self.assertEqual(len(expected_product_list), count)
@@ -116,7 +115,7 @@ class ListNoProductsTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse("product-list")
 
-    def validate_response_body(self, response):
+    def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)
         self.assertEqual(self.response_body["count"], 0)
         expected_products = self.response_body["results"]
