@@ -33,9 +33,9 @@ class CreateOptionTest(APIPostTestCaseMixin):
             "option_name": OptionFactory.option_name_color,
         }
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_option_name_is_empty(self):
         payload = {"option_name": ""}
         response = self.send_request(payload)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
