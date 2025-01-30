@@ -29,11 +29,11 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
         response = self.client.get(
             reverse("category-detail", kwargs={"pk": self.category.id})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_404(self):
+    def test_delete_if_category_not_exist(self):
         response = self.send_request(reverse("category-detail", kwargs={"pk": 999}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_parent(self):
         """test destroy category and check the parent field of children is set to null"""
@@ -47,10 +47,10 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
         child_2.save()
 
         # request
-        response = self.client.delete(
+        response = self.send_request(
             reverse("category-detail", kwargs={"pk": parent.id})
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertHTTPStatusCode(response, status.HTTP_204_NO_CONTENT)
 
         # Reload the children from the database to get the latest state
         child_1.refresh_from_db()
