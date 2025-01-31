@@ -34,6 +34,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
 
+    # TODO test create a product with a category
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
