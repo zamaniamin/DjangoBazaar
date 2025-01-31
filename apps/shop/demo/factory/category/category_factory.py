@@ -8,7 +8,7 @@ class CategoryFactory:
     sample_name = "sample category"
 
     @classmethod
-    def create_category(cls, name=""):
+    def create_category(cls, name="") -> Category:
         if name:
             return Category.objects.create(name=name)
         return Category.objects.create(name=cls.sample_name)
