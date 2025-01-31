@@ -14,8 +14,23 @@ class CategoryImageSerializer(TimestampedSerializer):
         fields = ["id", "category_id", "src", "alt", "updated_at", "created_at"]
 
 
+class CategoryTreeSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ["id", "name", "children"]  # Add any other fields you want to include
+
+    def get_children(self, obj):
+        # Get the children categories for the current category
+        children = obj.children.all()
+        return CategoryTreeSerializer(children, many=True).data
+
+
 class CategorySerializer(TimestampedSerializer):
     image = CategoryImageSerializer(read_only=True)
+    parents_hierarchy = serializers.SerializerMethodField()
+    children_hierarchy = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -25,7 +40,15 @@ class CategorySerializer(TimestampedSerializer):
             "slug",
             "description",
             "parent",
+            "parents_hierarchy",  # TODO write test
+            "children_hierarchy",  # TODO write test
             "image",
             "updated_at",
             "created_at",
         ]
+
+    def get_parents_hierarchy(self, obj):
+        return obj.get_parents_hierarchy()
+
+    def get_children_hierarchy(self, obj):
+        return obj.get_children_hierarchy()

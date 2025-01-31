@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from rest_framework import viewsets, serializers
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny
@@ -10,6 +11,7 @@ from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers.category_serializers import (
     CategorySerializer,
     CategoryImageSerializer,
+    CategoryTreeSerializer,
 )
 
 
@@ -19,6 +21,10 @@ from apps.shop.serializers.category_serializers import (
     list=extend_schema(tags=["Category"], summary="Retrieve a list of categories"),
     update=extend_schema(tags=["Category"], summary="Update a category"),
     destroy=extend_schema(tags=["Category"], summary="Deletes a category"),
+    category_tree=extend_schema(
+        tags=["Category"],
+        summary="Build a hierarchical tree by assigning each category's children to their parent.",
+    ),
 )
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
@@ -29,6 +35,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     ACTION_PERMISSIONS = {
         "list": [AllowAny()],
         "retrieve": [AllowAny()],
+        "category_tree": [AllowAny()],
     }
 
     def get_permissions(self):
@@ -56,6 +63,19 @@ class CategoryViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    def get_category_tree(self):
+        categories = Category.objects.prefetch_related("children").filter(
+            parent__isnull=True
+        )
+        return categories
+
+    @action(detail=False, methods=["get"], url_path="tree")
+    def category_tree(self, request):
+        # TODO write test for tree
+        root_categories = self.get_category_tree()
+        serializer = CategoryTreeSerializer(root_categories, many=True)
+        return Response({"categories_tree": serializer.data})
 
 
 @extend_schema_view(

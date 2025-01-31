@@ -14,7 +14,38 @@ class Category(TimestampedModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        related_name="children",  # Add a reverse relation to easily access children
     )
+
+    def get_parents_hierarchy(self):
+        hierarchy = []
+        category = self
+        while category.parent is not None:
+            hierarchy.append(
+                {
+                    "id": category.parent.id,
+                    "name": category.parent.name,
+                }
+            )
+            category = category.parent
+        return hierarchy[::-1]  # Reverse the list to get the highest ancestor first
+
+    def get_children_hierarchy(self):
+        def fetch_children(category):
+            children = []
+            for child in category.children.all():
+                children.append(
+                    {
+                        "id": child.id,
+                        "name": child.name,
+                        "children": fetch_children(
+                            child
+                        ),  # Recursively get child hierarchy
+                    }
+                )
+            return children
+
+        return fetch_children(self)
 
     def automatic_slug_creation(self):
         # TODO fix bug on automatic assign count
