@@ -3,12 +3,17 @@ from django.utils.text import slugify
 from rest_framework import status
 
 from apps.core.tests.mixin import APIPostTestCaseMixin
+from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
 from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
 class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.category = CategoryFactory.create_category()
 
     def api_path(self) -> str:
         return reverse("product-list")
@@ -22,12 +27,13 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         self.assertEqual(self.response_body["name"], payload.get("name"))
         self.assertEqual(self.response_body["description"], payload.get("description"))
         self.assertEqual(
-            self.response_body["status"], payload.get("status", Product.STATUS_DRAFT)
-        )
-        self.assertEqual(
             self.response_body["slug"],
             payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
         )
+        self.assertEqual(
+            self.response_body["status"], payload.get("status", Product.STATUS_DRAFT)
+        )
+        self.assertEqual(self.response_body["category"], payload.get("category"))
 
         # expected product date and time
         self.assertExpectedProductDatetimeFormat(self.response_body)
@@ -344,6 +350,14 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         product_data["status"] = Product.STATUS_ARCHIVED
         product = ProductService.create_product(**product_data)
         self.assertIsNone(product.published_at)
+
+    def test_create_with_category(self):
+        payload = {
+            "name": "test product",
+            "category": self.category.id,
+        }
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
 
 # TODO test invalid slug

@@ -12,6 +12,7 @@ from apps.shop.models import (
     ProductVariant,
     ProductImage,
     ProductVariantImage,
+    Category,
 )
 
 
@@ -132,6 +133,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     )
     options = ProductOptionSerializer(many=True, required=False, default=None)
     variants = ProductVariantSerializer(many=True, read_only=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = Product
@@ -145,6 +149,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "sku",
             "options",
             "variants",
+            "category",
             "created_at",
             "updated_at",
             "published_at",
@@ -228,8 +233,11 @@ class ProductSerializer(TimestampedSerializer):
 
     price = serializers.SerializerMethodField(read_only=True)
     total_stock = serializers.IntegerField(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), required=False, allow_null=True
+    )
 
-    # TODO set these fields `variants_min_price`, `variants_max_price`, `variants_total_stock` at CRUD response body
+    # TODO set these fields `price`, `total_stock`, `category`, at CRUD response body
     class Meta:
         model = Product
         fields = [
@@ -240,6 +248,7 @@ class ProductSerializer(TimestampedSerializer):
             "status",
             "options",
             "variants",
+            "category",
             "price",
             "total_stock",
             "images",
