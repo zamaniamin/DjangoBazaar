@@ -11,7 +11,7 @@ class CreateCategoryTest(APIPostTestCaseMixin, APIAssertMixin):
 
     def validate_response_body(self, response, payload, parent_category=None):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response_body), 8)
+        self.assertEqual(len(self.response_body), 10)
         self.assertIsInstance(self.response_body["id"], int)
         self.assertEqual(self.response_body["name"], payload["name"])
         self.assertEqual(

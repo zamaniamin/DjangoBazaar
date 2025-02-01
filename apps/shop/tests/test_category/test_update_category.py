@@ -29,6 +29,8 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
                 "description",
                 "image",
                 "parent",
+                "parents_hierarchy",
+                "children_hierarchy",
             },
         )
 

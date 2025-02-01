@@ -38,6 +38,8 @@ class ListCategoryTest(APIGetTestCaseMixin):
                     "description",
                     "image",
                     "parent",
+                    "parents_hierarchy",
+                    "children_hierarchy",
                 },
             )
 
@@ -81,6 +83,8 @@ class RetrieveCategoryTest(APIGetTestCaseMixin):
                 "description",
                 "image",
                 "parent",
+                "parents_hierarchy",
+                "children_hierarchy",
             },
         )
 
