@@ -21,7 +21,7 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)
-        self.assertEqual(len(self.response_body), 13)
+        self.assertEqual(len(self.response_body), 14)
         self.assertIsInstance(self.response_body["id"], int)
         self.assertEqual(
             self.response_body["name"], self.variable_product_payload["name"]

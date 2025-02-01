@@ -13,7 +13,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.category = CategoryFactory.create_category()
+        cls.category = CategoryFactory()
 
     def api_path(self) -> str:
         return reverse("product-list")
