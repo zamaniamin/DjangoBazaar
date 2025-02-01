@@ -16,14 +16,12 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFactory.create_product(get_payload=True)
+        ) = ProductFactory.customize(get_payload=True)
 
         # products with different status
-        cls.active_product = ProductFactory.create_product()
-        cls.archived_product = ProductFactory.create_product(
-            status=Product.STATUS_ARCHIVED
-        )
-        cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
+        cls.active_product = ProductFactory.customize()
+        cls.archived_product = ProductFactory.customize(status=Product.STATUS_ARCHIVED)
+        cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.simple_product.id})

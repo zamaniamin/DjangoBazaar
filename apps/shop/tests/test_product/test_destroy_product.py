@@ -8,7 +8,7 @@ from apps.shop.tests.test_product.mixin import ProductAssertMixin
 class DestroyProductTest(APIDeleteTestCaseMixin, ProductAssertMixin):
     def setUp(self):
         super().setUp()
-        self.product = ProductFactory.create_product()
+        self.product = ProductFactory.customize()
 
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.product.id})

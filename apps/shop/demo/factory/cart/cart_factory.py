@@ -20,7 +20,7 @@ class CartFactory:
     @classmethod
     def add_one_item(cls, get_item: bool = False, quantity: int = 1, stock: int = 5):
         cart_id = cls.create_cart()
-        product = ProductFactory.create_product(has_images=True, stock=stock)
+        product = ProductFactory.customize(has_image=True, stock=stock)
         variant = product.variants.first()
         cart_item = CartItem.objects.create(
             cart_id=cart_id, variant_id=variant.id, quantity=quantity
@@ -32,7 +32,7 @@ class CartFactory:
     @classmethod
     def add_multiple_items(cls, get_items: bool = False):
         cart_id = cls.create_cart()
-        product = ProductFactory.create_product(has_images=True, is_variable=True)
+        product = ProductFactory.customize(has_image=True, is_variable=True)
         variants_list = list(product.variants.all())
 
         cart_items = CartItem.objects.bulk_create(

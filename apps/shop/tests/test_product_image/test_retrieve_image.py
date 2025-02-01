@@ -13,7 +13,7 @@ class RetrieveImageTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.product = ProductFactory.create_product(has_images=True)
+        cls.product = ProductFactory.customize(has_image=True)
         cls.media_id = cls.product.media.first().id
 
     def api_path(self) -> str:
@@ -36,7 +36,7 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.product = ProductFactory.create_product(has_images=True)
+        cls.product = ProductFactory.customize(has_image=True)
 
     def api_path(self) -> str:
         return reverse("product-images-list", kwargs={"product_pk": self.product.id})

@@ -16,18 +16,16 @@ class ListProductsTest(APIGetTestCaseMixin):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFactory.create_product(get_payload=True)
+        ) = ProductFactory.customize(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFactory.create_product(get_payload=True, is_variable=True)
+        ) = ProductFactory.customize(get_payload=True, is_variable=True)
 
         # products with different status
-        cls.active_product = ProductFactory.create_product()
-        cls.archived_product = ProductFactory.create_product(
-            status=Product.STATUS_ARCHIVED
-        )
-        cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
+        cls.active_product = ProductFactory.customize()
+        cls.archived_product = ProductFactory.customize(status=Product.STATUS_ARCHIVED)
+        cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def api_path(self) -> str:
         return reverse("product-list")
@@ -143,7 +141,7 @@ class ListDraftProductsTest(APITestCase):
         The test populates a draft product, sends a GET request to retrieve the list of products,
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
-        ProductFactory.create_product(status="draft")
+        ProductFactory.customize(status=Product.STATUS_DRAFT)
         response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()

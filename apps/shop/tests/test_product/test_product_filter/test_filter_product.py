@@ -15,18 +15,16 @@ class FilterProductTest(ProductAssertMixin):
         (
             cls.simple_product_payload,
             cls.simple_product,
-        ) = ProductFactory.create_product(get_payload=True)
+        ) = ProductFactory.customize(get_payload=True)
         (
             cls.variable_product_payload,
             cls.variable_product,
-        ) = ProductFactory.create_product(is_variable=True, get_payload=True)
+        ) = ProductFactory.customize(is_variable=True, get_payload=True)
 
         # products with different status
-        cls.active_product = ProductFactory.create_product()
-        cls.archived_product = ProductFactory.create_product(
-            status=Product.STATUS_ARCHIVED
-        )
-        cls.draft_product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
+        cls.active_product = ProductFactory.customize()
+        cls.archived_product = ProductFactory.customize(status=Product.STATUS_ARCHIVED)
+        cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def test_filter_active_product(self):
         response = self.client.get(reverse("product-list"), {"status": "active"})

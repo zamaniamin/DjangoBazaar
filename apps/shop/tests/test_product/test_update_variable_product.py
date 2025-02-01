@@ -24,14 +24,15 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
             "stock": 4002,
             "options": [],
         }
+        f_helper = ProductFactoryHelper()
 
-        cls.option = ProductFactoryHelper().unique_options(1)
+        cls.option = f_helper.unique_options(1)
         cls.new_payload_with_one_option = cls.new_payload.copy()
         cls.new_payload_with_one_option["options"] = (
             {"option_name": "material", "items": ["Cotton"]},
         )
 
-        cls.options = ProductFactoryHelper().unique_options()
+        cls.options = f_helper.unique_options()
         cls.new_payload_with_multi_options = cls.new_payload.copy()
         cls.new_payload_with_multi_options["options"] = cls.options
 
@@ -40,7 +41,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         (
             self.variable_product_payload,
             self.variable_product,
-        ) = ProductFactory.create_product(
+        ) = ProductFactory.customize(
             is_variable=True, get_payload=True, count_of_options=2
         )
 

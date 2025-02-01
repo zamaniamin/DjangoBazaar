@@ -12,8 +12,8 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         super().setUpTestData()
 
         # create variable product
-        cls.variable_product_payload, cls.variable_product = (
-            ProductFactory.create_product(get_payload=True, is_variable=True)
+        cls.variable_product_payload, cls.variable_product = ProductFactory.customize(
+            get_payload=True, is_variable=True
         )
 
     def api_path(self) -> str:

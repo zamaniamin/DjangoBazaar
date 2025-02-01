@@ -24,11 +24,11 @@ class ProductService:
     @classmethod
     def create_product(cls, **data) -> Product:
         # Extract relevant data
-        cls.price = data.pop("price")
-        cls.stock = data.pop("stock")
+        cls.price = data.pop("price", 0.00)
+        cls.stock = data.pop("stock", 0)
         # TODO write tests for sku field on API endpoints
-        cls.sku = data.pop("sku")
-        cls.options_data = data.pop("options")
+        cls.sku = data.pop("sku", "")
+        cls.options_data = data.pop("options", [])
 
         # Create product
         cls.product = Product.objects.create(**data)

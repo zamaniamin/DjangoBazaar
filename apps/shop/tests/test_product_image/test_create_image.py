@@ -21,7 +21,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
 
     def setUp(self):
         super().setUp()
-        self.active_product = ProductFactory.create_product()
+        self.active_product = ProductFactory()
 
     def api_path(self) -> str:
         return reverse(

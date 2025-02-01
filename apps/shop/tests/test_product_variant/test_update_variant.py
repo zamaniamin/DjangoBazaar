@@ -8,8 +8,7 @@ class UpdateVariantTest(APIUpdateTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
-        cls.product = ProductFactory.create_product(is_variable=True, has_images=True)
+        cls.product = ProductFactory.customize(is_variable=True, has_image=True)
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:

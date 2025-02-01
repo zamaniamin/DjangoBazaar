@@ -28,7 +28,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         (
             self.simple_product_payload,
             self.simple_product,
-        ) = ProductFactory.create_product(get_payload=True)
+        ) = ProductFactory.customize(get_payload=True)
 
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.simple_product.id})

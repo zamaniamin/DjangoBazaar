@@ -13,12 +13,12 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         super().setUpTestData()
 
         # simple product
-        cls.simple_product = ProductFactory.create_product(has_images=True)
+        cls.simple_product = ProductFactory.customize(has_image=True)
         cls.simple_product_variant = cls.simple_product.variants.first()
 
         # variable product
-        cls.variable_product = ProductFactory.create_product(
-            is_variable=True, has_images=True
+        cls.variable_product = ProductFactory.customize(
+            is_variable=True, has_image=True
         )
         cls.variable_product_variants = cls.variable_product.variants.first()
         cls.variable_product_variants_list = list(cls.variable_product.variants.all())
@@ -115,7 +115,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_create_with_draft_product(self):
-        product = ProductFactory.create_product(status=Product.STATUS_DRAFT)
+        product = ProductFactory.customize(status=Product.STATUS_DRAFT)
         product_variant = product.variants.first()
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.send_request(
@@ -128,7 +128,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_archived_product(self):
-        product = ProductFactory.create_product(status=Product.STATUS_ARCHIVED)
+        product = ProductFactory.customize(status=Product.STATUS_ARCHIVED)
         product_variant = product.variants.first()
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.send_request(
@@ -141,7 +141,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_if_variant_not_in_stock(self):
-        product = ProductFactory.create_product(stock=0)
+        product = ProductFactory.customize(stock=0)
         product_variant = product.variants.first()
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.send_request(
@@ -154,7 +154,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_quantity_bigger_than_stock(self):
-        product = ProductFactory.create_product(stock=3)
+        product = ProductFactory.customize(stock=3)
         product_variant = product.variants.first()
         payload = {"variant": product_variant.id, "quantity": 4}
         response = self.send_request(
@@ -178,7 +178,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
     def test_create_without_image(self):
-        product = ProductFactory.create_product()
+        product = ProductFactory.customize()
         product_variant = product.variants.first()
         payload = {"variant": product_variant.id, "quantity": 1}
         response = self.send_request(

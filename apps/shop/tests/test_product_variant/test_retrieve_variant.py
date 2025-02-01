@@ -10,7 +10,7 @@ class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.product = ProductFactory.create_product(is_variable=True)
+        cls.product = ProductFactory.customize(is_variable=True)
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:
@@ -40,7 +40,7 @@ class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.product = ProductFactory.create_product(is_variable=True)
+        cls.product = ProductFactory.customize(is_variable=True)
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:
