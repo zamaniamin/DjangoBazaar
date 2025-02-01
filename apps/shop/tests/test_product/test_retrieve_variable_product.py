@@ -35,6 +35,10 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         self.assertEqual(
             self.response_body["status"], self.variable_product_payload["status"]
         )
+        self.assertEqual(
+            self.response_body["category"],
+            self.variable_product_payload.get("category"),
+        )
 
         # expected product date and time
         self.assertExpectedProductDatetimeFormat(self.response_body)
