@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from rest_framework import status
 
 from apps.core.tests.mixin import APIUpdateTestCaseMixin
+from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.demo.factory.product.product_factory import (
     ProductFactory,
     ProductFactoryHelper,
@@ -23,6 +24,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
             "price": 1001,
             "stock": 4002,
             "options": [],
+            "category": CategoryFactory().id,
         }
         f_helper = ProductFactoryHelper()
 
@@ -63,6 +65,7 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
             self.response_body["slug"],
             payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
         )
+        self.assertEqual(self.response_body["category"], payload.get("category"))
 
         # expected product date and time
         self.assertExpectedProductDatetimeFormat(self.response_body)
