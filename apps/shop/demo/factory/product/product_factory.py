@@ -46,6 +46,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
         status: str = Product.STATUS_ACTIVE,
         stock: int = -1,
     ):
+        category = CategoryFactory()
         product_data = {
             "name": " ".join([word.capitalize() for word in faker.words(3)]),
             "description": faker.paragraph(nb_sentences=5, variable_nb_sentences=True),
@@ -56,13 +57,15 @@ class ProductFactory(factory.django.DjangoModelFactory):
             "options": cls._generate_options(
                 is_variable, has_random_options, count_of_options
             ),
-            "category": CategoryFactory(),
+            "category": category,
         }
         product = ProductService.create_product(**product_data)
         if has_image:
             product = cls._add_images(product)
         if get_payload:
-            return product_data.copy(), product
+            payload = product_data.copy()
+            payload["category"] = category.id
+            return payload, product
         return product
 
     @classmethod
