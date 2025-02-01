@@ -5,6 +5,7 @@ from pathlib import Path
 from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
 
+from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.demo.factory.shop_factory_settings import PRODUCTS_COUNT
 from apps.shop.models import Product
 from apps.shop.services.product_service import ProductService
@@ -23,6 +24,7 @@ class ProductFactory:
         get_payload: bool = False,
         has_images: bool = False,
         stock: int = -1,
+        has_category: bool = True,
     ):
         helper = ProductFactoryHelper()
 
@@ -44,6 +46,7 @@ class ProductFactory:
             "stock": helper.random_stock() if stock <= -1 else stock,
             "sku": "123",
             "options": options,
+            "category": CategoryFactory() if has_category else None,
         }
         product = ProductService.create_product(**product_data)
 
