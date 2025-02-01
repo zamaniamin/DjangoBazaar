@@ -15,7 +15,7 @@ class CategoryImageUploadTest(APIPostTestCaseMixin, ImageTestCaseMixin, APIAsser
 
     def setUp(self):
         super().setUp()
-        self.category = CategoryFactory.create_category()
+        self.category = CategoryFactory()
 
     def api_path(self) -> str:
         return reverse("category-image-list", kwargs={"category_pk": self.category.id})

@@ -12,7 +12,7 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
 
     def setUp(self):
         super().setUp()
-        self.category = CategoryFactory.create_category()
+        self.category = CategoryFactory()
 
     def api_path(self) -> str:
         return reverse("category-detail", kwargs={"pk": self.category.id})
@@ -40,7 +40,8 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
 
         # make a family
         parent = self.category
-        child_1, child_2 = CategoryFactory.create_categories_list()
+        child_1 = CategoryFactory()
+        child_2 = CategoryFactory()
         child_1.parent = parent
         child_2.parent = parent
         child_1.save()

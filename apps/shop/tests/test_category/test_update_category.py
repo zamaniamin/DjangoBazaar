@@ -10,8 +10,9 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.category = CategoryFactory.create_category()
-        cls.simple_cat_1, cls.simple_cat_2 = CategoryFactory.create_categories_list()
+        cls.category = CategoryFactory()
+        cls.simple_cat_1 = CategoryFactory()
+        cls.simple_cat_2 = CategoryFactory()
 
     def api_path(self) -> str:
         return reverse("category-detail", kwargs={"pk": self.category.id})

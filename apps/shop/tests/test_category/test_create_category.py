@@ -41,7 +41,7 @@ class CreateCategoryTest(APIPostTestCaseMixin, APIAssertMixin):
         self.validate_response_body(response, payload)
 
     def test_create_with_all_fields(self):
-        parent_category = CategoryFactory.create_category()
+        parent_category = CategoryFactory()
         payload = {
             "name": "test category",
             "slug": "test-custom-slug",

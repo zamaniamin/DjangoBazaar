@@ -50,7 +50,8 @@ class ListCategoryTest(APIGetTestCaseMixin):
         self.check_access_permission_by_anonymous_user()
 
     def test_list(self):
-        CategoryFactory.create_categories_list()
+        CategoryFactory()
+        CategoryFactory()
         response = self.send_request()
         self.validate_response_body(response, results_len=2)
 
@@ -65,7 +66,7 @@ class RetrieveCategoryTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.category = CategoryFactory.create_category()
+        cls.category = CategoryFactory()
 
     def api_path(self) -> str:
         return reverse("category-detail", kwargs={"pk": self.category.id})
