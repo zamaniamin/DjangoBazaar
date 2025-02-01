@@ -1,21 +1,17 @@
+from factory import LazyAttribute
+from factory.django import DjangoModelFactory
 from faker import Faker
 
 from apps.shop.models.category import Category
 
+fake = Faker()
 
-class CategoryFactory:
-    faker = Faker()
-    sample_name = "sample category"
 
-    @classmethod
-    def create_category(cls, name="") -> Category:
-        if name:
-            return Category.objects.create(name=name)
-        return Category.objects.create(name=cls.sample_name)
+class CategoryFactory(DjangoModelFactory):
+    class Meta:
+        model = Category
 
-    @classmethod
-    def create_categories_list(cls):
-        return (
-            Category.objects.create(name=f"{cls.sample_name} 1"),
-            Category.objects.create(name=f"{cls.sample_name} 2"),
-        )
+    name = LazyAttribute(lambda _: fake.word())
+    description = LazyAttribute(lambda _: fake.sentence())
+    slug = LazyAttribute(lambda obj: fake.slug())
+    parent = None  # Set to None by default, you can override in tests
