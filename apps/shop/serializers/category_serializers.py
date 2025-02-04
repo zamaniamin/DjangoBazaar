@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from apps.core.serializers.timestamped_serializer import TimestampedSerializer
+from apps.core.serializers.timestamped_serializer import ModelMixinSerializer
 from apps.shop.models.category import Category, CategoryImage
 
 
-class CategoryImageSerializer(TimestampedSerializer):
+class CategoryImageSerializer(ModelMixinSerializer):
     category_id = serializers.IntegerField(source="category.id", read_only=True)
     src = serializers.ImageField(required=True)
     alt = serializers.CharField(required=False, allow_null=True, default=None)
@@ -27,7 +27,7 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
         return CategoryTreeSerializer(children, many=True).data
 
 
-class CategorySerializer(TimestampedSerializer):
+class CategorySerializer(ModelMixinSerializer):
     image = CategoryImageSerializer(read_only=True)
     parents_hierarchy = serializers.SerializerMethodField()
     children_hierarchy = serializers.SerializerMethodField()

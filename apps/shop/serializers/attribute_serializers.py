@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from apps.core.serializers.timestamped_serializer import TimestampedSerializer
+from apps.core.serializers.timestamped_serializer import ModelMixinSerializer
 from apps.shop.models.attribute import (
     Attribute,
     AttributeItem,
 )
 
 
-class AttributeSerializer(TimestampedSerializer):
+class AttributeSerializer(ModelMixinSerializer):
     class Meta:
         model = Attribute
         fields = "__all__"

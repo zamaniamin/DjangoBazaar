@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
-from apps.core.serializers.timestamped_serializer import TimestampedSerializer
+from apps.core.serializers.timestamped_serializer import ModelMixinSerializer
 from apps.shop.models.category import Category
 from apps.shop.models.product import (
     Product,
@@ -54,7 +54,7 @@ class ProductVariantImageSerializer(serializers.ModelSerializer):
             return f"{media_url}{src}"
 
 
-class ProductVariantSerializer(TimestampedSerializer):
+class ProductVariantSerializer(ModelMixinSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     option1 = serializers.CharField(
         source="option1.item_name", required=False, default=None, read_only=True
@@ -92,7 +92,7 @@ class ProductVariantSerializer(TimestampedSerializer):
         ]
 
 
-class ProductImageSerializer(TimestampedSerializer):
+class ProductImageSerializer(ModelMixinSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
     images = serializers.ListField(
         child=serializers.ImageField(), required=False, default=None, write_only=True
@@ -223,7 +223,7 @@ class ProductUpdateSerializer(ProductCreateSerializer):
     pass
 
 
-class ProductSerializer(TimestampedSerializer):
+class ProductSerializer(ModelMixinSerializer):
     published_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
     )
