@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
-from apps.core.models.timestamped import ModelMixin
+from apps.core.models.mixin import ModelMixin
 
 
 class Category(ModelMixin):

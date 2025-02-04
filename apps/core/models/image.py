@@ -4,7 +4,7 @@ import uuid
 
 from django.db import models
 
-from apps.core.models.timestamped import ModelMixin
+from apps.core.models.mixin import ModelMixin
 
 
 def generate_upload_path(instance, filename):

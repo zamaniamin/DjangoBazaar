@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.core.models.timestamped import ModelMixin
+from apps.core.models.mixin import ModelMixin
 
 
 class Attribute(ModelMixin):
