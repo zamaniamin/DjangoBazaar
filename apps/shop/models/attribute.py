@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.core.models.timestamped import TimestampedModel
+from apps.core.models.timestamped import ModelMixin
 
 
-class Attribute(TimestampedModel):
+class Attribute(ModelMixin):
     attribute_name = models.CharField(max_length=100, unique=True)
 
     class Meta:
@@ -13,7 +13,7 @@ class Attribute(TimestampedModel):
         return self.attribute_name
 
 
-class AttributeItem(TimestampedModel):
+class AttributeItem(ModelMixin):
     attribute = models.ForeignKey(
         Attribute, on_delete=models.CASCADE, related_name="items"
     )

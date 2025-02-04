@@ -4,7 +4,7 @@ import uuid
 
 from django.db import models
 
-from apps.core.models.timestamped import TimestampedModel
+from apps.core.models.timestamped import ModelMixin
 
 
 def generate_upload_path(instance, filename):
@@ -18,10 +18,11 @@ def generate_upload_path(instance, filename):
     return f"{folder}/{instance.get_related_id()}/{unique_id}{ext}"
 
 
-class AbstractImage(TimestampedModel):
+class AbstractImage(ModelMixin):
     # name = models.CharField(max_length=500, blank=True, null=True)
     src = models.ImageField(upload_to=generate_upload_path, blank=True, null=True)
     alt = models.CharField(max_length=500, blank=True, null=True)
+
     # size = models.PositiveIntegerField(
     #     default=0, blank=True, null=True
     # )  # Size in bytes

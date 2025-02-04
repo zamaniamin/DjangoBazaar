@@ -2,10 +2,10 @@ from django.db import models
 from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
-from apps.core.models.timestamped import TimestampedModel
+from apps.core.models.timestamped import ModelMixin
 
 
-class Category(TimestampedModel):
+class Category(ModelMixin):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True, allow_unicode=True)
     description = models.TextField(null=True, blank=True)
