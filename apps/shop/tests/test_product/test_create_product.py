@@ -4,7 +4,7 @@ from rest_framework import status
 
 from apps.core.tests.mixin import APIPostTestCaseMixin
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
-from apps.shop.models import Product
+from apps.shop.models.product import Product
 from apps.shop.services.product_service import ProductService
 from apps.shop.tests.test_product.mixin import ProductAssertMixin
 

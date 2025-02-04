@@ -5,7 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
-from apps.shop.models import Attribute, AttributeItem
+from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import attribute_serializers
 

@@ -8,7 +8,7 @@ from django.utils.text import slugify
 from faker import Faker
 
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
-from apps.shop.models import Product
+from apps.shop.models.product import Product
 from apps.shop.services.product_service import ProductService
 
 faker = Faker()

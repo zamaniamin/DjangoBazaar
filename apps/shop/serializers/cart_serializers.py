@@ -3,8 +3,8 @@ import uuid
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from apps.shop.models import ProductVariant, Product
 from apps.shop.models.cart import CartItem, Cart
+from apps.shop.models.product import ProductVariant, Product
 
 
 class CartVariantSerializer(serializers.ModelSerializer):

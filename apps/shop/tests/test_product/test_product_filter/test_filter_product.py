@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import Product
+from apps.shop.models.product import Product
 from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 

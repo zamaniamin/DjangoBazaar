@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 
 from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import Product
+from apps.shop.models.product import Product
 
 
 class ListProductsTest(APIGetTestCaseMixin):

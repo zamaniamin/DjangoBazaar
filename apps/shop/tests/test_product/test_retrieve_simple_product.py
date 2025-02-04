@@ -3,7 +3,7 @@ from rest_framework import status
 
 from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import Product
+from apps.shop.models.product import Product
 from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 

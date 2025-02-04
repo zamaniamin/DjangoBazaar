@@ -5,7 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
-from apps.shop.models import Option, OptionItem
+from apps.shop.models.option import Option, OptionItem
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import option_serializers
 from apps.shop.serializers.option_serializers import OptionItemSerializer

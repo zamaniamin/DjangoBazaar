@@ -5,7 +5,7 @@ from django.urls import reverse
 from apps.core.demo.factory.image.image_factory import ImageFactory
 from apps.core.tests.mixin import APIPostTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import ProductImage
+from apps.shop.models.product import ProductImage
 from apps.shop.serializers.product_serializers import ProductImageSerializer
 from config import settings
 

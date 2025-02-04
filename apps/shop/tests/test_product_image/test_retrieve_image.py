@@ -5,7 +5,7 @@ from rest_framework import status
 
 from apps.core.tests.mixin import APIGetTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
-from apps.shop.models import ProductImage
+from apps.shop.models.product import ProductImage
 from config import settings
 
 

@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from apps.shop.models import ProductVariant, ProductVariantImage
+from apps.shop.models.product import ProductVariant, ProductVariantImage
 from apps.shop.serializers import product_serializers
 
 

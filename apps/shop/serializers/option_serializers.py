@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.shop.models import (
+from apps.shop.models.option import (
     Option,
     OptionItem,
 )

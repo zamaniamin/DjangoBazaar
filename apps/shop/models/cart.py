@@ -3,7 +3,7 @@ import uuid
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from apps.shop.models import ProductVariant
+from apps.shop.models.product import ProductVariant
 
 
 class Cart(models.Model):

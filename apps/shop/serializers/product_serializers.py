@@ -6,13 +6,13 @@ from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
 from apps.core.serializers.timestamped_serializer import TimestampedSerializer
-from apps.shop.models import (
+from apps.shop.models.category import Category
+from apps.shop.models.product import (
     Product,
     ProductOption,
     ProductVariant,
     ProductImage,
     ProductVariantImage,
-    Category,
 )
 
 
