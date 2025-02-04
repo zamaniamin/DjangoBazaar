@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APIGetTestCaseMixin
+from apps.core.tests.mixin import APIGetTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
@@ -58,7 +58,7 @@ class ListOptionTest(APIGetTestCaseMixin):
 # TODO add pagination test
 
 
-class RetrieveOptionTest(APIGetTestCaseMixin):
+class RetrieveOptionTest(APIGetTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -78,6 +78,8 @@ class RetrieveOptionTest(APIGetTestCaseMixin):
                 "created_at",
             },
         )
+        self.assertDatetimeFormat(self.response_body["created_at"])
+        self.assertDatetimeFormat(self.response_body["updated_at"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

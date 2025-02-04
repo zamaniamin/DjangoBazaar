@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APIUpdateTestCaseMixin
+from apps.core.tests.mixin import APIUpdateTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 
-class UpdateOptionTest(APIUpdateTestCaseMixin):
+class UpdateOptionTest(APIUpdateTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -29,6 +29,8 @@ class UpdateOptionTest(APIUpdateTestCaseMixin):
             },
         )
         self.assertEqual(self.response_body["option_name"], payload.get("option_name"))
+        self.assertDatetimeFormat(self.response_body["created_at"])
+        self.assertDatetimeFormat(self.response_body["updated_at"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
