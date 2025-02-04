@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.core.models.mixin import ModelMixin
 from config import settings
 
 
@@ -35,7 +36,7 @@ class OrderAddress(models.Model):
     longitude = models.FloatField(null=True, blank=True)
 
 
-class Order(models.Model):
+class Order(ModelMixin):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     order_number = models.AutoField(unique=True, default=1001)
     ORDER_STATUS_open = "open"
@@ -69,11 +70,10 @@ class Order(models.Model):
     note = models.TextField(blank=True)
 
     completed_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
-class OrderItem(models.Model):
+class OrderItem(ModelMixin):
+    pass
     # custom
     # variant_id
     # product_id
@@ -85,5 +85,3 @@ class OrderItem(models.Model):
     # grams
 
     # variant price
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)

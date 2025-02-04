@@ -4,11 +4,12 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
+from apps.core.models.mixin import ModelMixin
 from apps.shop.models.attribute import Attribute
 from apps.shop.models.category import Category
 
 
-class Product(models.Model):
+class Product(ModelMixin):
     STATUS_ACTIVE = "active"
     STATUS_ARCHIVED = "archived"
     STATUS_DRAFT = "draft"
@@ -31,8 +32,6 @@ class Product(models.Model):
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
 
     # TODO test create a product with a category
@@ -104,7 +103,7 @@ class ProductOptionItem(models.Model):
         return self.item_name
 
 
-class ProductVariant(models.Model):
+class ProductVariant(ModelMixin):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="variants"
     )
@@ -136,9 +135,6 @@ class ProductVariant(models.Model):
         blank=True,
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
 
 class ProductImage(AbstractImage):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="media")
@@ -166,7 +162,3 @@ class ProductVariantImage(models.Model):
     variant = models.ForeignKey(
         ProductVariant, on_delete=models.CASCADE, related_name="images"
     )
-
-
-# todo add product categorize api
-# todo add product features api
