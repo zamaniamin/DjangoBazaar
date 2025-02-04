@@ -1,12 +1,10 @@
 from django.db import models
 
+from apps.core.models.timestamped import TimestampedModel
 
-class Attribute(models.Model):
+
+class Attribute(TimestampedModel):
     attribute_name = models.CharField(max_length=100, unique=True)
-
-    # TODO write test for new fields `created_at` and `updated_at`
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["attribute_name"]
@@ -15,15 +13,11 @@ class Attribute(models.Model):
         return self.attribute_name
 
 
-class AttributeItem(models.Model):
+class AttributeItem(TimestampedModel):
     attribute = models.ForeignKey(
         Attribute, on_delete=models.CASCADE, related_name="items"
     )
     item_name = models.CharField(max_length=255)
-
-    # TODO write test for new fields `created_at` and `updated_at`
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ("attribute", "item_name")
