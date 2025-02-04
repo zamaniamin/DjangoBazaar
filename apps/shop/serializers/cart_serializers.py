@@ -126,3 +126,6 @@ class CartSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_total_price(cart) -> float:
         return sum([item.quantity * item.variant.price for item in cart.items.all()])
+
+
+# todo add created_at and updated_at to response body
