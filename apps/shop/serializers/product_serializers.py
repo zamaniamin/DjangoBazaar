@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
-from apps.core.serializers.timestamped_serializer import ModelMixinSerializer
+from apps.core.serializers.mixin import ModelMixinSerializer
 from apps.shop.models.category import Category
 from apps.shop.models.product import (
     Product,

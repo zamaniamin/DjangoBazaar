@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.core.serializers.timestamped_serializer import ModelMixinSerializer
+from apps.core.serializers.mixin import ModelMixinSerializer
 from apps.shop.models.category import Category, CategoryImage
 
 
