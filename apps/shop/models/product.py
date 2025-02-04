@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
+from apps.shop.models.attribute import Attribute
 from apps.shop.models.category import Category
 
 
@@ -40,6 +41,12 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
         related_name="products",
         null=True,
+        blank=True,
+    )
+
+    attributes = models.ManyToManyField(
+        Attribute,
+        related_name="products",
         blank=True,
     )
 
