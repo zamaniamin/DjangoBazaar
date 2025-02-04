@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 
-from apps.core.tests.mixin import APIUpdateTestCaseMixin
+from apps.core.tests.mixin import APIUpdateTestCaseMixin, APIAssertMixin
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 
-class UpdateAttributeTest(APIUpdateTestCaseMixin):
+class UpdateAttributeTest(APIUpdateTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -31,6 +31,8 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin):
         self.assertEqual(
             self.response_body["attribute_name"], payload["attribute_name"]
         )
+        self.assertDatetimeFormat(self.response_body["created_at"])
+        self.assertDatetimeFormat(self.response_body["updated_at"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
