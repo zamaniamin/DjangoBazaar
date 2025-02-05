@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 from apps.core.models.image import AbstractImage
 from apps.core.models.mixin import ModelMixin
-from apps.shop.models.attribute import Attribute
+from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.category import Category
 
 
@@ -45,6 +45,8 @@ class Product(ModelMixin):
 
     attributes = models.ManyToManyField(
         Attribute,
+        through="ProductAttribute",
+        through_fields=("product", "attribute"),
         related_name="products",
         blank=True,
     )
@@ -67,6 +69,20 @@ class Product(ModelMixin):
             self.slug = slug
 
         super().save(*args, **kwargs)
+
+
+class ProductAttribute(ModelMixin):
+    """Through model to track selected AttributeItems"""
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    items = models.ManyToManyField(AttributeItem)
+
+    class Meta:
+        unique_together = (
+            "product",
+            "attribute",
+        )  # One entry per product-attribute pair
 
 
 class ProductOption(models.Model):
