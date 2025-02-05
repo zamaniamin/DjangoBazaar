@@ -16,12 +16,6 @@ from apps.shop.models.product import (
 )
 
 
-# class ProductOptionItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ProductOptionItem
-#         fields = ["id", "item_name"]
-
-
 class ProductOptionSerializer(serializers.ModelSerializer):
     items = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
@@ -113,6 +107,11 @@ class ProductImageSerializer(ModelMixinSerializer):
         read_only_fields = ["src", "alt", "created_at", "updated_at"]
 
 
+class ProductAttributeInputSerializer(serializers.Serializer):
+    attribute_id = serializers.IntegerField()
+    items_id = serializers.ListField(child=serializers.IntegerField())
+
+
 class ProductCreateSerializer(serializers.ModelSerializer):
     status = serializers.CharField(
         max_length=10, allow_blank=True, required=False, default=Product.STATUS_DRAFT
@@ -136,6 +135,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), required=False, allow_null=True
     )
+    attributes = ProductAttributeInputSerializer(
+        many=True, required=False, default=list
+    )
 
     class Meta:
         model = Product
@@ -150,6 +152,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "options",
             "variants",
             "category",
+            "attributes",
             "created_at",
             "updated_at",
             "published_at",
