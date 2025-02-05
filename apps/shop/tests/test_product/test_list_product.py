@@ -36,7 +36,7 @@ class ListProductsTest(APIGetTestCaseMixin):
         expected_product_list = self.response_body["results"]
         self.assertEqual(len(expected_product_list), count)
         for product in expected_product_list:
-            self.assertEqual(len(product), 14)
+            self.assertEqual(len(product), 15)
             self.assertIn(
                 product["status"],
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
@@ -52,6 +52,7 @@ class ListProductsTest(APIGetTestCaseMixin):
                     "options",
                     "variants",
                     "category",
+                    "attributes",
                     "price",
                     "total_stock",
                     "images",
