@@ -6,6 +6,7 @@ from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
 from apps.core.serializers.mixin import ModelMixinSerializer
+from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.category import Category
 from apps.shop.models.product import (
     Product,
@@ -163,6 +164,32 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "published_at",
         ]
 
+    def validate_attributes(self, attributes):
+        for attr in attributes:
+            attribute_id = attr["attribute_id"]
+            item_ids = attr["items_id"]
+
+            # Validate attribute ID
+            if not Attribute.objects.filter(id=attribute_id).exists():
+                raise serializers.ValidationError(
+                    f"One or more attribute IDs are invalid."
+                )
+
+            # Validate item IDs
+            valid_item_ids = AttributeItem.objects.filter(
+                attribute_id=attribute_id
+            ).values_list("id", flat=True)
+            invalid_item_ids = [
+                item_id for item_id in item_ids if item_id not in valid_item_ids
+            ]
+
+            if invalid_item_ids:
+                raise serializers.ValidationError(
+                    f"Item IDs {invalid_item_ids} are invalid for attribute ID {attribute_id}."
+                )
+
+        return attributes
+
     @staticmethod
     def validate_options(options):
         # If options is None, return None
@@ -239,6 +266,7 @@ class ProductSerializer(ModelMixinSerializer):
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), required=False, allow_null=True
     )
+    attributes = serializers.SerializerMethodField(read_only=True)
 
     # TODO set these fields `price`, `total_stock`, `category`, at CRUD response body
     class Meta:
@@ -252,6 +280,7 @@ class ProductSerializer(ModelMixinSerializer):
             "options",
             "variants",
             "category",
+            "attributes",
             "price",
             "total_stock",
             "images",
@@ -267,6 +296,29 @@ class ProductSerializer(ModelMixinSerializer):
             max_price = variants.aggregate(Max("price"))["price__max"]
             return {"min_price": min_price, "max_price": max_price}
         return {"min_price": None, "max_price": None}
+
+    def get_attributes(self, instance):
+        """
+        Return the attributes associated with the product.
+        If there are no attributes, return None.
+        """
+        for product_attribute in instance.productattribute_set.all():
+            attribute = product_attribute.attribute
+            selected_items = product_attribute.items.all()
+            return [
+                {
+                    "attribute_id": attribute.id,
+                    "attribute_name": attribute.attribute_name,
+                    "items": [
+                        {
+                            "item_id": item.id,
+                            "item_name": item.item_name,
+                        }
+                        for item in selected_items
+                    ],
+                }
+            ]
+        return None
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
