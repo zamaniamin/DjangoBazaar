@@ -2,12 +2,14 @@ from itertools import product as options_combination
 
 from django.db.models import Prefetch
 
+from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.product import (
     Product,
     ProductOption,
     ProductOptionItem,
     ProductVariant,
     ProductImage,
+    ProductAttribute,
 )
 
 
@@ -18,6 +20,7 @@ class ProductService:
     sku: str
     options: list | None = []
     options_data: list = []
+    attributes_data: list = []
     variants: list = []
     media: list | None = None
 
@@ -29,12 +32,11 @@ class ProductService:
         # TODO write tests for sku field on API endpoints
         cls.sku = data.pop("sku", "")
         cls.options_data = data.pop("options", [])
+        cls.attributes_data = data.pop("attributes", [])
 
-        # Create product
         cls.product = Product.objects.create(**data)
-
-        # Create options
         cls.__manage_options()
+        cls.__manage_attributes()
 
         # Return product object
         return cls.retrieve_product_details(cls.product.id)
@@ -47,13 +49,13 @@ class ProductService:
         # TODO write tests for sku field on API endpoints
         cls.sku = data.pop("sku", "")
         cls.options_data = data.pop("options", [])
+        attributes_data = data.pop("attributes", None)
 
         # Update the product instance fields
         cls.product = product
         for attr, value in data.items():
             setattr(cls.product, attr, value)
 
-        # Save the updated product
         cls.product.save()
 
         # create or update options
@@ -351,3 +353,75 @@ class ProductService:
             queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
         return queryset.order_by("-created_at")
+
+    @classmethod
+    def __manage_attributes(cls):
+        """
+        Manage attributes for a product.
+
+        This method handles the creation, update, and deletion of attributes for a product.
+        It performs the following operations:
+        1. If attributes are provided, it creates new attributes and associates them with the product.
+        2. If no attributes are provided, it removes all existing attributes associated with the product.
+        """
+        # Clear existing attributes if no new attributes are provided
+        if not cls.attributes_data:
+            ProductAttribute.objects.filter(product=cls.product).delete()
+            return
+
+        # Extract attribute IDs and item IDs from the provided data
+        attribute_ids = [attr_data["attribute_id"] for attr_data in cls.attributes_data]
+        item_ids = {
+            item_id
+            for attr_data in cls.attributes_data
+            for item_id in attr_data["items_id"]
+        }
+
+        # Fetch all attributes and items in bulk to minimize queries
+        attributes = Attribute.objects.filter(id__in=attribute_ids).prefetch_related(
+            "items"
+        )
+        items = AttributeItem.objects.filter(id__in=item_ids)
+
+        # Prepare ProductAttribute instances
+        product_attributes = []
+        for attr_data in cls.attributes_data:
+            attribute_id = attr_data["attribute_id"]
+            attribute = next(
+                (attr for attr in attributes if attr.id == attribute_id), None
+            )
+
+            if attribute:
+                product_attribute = ProductAttribute(
+                    product=cls.product, attribute=attribute
+                )
+                product_attributes.append(product_attribute)
+
+        # Bulk create ProductAttributes and get the created instances
+        created_product_attributes = ProductAttribute.objects.bulk_create(
+            product_attributes
+        )
+
+        # Prepare M2M relationships for valid items
+        m2m_entries = []
+        for attr_data, product_attribute in zip(
+            cls.attributes_data, created_product_attributes
+        ):
+            attribute_id = attr_data["attribute_id"]
+            attribute = next(
+                (attr for attr in attributes if attr.id == attribute_id), None
+            )
+
+            if attribute:
+                valid_items = items.filter(attribute=attribute)
+                m2m_entries.extend(
+                    ProductAttribute.items.through(
+                        productattribute_id=product_attribute.id,
+                        attributeitem_id=item.id,
+                    )
+                    for item in valid_items
+                )
+
+        # Bulk create M2M relationships
+        if m2m_entries:
+            ProductAttribute.items.through.objects.bulk_create(m2m_entries)
