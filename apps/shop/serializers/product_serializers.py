@@ -253,6 +253,8 @@ class ProductUpdateSerializer(ProductCreateSerializer):
 
 
 class ProductSerializer(ModelMixinSerializer):
+    DEFAULT_TOTAL_STOCK = 0
+
     published_at = serializers.DateTimeField(
         format="%Y-%m-%d %H:%M:%S", required=False, read_only=True
     )
@@ -290,13 +292,10 @@ class ProductSerializer(ModelMixinSerializer):
 
     def get_price(self, instance):
         # Use annotated values instead of querying variants
-        return {"min_price": instance.min_price, "max_price": instance.max_price}
-        # variants = instance.variants.all()
-        # if variants.exists():
-        #     min_price = variants.aggregate(Min("price"))["price__min"]
-        #     max_price = variants.aggregate(Max("price"))["price__max"]
-        #     return {"min_price": min_price, "max_price": max_price}
-        # return {"min_price": None, "max_price": None}
+        return {
+            "min_price": getattr(instance, "min_price", None),
+            "max_price": getattr(instance, "max_price", None),
+        }
 
     def get_attributes(self, instance):
         """
@@ -323,20 +322,16 @@ class ProductSerializer(ModelMixinSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-
-        # Check if the "options" field is an empty list and set it to None
-        if not representation["options"]:
-            representation["options"] = None
-        if not representation["images"]:
-            representation["images"] = None
-
-        # Calculate total stock from variants
-        representation["total_stock"] = instance.total_stock or 0
-        # variants = instance.variants.all()
-        # if variants.exists():
-        #     total_stock = variants.aggregate(Sum("stock"))["stock__sum"]
-        #     representation["total_stock"] = total_stock
-        # else:
-        #     representation["total_stock"] = 0
+        self._set_none_if_empty(representation, "options")
+        self._set_none_if_empty(representation, "images")
+        representation["total_stock"] = getattr(
+            instance, "total_stock", self.DEFAULT_TOTAL_STOCK
+        )
 
         return representation
+
+    @staticmethod
+    def _set_none_if_empty(data, field_name):
+        """Helper to set a field to None if it's empty."""
+        if not data.get(field_name):
+            data[field_name] = None

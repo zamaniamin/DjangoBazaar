@@ -339,48 +339,57 @@ class ProductService:
 
     @classmethod
     def get_product_queryset(cls, request):
-        # Annotate aggregates for price and stock
-        queryset = (
-            Product.objects.annotate(
-                min_price=Min("variants__price"),
-                max_price=Max("variants__price"),
-                total_stock=Sum("variants__stock"),
-            )
-            .select_related("category")
-            .prefetch_related(
-                # Prefetch product options and their items
-                Prefetch(
-                    "options", queryset=ProductOption.objects.prefetch_related("items")
-                ),
-                # Prefetch variants with their options and images
-                Prefetch(
-                    "variants",
-                    queryset=ProductVariant.objects.select_related(
-                        "option1", "option2", "option3"
-                    )
-                    .prefetch_related(
-                        Prefetch(
-                            "images",
-                            queryset=ProductVariantImage.objects.select_related(
-                                "product_image"
-                            ),
-                        )
-                    )
-                    .order_by("id"),
-                ),
-                # Prefetch product media (images)
-                "media",
-                # Prefetch product attributes and their items
-                Prefetch(
-                    "productattribute_set",
-                    queryset=ProductAttribute.objects.prefetch_related("items"),
-                ),
-            )
+        # Annotate each product with minimum price, maximum price, and total stock from its variants.
+        annotated_queryset = Product.objects.annotate(
+            min_price=Min("variants__price"),
+            max_price=Max("variants__price"),
+            total_stock=Sum("variants__stock"),
+        ).select_related(
+            "category"
+        )  # Optimize DB query by joining related category.
+
+        # Prefetch product options along with their items.
+        options_prefetch = Prefetch(
+            "options",
+            queryset=ProductOption.objects.prefetch_related("items"),
         )
 
+        # Prefetch product variants with their options and images.
+        variants_prefetch = Prefetch(
+            "variants",
+            queryset=ProductVariant.objects.select_related(
+                "option1", "option2", "option3"
+            )
+            .prefetch_related(
+                Prefetch(
+                    "images",
+                    queryset=ProductVariantImage.objects.select_related(
+                        "product_image"
+                    ),
+                )
+            )
+            .order_by("id"),  # Order variants by their ID.
+        )
+
+        # Prefetch product attributes and their corresponding attribute details.
+        attributes_prefetch = Prefetch(
+            "productattribute_set",
+            queryset=ProductAttribute.objects.select_related("attribute"),
+        )
+
+        # Combine all prefetches with the annotated queryset.
+        queryset = annotated_queryset.prefetch_related(
+            options_prefetch,
+            variants_prefetch,
+            "media",  # Prefetch product media (images).
+            attributes_prefetch,
+        )
+
+        # For non-staff users, exclude products with a draft status.
         if not request.user.is_staff:
             queryset = queryset.exclude(status=Product.STATUS_DRAFT)
 
+        # Return the final queryset ordered by creation date in descending order.
         return queryset.order_by("-created_at")
 
     @classmethod
