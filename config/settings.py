@@ -276,7 +276,9 @@ CORS_ALLOWED_ORIGINS = env.list(
     ],
 )
 
-# ---
+# ---------------------
+# --- debug toolbar ---
+# ---------------------
 # Only enable the toolbar when we're in debug mode and we're
 # not running tests. Django will change DEBUG to be False for
 # tests, so we can't rely on DEBUG alone.
@@ -290,3 +292,19 @@ if ENABLE_DEBUG_TOOLBAR:
     ]
     # Customize the config to support turbo and htmx boosting.
     DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent hx-preserve"}
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "handlers": {
+#         "console": {
+#             "class": "logging.StreamHandler",
+#         },
+#     },
+#     "loggers": {
+#         "django.db.backends": {
+#             "level": "DEBUG",
+#             "handlers": ["console"],
+#         },
+#     },
+# }
