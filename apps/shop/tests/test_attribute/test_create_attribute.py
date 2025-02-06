@@ -41,9 +41,9 @@ class CreateAttributeTest(APIPostTestCaseMixin, APIAssertMixin):
         self.validate_response_body(response, payload)
 
     def test_create_if_already_exist(self):
-        AttributeFactory.create_attribute()
+        attribute_instance = AttributeFactory()
         payload = {
-            "attribute_name": AttributeFactory.attribute_name,
+            "attribute_name": attribute_instance.attribute_name,
         }
         response = self.send_request(payload)
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)

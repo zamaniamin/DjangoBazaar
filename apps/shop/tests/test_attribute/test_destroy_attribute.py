@@ -9,8 +9,10 @@ class DestroyAttributeTest(APIDeleteTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
-        cls.attribute_item = AttributeFactory.add_one_attribute_item(cls.attribute.id)
+        cls.attribute = AttributeFactory.create_with_items(
+            attribute_name="test attribute"
+        )
+        cls.attribute_item = cls.attribute.items.first()
 
     def api_path(self) -> str:
         return reverse("attribute-detail", kwargs={"pk": self.attribute.id})

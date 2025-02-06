@@ -9,8 +9,10 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
-        cls.attribute_items = AttributeFactory.add_attribute_item_list(cls.attribute.id)
+        cls.attribute = AttributeFactory.create_with_items(
+            attribute_name="test attribute", item_count=2
+        )
+        cls.attribute_items = cls.attribute.items.all()
 
     def api_path(self) -> str:
         return reverse(
@@ -49,7 +51,7 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_attribute_dont_have_item(self):
-        attribute = AttributeFactory.create_attribute("material")
+        attribute = AttributeFactory()
         response = self.send_request(
             reverse("attribute-items-list", kwargs={"attribute_pk": attribute.id})
         )
@@ -60,8 +62,10 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
-        cls.attribute_item = AttributeFactory.add_one_attribute_item(cls.attribute.id)
+        cls.attribute = AttributeFactory.create_with_items(
+            attribute_name="test attribute"
+        )
+        cls.attribute_item = cls.attribute.items.first()
 
     def api_path(self) -> str:
         return reverse(

@@ -3,8 +3,8 @@ from django.utils.text import slugify
 from rest_framework import status
 
 from apps.core.tests.mixin import APIPostTestCaseMixin
+from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
-from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.product import Product
 from apps.shop.services.product_service import ProductService
 from apps.shop.tests.test_product.mixin import ProductAssertMixin
@@ -15,12 +15,10 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
     def setUpTestData(cls):
         super().setUpTestData()
         cls.category = CategoryFactory()
-
-        cls.attribute = Attribute.objects.create(attribute_name="test attribute")
-        cls.attribute_items = [
-            AttributeItem.objects.create(attribute=cls.attribute, item_name=name)
-            for name in ["item 1", "item 2", "item 3"]
-        ]
+        cls.attribute = AttributeFactory.create_with_items(
+            attribute_name="test attribute", item_count=3
+        )
+        cls.attribute_items = cls.attribute.items.all()
 
     def api_path(self) -> str:
         return reverse("product-list")

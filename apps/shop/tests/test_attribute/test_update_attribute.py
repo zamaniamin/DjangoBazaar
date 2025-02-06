@@ -9,7 +9,7 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
+        cls.attribute = AttributeFactory()
 
     def api_path(self) -> str:
         return reverse(

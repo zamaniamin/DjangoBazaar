@@ -9,8 +9,9 @@ class CreateAttributeItemTest(APIPostTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
-        cls.payload = {"item_name": AttributeFactory.attribute_item_name}
+        cls.attribute = AttributeFactory.create_with_items(item_count=1)
+        item = cls.attribute.items.first()
+        cls.payload = {"item_name": item.item_name}
 
     def api_path(self) -> str:
         return reverse(
@@ -29,11 +30,12 @@ class CreateAttributeItemTest(APIPostTestCaseMixin):
         self.check_access_permission_by_anonymous_user()
 
     def test_create(self):
-        response = self.send_request(self.payload)
-        self.validate_response_body(response, self.payload)
+        payload = {"item_name": "999"}
+        response = self.send_request(payload)
+        self.validate_response_body(response, payload)
 
     def test_create_if_already_exist(self):
-        AttributeFactory.add_one_attribute_item(self.attribute.id)
+        # AttributeFactory.add_one_attribute_item(self.attribute.id)
         response = self.send_request(self.payload)
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 

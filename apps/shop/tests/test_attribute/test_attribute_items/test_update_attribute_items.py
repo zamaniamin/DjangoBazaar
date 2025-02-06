@@ -9,8 +9,10 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
-        cls.item = AttributeFactory.add_one_attribute_item(cls.attribute.id)
+        cls.attribute = AttributeFactory.create_with_items(
+            attribute_name="test attribute"
+        )
+        cls.attribute_item = cls.attribute.items.first()
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -21,7 +23,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "attribute-items-detail",
-            kwargs={"attribute_pk": self.attribute.id, "pk": self.item.id},
+            kwargs={"attribute_pk": self.attribute.id, "pk": self.attribute_item.id},
         )
 
     def validate_response_body(self, response, payload):
@@ -53,7 +55,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
         response = self.send_request(
             path=reverse(
                 "attribute-items-detail",
-                kwargs={"attribute_pk": 99999, "pk": self.item.id},
+                kwargs={"attribute_pk": 99999, "pk": self.attribute_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

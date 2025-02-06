@@ -44,7 +44,8 @@ class ListAttributeTest(APIGetTestCaseMixin):
         self.check_access_permission_by_anonymous_user()
 
     def test_list(self):
-        AttributeFactory.create_attribute_list()
+        AttributeFactory()
+        AttributeFactory()
         response = self.send_request()
         self.validate_response_body(response, results_len=2)
 
@@ -60,7 +61,7 @@ class RetrieveAttributeTest(APIGetTestCaseMixin, APIAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.attribute = AttributeFactory.create_attribute()
+        cls.attribute = AttributeFactory()
 
     def api_path(self) -> str:
         return reverse("attribute-detail", kwargs={"pk": self.attribute.id})
