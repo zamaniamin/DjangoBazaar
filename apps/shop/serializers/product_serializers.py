@@ -2,7 +2,6 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models.aggregates import Min, Max, Sum
 from rest_framework import serializers
 
 from apps.core.serializers.mixin import ModelMixinSerializer
@@ -290,12 +289,14 @@ class ProductSerializer(ModelMixinSerializer):
         ]
 
     def get_price(self, instance):
-        variants = instance.variants.all()
-        if variants.exists():
-            min_price = variants.aggregate(Min("price"))["price__min"]
-            max_price = variants.aggregate(Max("price"))["price__max"]
-            return {"min_price": min_price, "max_price": max_price}
-        return {"min_price": None, "max_price": None}
+        # Use annotated values instead of querying variants
+        return {"min_price": instance.min_price, "max_price": instance.max_price}
+        # variants = instance.variants.all()
+        # if variants.exists():
+        #     min_price = variants.aggregate(Min("price"))["price__min"]
+        #     max_price = variants.aggregate(Max("price"))["price__max"]
+        #     return {"min_price": min_price, "max_price": max_price}
+        # return {"min_price": None, "max_price": None}
 
     def get_attributes(self, instance):
         """
@@ -330,11 +331,12 @@ class ProductSerializer(ModelMixinSerializer):
             representation["images"] = None
 
         # Calculate total stock from variants
-        variants = instance.variants.all()
-        if variants.exists():
-            total_stock = variants.aggregate(Sum("stock"))["stock__sum"]
-            representation["total_stock"] = total_stock
-        else:
-            representation["total_stock"] = 0
+        representation["total_stock"] = instance.total_stock or 0
+        # variants = instance.variants.all()
+        # if variants.exists():
+        #     total_stock = variants.aggregate(Sum("stock"))["stock__sum"]
+        #     representation["total_stock"] = total_stock
+        # else:
+        #     representation["total_stock"] = 0
 
         return representation

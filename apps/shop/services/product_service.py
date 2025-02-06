@@ -1,6 +1,6 @@
 from itertools import product as options_combination
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Min, Max, Sum
 
 from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.product import (
@@ -10,6 +10,7 @@ from apps.shop.models.product import (
     ProductVariant,
     ProductImage,
     ProductAttribute,
+    ProductVariantImage,
 )
 
 
@@ -338,15 +339,43 @@ class ProductService:
 
     @classmethod
     def get_product_queryset(cls, request):
-        queryset = Product.objects.select_related().prefetch_related(
-            "options__items",
-            Prefetch(
-                "variants",
-                queryset=ProductVariant.objects.select_related(
-                    "option1", "option2", "option3"
-                ).order_by("id"),
-            ),
-            "media",
+        # Annotate aggregates for price and stock
+        queryset = (
+            Product.objects.annotate(
+                min_price=Min("variants__price"),
+                max_price=Max("variants__price"),
+                total_stock=Sum("variants__stock"),
+            )
+            .select_related("category")
+            .prefetch_related(
+                # Prefetch product options and their items
+                Prefetch(
+                    "options", queryset=ProductOption.objects.prefetch_related("items")
+                ),
+                # Prefetch variants with their options and images
+                Prefetch(
+                    "variants",
+                    queryset=ProductVariant.objects.select_related(
+                        "option1", "option2", "option3"
+                    )
+                    .prefetch_related(
+                        Prefetch(
+                            "images",
+                            queryset=ProductVariantImage.objects.select_related(
+                                "product_image"
+                            ),
+                        )
+                    )
+                    .order_by("id"),
+                ),
+                # Prefetch product media (images)
+                "media",
+                # Prefetch product attributes and their items
+                Prefetch(
+                    "productattribute_set",
+                    queryset=ProductAttribute.objects.prefetch_related("items"),
+                ),
+            )
         )
 
         if not request.user.is_staff:
