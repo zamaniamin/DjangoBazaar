@@ -1,38 +1,34 @@
+from factory import LazyAttribute, SubFactory
+from factory.django import DjangoModelFactory
 from faker import Faker
 
 from apps.shop.models.attribute import Attribute, AttributeItem
 
+fake = Faker()
 
-class AttributeFactory:
-    faker = Faker()
-    attribute_name = "sample attribute"
-    attribute_name_2 = "sample attribute 2"
-    attribute_item_name = "sample item"
-    attribute_item_name_2 = "sample item 2"
 
-    @classmethod
-    def create_attribute(cls, attribute_name=""):
-        if attribute_name:
-            return Attribute.objects.create(attribute_name=attribute_name)
-        return Attribute.objects.create(attribute_name=cls.attribute_name)
+class AttributeFactory(DjangoModelFactory):
+    class Meta:
+        model = Attribute
+
+    attribute_name = LazyAttribute(lambda _: fake.word())
 
     @classmethod
-    def add_one_attribute_item(cls, attribute_id):
-        return AttributeItem.objects.create(
-            attribute_id=attribute_id, item_name=cls.attribute_item_name
-        )
+    def create_with_items(cls, attribute_name=None, item_count=1):
+        """
+        Create an attribute and optionally attach multiple attribute items.
+        """
+        attribute = cls(attribute_name=attribute_name) if attribute_name else cls()
+        for _ in range(item_count):
+            AttributeItemFactory(attribute=attribute)
+        return attribute
 
-    @classmethod
-    def add_attribute_item_list(cls, attribute_id):
-        items = [
-            AttributeItem(attribute_id=attribute_id, item_name=cls.attribute_item_name),
-            AttributeItem(
-                attribute_id=attribute_id, item_name=cls.attribute_item_name_2
-            ),
-        ]
-        return AttributeItem.objects.bulk_create(items)
 
-    @classmethod
-    def create_attribute_list(cls):
-        Attribute.objects.create(attribute_name=cls.attribute_name)
-        Attribute.objects.create(attribute_name=cls.attribute_name_2)
+class AttributeItemFactory(DjangoModelFactory):
+    class Meta:
+        model = AttributeItem
+
+    item_name = LazyAttribute(lambda _: fake.word())
+    attribute = SubFactory(
+        AttributeFactory
+    )  # Automatically link to an Attribute instance
