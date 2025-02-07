@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.text import slugify
 from faker import Faker
 
+from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.models.product import Product
 from apps.shop.services.product_service import ProductService
@@ -41,6 +42,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
         is_variable=False,
         has_image=False,
         has_random_options=False,
+        has_attributes=False,
         get_payload: bool = False,
         count_of_options=3,
         status: str = Product.STATUS_ACTIVE,
@@ -58,6 +60,11 @@ class ProductFactory(factory.django.DjangoModelFactory):
                 is_variable, has_random_options, count_of_options
             ),
             "category": category,
+            "attributes": (
+                AttributeFactory.generate_multiple(get_payload=True)[0]
+                if has_attributes
+                else None
+            ),
         }
         product = ProductService.create_product(**product_data)
         if has_image:
