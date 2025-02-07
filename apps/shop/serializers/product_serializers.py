@@ -302,10 +302,11 @@ class ProductSerializer(ModelMixinSerializer):
         Return the attributes associated with the product.
         If there are no attributes, return None.
         """
+        attributes = []
         for product_attribute in instance.productattribute_set.all():
             attribute = product_attribute.attribute
             selected_items = product_attribute.items.all()
-            return [
+            attributes.append(
                 {
                     "attribute_id": attribute.id,
                     "attribute_name": attribute.attribute_name,
@@ -317,8 +318,8 @@ class ProductSerializer(ModelMixinSerializer):
                         for item in selected_items
                     ],
                 }
-            ]
-        return None
+            )
+        return attributes if attributes else None
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
