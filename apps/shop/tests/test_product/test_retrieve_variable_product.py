@@ -13,7 +13,7 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
         # create variable product
         cls.variable_product_payload, cls.variable_product = ProductFactory.customize(
-            get_payload=True, is_variable=True
+            get_payload=True, is_variable=True, has_attributes=True
         )
 
     def api_path(self) -> str:
@@ -21,62 +21,11 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)
-        self.assertEqual(len(self.response_body), 15)
-        self.assertEqual(
-            set(self.response_body.keys()),
-            {
-                "id",
-                "name",
-                "slug",
-                "description",
-                "status",
-                "options",
-                "variants",
-                "category",
-                "attributes",
-                "price",
-                "total_stock",
-                "images",
-                "created_at",
-                "updated_at",
-                "published_at",
-            },
-        )
-        self.assertIsInstance(self.response_body["id"], int)
-        self.assertEqual(
-            self.response_body["name"], self.variable_product_payload["name"]
-        )
-
-        # TODO add slug
-        self.assertEqual(
-            self.response_body["description"],
-            self.variable_product_payload["description"],
-        )
-        self.assertEqual(
-            self.response_body["status"], self.variable_product_payload["status"]
-        )
-        self.assertEqual(
-            self.response_body["category"],
-            self.variable_product_payload.get("category"),
-        )
-
-        # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response_body)
-
-        self.assertEqual(
-            set(self.response_body["price"].keys()),
-            {"min_price", "max_price"},
-        )
-
-        self.assertIsInstance(self.response_body["total_stock"], int)
-        self.assertEqual(len(self.response_body["options"]), 3)
-
-        # expected product variants
-        self.assertEqual(len(self.response_body["variants"]), 8)
-        self.assertExpectedVariants(
-            self.response_body["variants"],
-            expected_price=self.variable_product_payload["price"],
-            expected_stock=self.variable_product_payload["stock"],
+        self.assertExpectedProductResponse(
+            self.response_body,
+            self.variable_product_payload,
+            variants_len=8,
+            options_len=3,
         )
 
     def test_access_permission_by_regular_user(self):

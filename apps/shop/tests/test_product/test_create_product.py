@@ -1,5 +1,4 @@
 from django.urls import reverse
-from django.utils.text import slugify
 from rest_framework import status
 
 from apps.core.tests.mixin import APIPostTestCaseMixin
@@ -24,84 +23,17 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         return reverse("product-list")
 
     def validate_response_body(
-        self, response, payload, options_len: int = 0, variants_len: int = 1
+        self,
+        response,
+        payload,
+        options_len: int = 0,
+        variants_len: int = 1,
+        attribute_len: int = 2,
     ):
         super().validate_response_body(response, payload)
-        self.assertEqual(len(self.response_body), 15)
-        self.assertEqual(
-            set(self.response_body.keys()),
-            {
-                "id",
-                "name",
-                "slug",
-                "description",
-                "status",
-                "options",
-                "variants",
-                "category",
-                "attributes",
-                "price",
-                "total_stock",
-                "images",
-                "created_at",
-                "updated_at",
-                "published_at",
-            },
+        self.assertExpectedProductResponse(
+            self.response_body, payload, options_len, variants_len, attribute_len
         )
-        self.assertIsInstance(self.response_body["id"], int)
-        self.assertEqual(self.response_body["name"], payload.get("name"))
-        self.assertEqual(
-            self.response_body["slug"],
-            payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
-        )
-        self.assertEqual(self.response_body["description"], payload.get("description"))
-        self.assertEqual(
-            self.response_body["status"], payload.get("status", Product.STATUS_DRAFT)
-        )
-
-        # expected product options
-        if options_len:
-            self.assertEqual(len(self.response_body["options"]), options_len)
-            self.assertExpectedOptions(
-                self.response_body["options"], payload.get("options")
-            )
-        else:
-            self.assertIsNone(self.response_body["options"])
-
-        # expected product variants
-        self.assertEqual(len(self.response_body["variants"]), variants_len)
-        self.assertExpectedVariants(
-            self.response_body["variants"],
-            expected_price=payload.get("price"),
-            expected_stock=payload.get("stock"),
-        )
-
-        self.assertEqual(self.response_body["category"], payload.get("category"))
-        attributes = self.response_body["attributes"]
-        if attributes:
-            for attribute in attributes:
-                self.assertEqual(
-                    set(attribute.keys()),
-                    {
-                        "attribute_id",
-                        "attribute_name",
-                        "items",
-                    },
-                )
-                for item in attribute["items"]:
-                    self.assertEqual(
-                        set(item.keys()),
-                        {
-                            "item_id",
-                            "item_name",
-                        },
-                    )
-
-        # expected product media
-        self.assertIsNone(self.response_body["images"])
-
-        # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response_body)
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -128,9 +60,6 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         self.validate_response_body(response, payload)
 
     def test_create_with_options(self):
-        """
-        Test create a product with options.
-        """
         payload = {
             "name": "test product",
             "description": "test description",
@@ -260,15 +189,16 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         self.assertHTTPStatusCode(response)
 
         # expected response body
-        expected = response.json()
-        self.assertEqual(len(expected["options"]), 3)
+        response_body = response.json()
         final_options = [
             {"option_name": "color", "items": ["red", "green", "black"]},
             {"option_name": "size", "items": ["S", "M"]},
             {"option_name": "material", "items": ["Cotton", "Nylon"]},
         ]
-        self.assertExpectedOptions(expected["options"], final_options)
-        self.assertExpectedVariants(expected["variants"])
+        self.assertExpectedOptions(
+            response_body, {"options": final_options}, options_len=3
+        )
+        self.assertExpectedVariants(response_body, variants_len=12)
 
     def test_create_with_duplicate_items_in_options(self):
         payload = {
@@ -415,7 +345,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
             ],
         }
         response = self.send_request(payload)
-        self.validate_response_body(response, payload)
+        self.validate_response_body(response, payload, attribute_len=1)
         expected = response.json()
         self.assertEqual(len(expected["attributes"]), 1)
         self.assertEqual(len(expected["attributes"][0]["items"]), 1)

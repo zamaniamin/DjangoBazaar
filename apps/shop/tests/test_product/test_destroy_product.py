@@ -24,5 +24,7 @@ class DestroyProductTest(APIDeleteTestCaseMixin, ProductAssertMixin):
         self.assertHTTPStatusCode(response)
 
 
-# TODO test on delete a product, the category is not deleted by product.
+# TODO test on delete a product, the category was not deleted by product.
+# TODO test on delete a product, the attributes was not deleted by product.
+# TODO test on delete a product, the options was not deleted by product.
 # TODO test destroy a product deletes all related information too

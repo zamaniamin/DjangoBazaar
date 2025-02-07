@@ -1,5 +1,4 @@
 from django.urls import reverse
-from django.utils.text import slugify
 from rest_framework import status
 
 from apps.core.tests.mixin import APIUpdateTestCaseMixin
@@ -30,9 +29,9 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
 
         cls.option = f_helper.unique_options(1)
         cls.new_payload_with_one_option = cls.new_payload.copy()
-        cls.new_payload_with_one_option["options"] = (
-            {"option_name": "material", "items": ["Cotton"]},
-        )
+        cls.new_payload_with_one_option["options"] = [
+            {"option_name": "material", "items": ["Cotton"]}
+        ]
 
         cls.options = f_helper.unique_options()
         cls.new_payload_with_multi_options = cls.new_payload.copy()
@@ -54,41 +53,9 @@ class UpdateVariableProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         self, response, payload, options_len: int = None, variants_len=1
     ):
         super().validate_response_body(response, payload)
-
-        self.assertIsInstance(self.response_body["id"], int)
-        self.assertEqual(self.response_body["name"], payload.get("name"))
-        self.assertEqual(self.response_body["description"], payload.get("description"))
-        self.assertEqual(
-            self.response_body["status"], payload.get("status", Product.STATUS_DRAFT)
+        self.assertExpectedProductResponse(
+            self.response_body, payload, options_len, variants_len
         )
-        self.assertEqual(
-            self.response_body["slug"],
-            payload.get("slug", slugify(payload.get("name"), allow_unicode=True)),
-        )
-        self.assertEqual(self.response_body["category"], payload.get("category"))
-
-        # expected product date and time
-        self.assertExpectedProductDatetimeFormat(self.response_body)
-
-        # expected product options
-        if options_len:
-            self.assertEqual(len(self.response_body["options"]), options_len)
-            self.assertExpectedOptions(
-                self.response_body["options"], payload.get("options")
-            )
-        else:
-            self.assertIsNone(self.response_body["options"])
-
-        # expected product variants
-        self.assertEqual(len(self.response_body["variants"]), variants_len)
-        self.assertExpectedVariants(
-            self.response_body["variants"],
-            expected_price=payload.get("price"),
-            expected_stock=payload.get("stock"),
-        )
-
-        # expected product media
-        self.assertIsNone(self.response_body["images"])
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

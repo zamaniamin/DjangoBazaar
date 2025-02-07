@@ -5,14 +5,13 @@ from rest_framework.test import APITestCase
 from apps.core.tests.mixin import APIGetTestCaseMixin
 from apps.shop.demo.factory.product.product_factory import ProductFactory
 from apps.shop.models.product import Product
+from apps.shop.tests.test_product.mixin import ProductAssertMixin
 
 
-class ListProductsTest(APIGetTestCaseMixin):
+class ListProductsTest(APIGetTestCaseMixin, ProductAssertMixin):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
-        # create products
         (
             cls.simple_product_payload,
             cls.simple_product,
@@ -22,7 +21,7 @@ class ListProductsTest(APIGetTestCaseMixin):
             cls.variable_product,
         ) = ProductFactory.customize(get_payload=True, is_variable=True)
 
-        # products with different status
+        # simple products with different status
         cls.active_product = ProductFactory.customize()
         cls.archived_product = ProductFactory.customize(status=Product.STATUS_ARCHIVED)
         cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
@@ -33,33 +32,13 @@ class ListProductsTest(APIGetTestCaseMixin):
     def validate_response_body(self, response, count: int = 0):
         super().validate_response_body(response)
         self.assertEqual(self.response_body["count"], count)
-        expected_product_list = self.response_body["results"]
-        self.assertEqual(len(expected_product_list), count)
-        for product in expected_product_list:
-            self.assertEqual(len(product), 15)
+        response_body_product_list = self.response_body["results"]
+        self.assertEqual(len(response_body_product_list), count)
+        for product in response_body_product_list:
+            self.assertExpectedKeys(product)
             self.assertIn(
                 product["status"],
                 [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED, Product.STATUS_DRAFT],
-            )
-            self.assertEqual(
-                set(product.keys()),
-                {
-                    "id",
-                    "name",
-                    "slug",
-                    "description",
-                    "status",
-                    "options",
-                    "variants",
-                    "category",
-                    "attributes",
-                    "price",
-                    "total_stock",
-                    "images",
-                    "created_at",
-                    "updated_at",
-                    "published_at",
-                },
             )
 
     def test_access_permission_by_regular_user(self):
