@@ -1,3 +1,4 @@
+# python
 from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.models.product import ProductAttribute
 from apps.shop.services.product.product_data import ProductData
@@ -11,13 +12,16 @@ class ProductAttributeMixin:
 
         This method handles the creation, update, and deletion of attributes for a product.
         It performs the following operations:
-        1. If attributes are provided, it creates new attributes and associates them with the product.
-        2. If no attributes are provided, it removes all existing attributes associated with the product.
+        1. If no attributes are provided, it removes all existing attributes associated with the product.
+        2. Otherwise, it clears the current attributes and creates new ones based on the provided data.
         """
-        # Clear existing attributes if no new attributes are provided
+        # Remove all current attributes if no new attributes are provided
         if not product_data.attributes:
             ProductAttribute.objects.filter(product=product_data.product).delete()
             return
+
+        # Delete existing product attributes to prevent duplicate entries
+        ProductAttribute.objects.filter(product=product_data.product).delete()
 
         # Extract attribute IDs and item IDs from the provided data
         attribute_ids = [
@@ -42,19 +46,18 @@ class ProductAttributeMixin:
             attribute = next(
                 (attr for attr in attributes if attr.id == attribute_id), None
             )
-
             if attribute:
                 product_attribute = ProductAttribute(
                     product=product_data.product, attribute=attribute
                 )
                 product_attributes.append(product_attribute)
 
-        # Bulk create ProductAttributes and get the created instances
+        # Bulk create ProductAttributes and retrieve the created instances
         created_product_attributes = ProductAttribute.objects.bulk_create(
             product_attributes
         )
 
-        # Prepare M2M relationships for valid items
+        # Prepare many-to-many relationships for valid items
         m2m_entries = []
         for attr_data, product_attribute in zip(
             product_data.attributes, created_product_attributes
@@ -63,7 +66,6 @@ class ProductAttributeMixin:
             attribute = next(
                 (attr for attr in attributes if attr.id == attribute_id), None
             )
-
             if attribute:
                 valid_items = items.filter(attribute=attribute)
                 m2m_entries.extend(
@@ -74,6 +76,6 @@ class ProductAttributeMixin:
                     for item in valid_items
                 )
 
-        # Bulk create M2M relationships
+        # Bulk create many-to-many relationships if any entries exist
         if m2m_entries:
             ProductAttribute.items.through.objects.bulk_create(m2m_entries)

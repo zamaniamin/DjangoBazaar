@@ -157,7 +157,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         new_attributes = AttributeFactory.generate_multiple(get_payload=True)[0]
         self.new_payload["attributes"] = new_attributes
         response = self.send_request(self.new_payload)
-        self.validate_response_body(response, self.new_payload, attributes_len=4)
+        self.validate_response_body(response, self.new_payload, attributes_len=2)
 
 
 # TODO test update if old attributes was unchecked from product attributes
