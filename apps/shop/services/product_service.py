@@ -50,7 +50,7 @@ class ProductService:
         # TODO write tests for sku field on API endpoints
         cls.sku = data.pop("sku", "")
         cls.options_data = data.pop("options", [])
-        attributes_data = data.pop("attributes", None)
+        cls.attributes_data = data.pop("attributes", [])
 
         # Update the product instance fields
         cls.product = product
@@ -58,9 +58,8 @@ class ProductService:
             setattr(cls.product, attr, value)
 
         cls.product.save()
-
-        # create or update options
         cls.__manage_options()
+        cls.__manage_attributes()
 
         # Return product object
         return cls.retrieve_product_details(product.id)
