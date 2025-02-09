@@ -10,7 +10,7 @@ from faker import Faker
 from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.models.product import Product
-from apps.shop.services.product_service import ProductService
+from apps.shop.services.product.product_service import ProductService
 
 faker = Faker()
 

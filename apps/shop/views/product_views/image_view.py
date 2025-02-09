@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from apps.shop.models.product import ProductImage
 from apps.shop.serializers.product_serializers import ProductImageSerializer
-from apps.shop.services.product_service import ProductService
+from apps.shop.services.product.product_service import ProductService
 
 
 @extend_schema_view(

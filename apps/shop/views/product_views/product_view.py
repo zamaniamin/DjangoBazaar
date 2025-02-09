@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from apps.shop.filters.product_filter import ProductFilter
 from apps.shop.paginations import DefaultPagination
 from apps.shop.serializers import product_serializers
-from apps.shop.services.product_service import ProductService
+from apps.shop.services.product.product_service import ProductService
 
 
 @extend_schema_view(

@@ -6,8 +6,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
 
 from apps.shop.demo.factory.shop_factory_settings import PRODUCTS_COUNT
-from apps.shop.models import Product
-from apps.shop.services.product_service import ProductService
+from apps.shop.models.product import Product
+from apps.shop.services.product.product_service import ProductService
 
 
 class FarsiProductFactory:
