@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.core.tests.mixin import APIUpdateTestCaseMixin
+from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 from apps.shop.demo.factory.category.category_factory import CategoryFactory
 from apps.shop.demo.factory.product.product_factory import (
     ProductFactory,
@@ -29,17 +30,22 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         (
             self.simple_product_payload,
             self.simple_product,
-        ) = ProductFactory.customize(get_payload=True)
+        ) = ProductFactory.customize(get_payload=True, has_attributes=True)
 
     def api_path(self) -> str:
         return reverse("product-detail", kwargs={"pk": self.simple_product.id})
 
     def validate_response_body(
-        self, response, payload, options_len: int = None, variants_len=1
+        self,
+        response,
+        payload,
+        options_len: int = None,
+        variants_len=1,
+        attributes_len: int = None,
     ):
         super().validate_response_body(response, payload)
         self.assertExpectedProductResponse(
-            self.response_body, payload, options_len, variants_len
+            self.response_body, payload, options_len, variants_len, attributes_len
         )
 
     def test_access_permission_by_regular_user(self):
@@ -147,6 +153,14 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
             response = self.send_request(payload)
             self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
+    def test_update_add_new_attributes(self):
+        new_attributes = AttributeFactory.generate_multiple(get_payload=True)[0]
+        self.new_payload["attributes"] = new_attributes
+        response = self.send_request(self.new_payload)
+        self.validate_response_body(response, self.new_payload, attributes_len=4)
 
+
+# TODO test update if old attributes was unchecked from product attributes
+# TODO test update if new attached attribute-item has same attribute-id
 # TODO test_update_check_updated_at
 # TODO test update with invalid slug
