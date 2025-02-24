@@ -7,7 +7,7 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 class CreateOptionTest(APIPostTestCaseMixin, APIAssertMixin):
     def api_path(self) -> str:
-        return reverse("option-list")
+        return reverse("options:option-list")
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

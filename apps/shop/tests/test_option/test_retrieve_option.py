@@ -7,7 +7,7 @@ from apps.shop.demo.factory.option.option_factory import OptionFactory
 
 class ListOptionTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("option-list")
+        return reverse("options:option-list")
 
     def validate_response_body(
         self, response, payload: dict = None, result_len: int = 0
@@ -65,7 +65,7 @@ class RetrieveOptionTest(APIGetTestCaseMixin, APIAssertMixin):
         cls.option = OptionFactory.create_option()
 
     def api_path(self) -> str:
-        return reverse("option-detail", kwargs={"pk": self.option.id})
+        return reverse("options:option-detail", kwargs={"pk": self.option.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -92,5 +92,7 @@ class RetrieveOptionTest(APIGetTestCaseMixin, APIAssertMixin):
         self.validate_response_body(response)
 
     def test_retrieve_404(self):
-        response = self.send_request(reverse("option-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("options:option-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

@@ -13,7 +13,7 @@ class CreateOptionItemsTest(APIPostTestCaseMixin):
         cls.payload = {"item_name": OptionFactory.item_name}
 
     def api_path(self) -> str:
-        return reverse("option-items-list", kwargs={"option_pk": self.option.id})
+        return reverse("options:items", kwargs={"option_pk": self.option.id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
@@ -41,6 +41,6 @@ class CreateOptionItemsTest(APIPostTestCaseMixin):
 
     def test_create_if_option_not_exist(self):
         response = self.send_request(
-            self.payload, reverse("option-items-list", kwargs={"option_pk": 999})
+            self.payload, reverse("options:items", kwargs={"option_pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

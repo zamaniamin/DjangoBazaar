@@ -13,7 +13,7 @@ class UpdateOptionTest(APIUpdateTestCaseMixin, APIAssertMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "option-detail",
+            "options:option-detail",
             kwargs={"pk": self.option.id},
         )
 
@@ -46,7 +46,7 @@ class UpdateOptionTest(APIUpdateTestCaseMixin, APIAssertMixin):
     def test_update_404(self):
         response = self.send_request(
             path=reverse(
-                "option-detail",
+                "options:option-detail",
                 kwargs={"pk": 999},
             )
         )

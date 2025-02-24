@@ -14,7 +14,7 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "option-items-detail",
+            "options:item",
             kwargs={"option_pk": self.option.id, "pk": self.item.id},
         )
 
@@ -43,7 +43,7 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
     def test_update_invalid_item_pk(self):
         response = self.send_request(
             path=reverse(
-                "option-items-detail",
+                "options:item",
                 kwargs={"option_pk": self.option.id, "pk": 999},
             )
         )
@@ -52,7 +52,7 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
     def test_update_with_invalid_option_pk(self):
         response = self.send_request(
             path=reverse(
-                "option-items-detail",
+                "options:item",
                 kwargs={"option_pk": 99999, "pk": self.item.id},
             )
         )

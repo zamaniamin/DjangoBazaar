@@ -14,7 +14,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "option-items-detail",
+            "options:item",
             kwargs={"option_pk": self.option.id, "pk": self.option_item.id},
         )
 
@@ -35,7 +35,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
     def test_delete_with_invalid_option_pk(self):
         response = self.send_request(
             reverse(
-                "option-items-detail",
+                "options:item",
                 kwargs={"option_pk": 999, "pk": self.option_item.id},
             )
         )
@@ -44,7 +44,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
     def test_delete_with_invalid_item_pk(self):
         response = self.send_request(
             reverse(
-                "option-items-detail",
+                "options:item",
                 kwargs={"option_pk": self.option.id, "pk": 999},
             )
         )
