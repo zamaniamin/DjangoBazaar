@@ -18,7 +18,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
         return reverse(
             "attributes:item",
             kwargs={
-                "attribute_pk": self.attribute.id,
+                "attribute_id": self.attribute.id,
                 "pk": self.attribute_item.id,
             },
         )
@@ -38,7 +38,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
             reverse(
                 "attributes:item",
                 kwargs={
-                    "attribute_pk": self.attribute.id,
+                    "attribute_id": self.attribute.id,
                     "pk": self.attribute_item.id,
                 },
             )
@@ -49,7 +49,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
         response = self.send_request(
             reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
+                kwargs={"attribute_id": 999, "pk": self.attribute_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -58,7 +58,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
         response = self.send_request(
             reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": self.attribute.id, "pk": 999},
+                kwargs={"attribute_id": self.attribute.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

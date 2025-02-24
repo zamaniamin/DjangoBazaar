@@ -17,7 +17,7 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "attributes:items",
-            kwargs={"attribute_pk": self.attribute.id},
+            kwargs={"attribute_id": self.attribute.id},
         )
 
     def validate_response_body(
@@ -46,14 +46,14 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
 
     def test_list_if_attribute_not_exist(self):
         response = self.send_request(
-            reverse("attributes:items", kwargs={"attribute_pk": 999})
+            reverse("attributes:items", kwargs={"attribute_id": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_attribute_dont_have_item(self):
         attribute = AttributeFactory()
         response = self.send_request(
-            reverse("attributes:items", kwargs={"attribute_pk": attribute.id})
+            reverse("attributes:items", kwargs={"attribute_id": attribute.id})
         )
         self.validate_response_body(response)
 
@@ -71,7 +71,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
         return reverse(
             "attributes:item",
             kwargs={
-                "attribute_pk": self.attribute.id,
+                "attribute_id": self.attribute.id,
                 "pk": self.attribute_item.id,
             },
         )
@@ -100,7 +100,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
+                kwargs={"attribute_id": 999, "pk": self.attribute_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -109,7 +109,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": self.attribute.id, "pk": 999},
+                kwargs={"attribute_id": self.attribute.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

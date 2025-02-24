@@ -14,12 +14,12 @@ router.register(r"", AttributeViewSet, basename="attribute")
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "<int:attribute_pk>/items/",
+        "<int:attribute_id>/items/",
         AttributeItemViewSet.as_view({"get": "list", "post": "create"}),
         name="items",
     ),
     path(
-        "<int:attribute_pk>/items/<int:pk>/",
+        "<int:attribute_id>/items/<int:pk>/",
         AttributeItemViewSet.as_view(
             {
                 "get": "retrieve",

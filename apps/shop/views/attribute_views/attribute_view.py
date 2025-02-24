@@ -62,7 +62,7 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
     }
 
     def get_queryset(self):
-        attribute_id = self.kwargs.get("attribute_pk")
+        attribute_id = self.kwargs.get("attribute_id")
         get_object_or_404(Attribute, pk=attribute_id)
         # TODO write test for check attribute items is order by created-at
         return AttributeItem.objects.filter(attribute_id=attribute_id).order_by(
@@ -74,9 +74,9 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # validate data
-        attribute_id = kwargs["attribute_pk"]
+        attribute_id = kwargs["attribute_id"]
         serializer = self.get_serializer(
-            data=request.data, context={"attribute_pk": attribute_id}
+            data=request.data, context={"attribute_id": attribute_id}
         )
         serializer.is_valid(raise_exception=True)
 

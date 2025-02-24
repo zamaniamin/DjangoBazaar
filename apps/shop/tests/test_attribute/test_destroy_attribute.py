@@ -38,7 +38,7 @@ class DestroyAttributeTest(APIDeleteTestCaseMixin):
             reverse(
                 "attributes:item",
                 kwargs={
-                    "attribute_pk": self.attribute.id,
+                    "attribute_id": self.attribute.id,
                     "pk": self.attribute_item.id,
                 },
             )

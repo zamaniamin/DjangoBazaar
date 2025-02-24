@@ -14,7 +14,7 @@ class CreateAttributeItemTest(APIPostTestCaseMixin):
         cls.payload = {"item_name": item.item_name}
 
     def api_path(self) -> str:
-        return reverse("attributes:items", kwargs={"attribute_pk": self.attribute.id})
+        return reverse("attributes:items", kwargs={"attribute_id": self.attribute.id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
@@ -44,6 +44,6 @@ class CreateAttributeItemTest(APIPostTestCaseMixin):
 
     def test_create_if_attribute_not_exist(self):
         response = self.send_request(
-            self.payload, reverse("attributes:items", kwargs={"attribute_pk": 999})
+            self.payload, reverse("attributes:items", kwargs={"attribute_id": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

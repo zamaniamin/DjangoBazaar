@@ -23,7 +23,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "attributes:item",
-            kwargs={"attribute_pk": self.attribute.id, "pk": self.attribute_item.id},
+            kwargs={"attribute_id": self.attribute.id, "pk": self.attribute_item.id},
         )
 
     def validate_response_body(self, response, payload):
@@ -46,7 +46,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
         response = self.send_request(
             path=reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": self.attribute.id, "pk": 999},
+                kwargs={"attribute_id": self.attribute.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -55,7 +55,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
         response = self.send_request(
             path=reverse(
                 "attributes:item",
-                kwargs={"attribute_pk": 99999, "pk": self.attribute_item.id},
+                kwargs={"attribute_id": 99999, "pk": self.attribute_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
