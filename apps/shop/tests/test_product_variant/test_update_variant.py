@@ -12,7 +12,7 @@ class UpdateVariantTest(APIUpdateTestCaseMixin):
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:
-        return reverse("variant-detail", kwargs={"pk": self.variant_id})
+        return reverse("variants:variant-detail", kwargs={"pk": self.variant_id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

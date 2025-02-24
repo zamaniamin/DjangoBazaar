@@ -14,7 +14,7 @@ class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:
-        return reverse("variant-detail", kwargs={"pk": self.variant_id})
+        return reverse("variants:variant-detail", kwargs={"pk": self.variant_id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -32,7 +32,9 @@ class RetrieveVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
         self.validate_response_body(response)
 
     def test_retrieve_if_variant_not_exist(self):
-        response = self.send_request(reverse("variant-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("variants:variant-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
 
@@ -44,7 +46,7 @@ class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
         cls.variant_id = cls.product.variants.first().id
 
     def api_path(self) -> str:
-        return reverse("product-list-variants", kwargs={"pk": self.product.id})
+        return reverse("products:product-list-variants", kwargs={"pk": self.product.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -64,6 +66,6 @@ class ListVariantTest(APIGetTestCaseMixin, ProductAssertMixin):
 
     def test_retrieve_if_product_not_exist(self):
         response = self.send_request(
-            reverse("product-list-variants", kwargs={"pk": 999})
+            reverse("products:product-list-variants", kwargs={"pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
