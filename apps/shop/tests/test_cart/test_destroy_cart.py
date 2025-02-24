@@ -34,7 +34,7 @@ class DestroyCartTest(APIDeleteTestCaseMixin):
         response = self.client.get(
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+                kwargs={"cart_id": self.cart_id, "pk": self.cart_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -57,7 +57,7 @@ class DestroyCartTest(APIDeleteTestCaseMixin):
             response = self.client.get(
                 reverse(
                     "carts:item",
-                    kwargs={"cart_pk": self.cart_id, "pk": item.id},
+                    kwargs={"cart_id": self.cart_id, "pk": item.id},
                 )
             )
             self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

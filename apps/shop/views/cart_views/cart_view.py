@@ -18,26 +18,26 @@ from apps.shop.serializers.cart_serializers import (
     create=extend_schema(
         tags=["Cart Item"],
         summary="Add one variant to cart",
-        parameters=[OpenApiParameter("cart_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("cart_id", str, OpenApiParameter.PATH)],
     ),
     retrieve=extend_schema(
         tags=["Cart Item"],
         summary="Retrieve an item from the cart",
         parameters=[
-            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("cart_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
     list=extend_schema(
         tags=["Cart Item"],
         summary="Retrieve a list of items from the cart",
-        parameters=[OpenApiParameter("cart_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("cart_id", str, OpenApiParameter.PATH)],
     ),
     partial_update=extend_schema(
         tags=["Cart Item"],
         summary="Update an item from the cart",
         parameters=[
-            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("cart_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -45,7 +45,7 @@ from apps.shop.serializers.cart_serializers import (
         tags=["Cart Item"],
         summary="Deletes an item from the cart",
         parameters=[
-            OpenApiParameter("cart_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("cart_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -54,8 +54,8 @@ class CartItemViewSet(ModelViewSet):
     http_method_names = ["post", "get", "patch", "delete"]
 
     def get_queryset(self):
-        cart_pk = self.kwargs.get("cart_pk")
-        return CartItem.objects.select_related("variant").filter(cart_id=cart_pk).all()
+        cart_id = self.kwargs.get("cart_id")
+        return CartItem.objects.select_related("variant").filter(cart_id=cart_id).all()
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -66,9 +66,9 @@ class CartItemViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # validate data
-        cart_id = self.kwargs.get("cart_pk")
+        cart_id = self.kwargs.get("cart_id")
         serializer = self.get_serializer(
-            data=request.data, context={"cart_pk": cart_id}
+            data=request.data, context={"cart_id": cart_id}
         )
         serializer.is_valid(raise_exception=True)
 

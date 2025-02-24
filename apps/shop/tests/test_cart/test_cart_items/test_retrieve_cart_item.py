@@ -12,7 +12,7 @@ class ListCartItemsTest(APIGetTestCaseMixin):
         cls.cart_id, cls.cart_items = CartFactory.add_multiple_items(get_items=True)
 
     def api_path(self) -> str:
-        return reverse("carts:items", kwargs={"cart_pk": self.cart_id})
+        return reverse("carts:items", kwargs={"cart_id": self.cart_id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -45,12 +45,12 @@ class ListCartItemsTest(APIGetTestCaseMixin):
     def test_list_empty_items(self):
         cart_id = CartFactory.create_cart()
         response = self.send_request(
-            reverse("carts:items", kwargs={"cart_pk": cart_id})
+            reverse("carts:items", kwargs={"cart_id": cart_id})
         )
         self.assertHTTPStatusCode(response)
 
     def _test_list_with_invalid_cart_id(self):
-        response = self.send_request(reverse("carts:items", kwargs={"cart_pk": 11}))
+        response = self.send_request(reverse("carts:items", kwargs={"cart_id": 11}))
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
 
@@ -63,7 +63,7 @@ class RetrieveCartItemTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "carts:item",
-            kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            kwargs={"cart_id": self.cart_id, "pk": self.cart_item.id},
         )
 
     def validate_response_body(self, response, payload: dict = None):
@@ -94,7 +94,7 @@ class RetrieveCartItemTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": cart_id, "pk": cart_item.id},
+                kwargs={"cart_id": cart_id, "pk": cart_item.id},
             )
         )
         self.validate_response_body(response)
@@ -102,6 +102,6 @@ class RetrieveCartItemTest(APIGetTestCaseMixin):
     def _test_retrieve_with_invalid_cart_id(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         response = self.client.get(
-            reverse("carts:item", kwargs={"cart_pk": 11, "pk": cart_item.id})
+            reverse("carts:item", kwargs={"cart_id": 11, "pk": cart_item.id})
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)

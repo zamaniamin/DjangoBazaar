@@ -11,12 +11,12 @@ router.register(r"", CartViewSet, basename="cart")
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "<uuid:cart_pk>/items/",
+        "<uuid:cart_id>/items/",
         CartItemViewSet.as_view({"get": "list", "post": "create"}),
         name="items",
     ),
     path(
-        "<uuid:cart_pk>/items/<int:pk>/",
+        "<uuid:cart_id>/items/<int:pk>/",
         CartItemViewSet.as_view(
             {
                 "get": "retrieve",

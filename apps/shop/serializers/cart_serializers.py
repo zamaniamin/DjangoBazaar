@@ -57,7 +57,7 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         fields = ["id", "variant", "quantity"]
 
     def validate(self, data):
-        cart_id = self.context.get("cart_pk")
+        cart_id = self.context.get("cart_id")
         variant = data["variant"]
         quantity = data["quantity"]
 

@@ -14,7 +14,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "carts:item",
-            kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            kwargs={"cart_id": self.cart_id, "pk": self.cart_item.id},
         )
 
     def validate_response_body(self, response, payload):
@@ -69,7 +69,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             payload,
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": cart_id, "pk": cart_item.id},
+                kwargs={"cart_id": cart_id, "pk": cart_item.id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -81,7 +81,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             payload,
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": cart_id, "pk": cart_item.id},
+                kwargs={"cart_id": cart_id, "pk": cart_item.id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -94,7 +94,7 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             reverse(
                 "carts:item",
                 kwargs={
-                    "cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750",
+                    "cart_id": "5a092b03-7920-4c61-ba98-f749296e4750",
                     "pk": cart_item.id,
                 },
             ),
@@ -108,19 +108,19 @@ class UpdateCartItemTest(APIUpdateTestCaseMixin):
             payload,
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": cart_id, "pk": 1111},
+                kwargs={"cart_id": cart_id, "pk": 1111},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
-    def _test_update_with_invalid_cart_pk(self):
+    def _test_update_with_invalid_cart_id(self):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         payload = {"quantity": 3}
         response = self.send_patch_request(
             payload,
             reverse(
                 "carts:item",
-                kwargs={"cart_pk": 7, "pk": cart_item.id},
+                kwargs={"cart_id": 7, "pk": cart_item.id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)

@@ -29,7 +29,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         self.cart_id = CartFactory.create_cart()
 
     def api_path(self) -> str:
-        return reverse("carts:items", kwargs={"cart_pk": self.cart_id})
+        return reverse("carts:items", kwargs={"cart_id": self.cart_id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
@@ -77,7 +77,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         cart_id, cart_item = CartFactory.add_one_item(get_item=True)
         payload = {"variant": cart_item.variant_id, "quantity": 1}
         response = self.send_request(
-            payload, reverse("carts:items", kwargs={"cart_pk": cart_id})
+            payload, reverse("carts:items", kwargs={"cart_id": cart_id})
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
@@ -86,7 +86,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         for variant in self.variable_product_variants_list:
             payload = {"variant": variant.id, "quantity": 1}
             response = self.send_request(
-                payload, reverse("carts:items", kwargs={"cart_pk": self.cart_id})
+                payload, reverse("carts:items", kwargs={"cart_id": self.cart_id})
             )
             self.assertHTTPStatusCode(response)
             expected = response.json()
@@ -100,9 +100,9 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
         expected = response.json()
         self.assertAlmostEqual(expected["total_price"], round(total_price, 2), places=2)
 
-    def _test_create_with_invalid_cart_pk(self):
+    def _test_create_with_invalid_cart_id(self):
         response = self.send_request(
-            self.payload, reverse("carts:items", kwargs={"cart_pk": 7})
+            self.payload, reverse("carts:items", kwargs={"cart_id": 7})
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
 
@@ -111,7 +111,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             self.payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": "5a092b03-7920-4c61-ba98-f749296e4750"},
+                kwargs={"cart_id": "5a092b03-7920-4c61-ba98-f749296e4750"},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -124,7 +124,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -137,7 +137,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -150,7 +150,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -163,7 +163,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -174,7 +174,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -187,7 +187,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
             payload,
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": self.cart_id},
+                kwargs={"cart_id": self.cart_id},
             ),
         )
         self.assertHTTPStatusCode(response)
@@ -210,7 +210,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 invalid_payload,
                 reverse(
                     "carts:items",
-                    kwargs={"cart_pk": self.cart_id},
+                    kwargs={"cart_id": self.cart_id},
                 ),
             )
             self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
@@ -232,7 +232,7 @@ class CreateCartItemsTest(APIPostTestCaseMixin):
                 invalid_payload,
                 reverse(
                     "carts:items",
-                    kwargs={"cart_pk": self.cart_id},
+                    kwargs={"cart_id": self.cart_id},
                 ),
             )
             self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)

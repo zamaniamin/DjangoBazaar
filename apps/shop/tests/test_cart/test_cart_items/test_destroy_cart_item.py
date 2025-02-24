@@ -14,7 +14,7 @@ class DestroyCartItemsTest(APIDeleteTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "carts:item",
-            kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
+            kwargs={"cart_id": self.cart_id, "pk": self.cart_item.id},
         )
 
     def test_access_permission_by_regular_user(self):
@@ -31,11 +31,11 @@ class DestroyCartItemsTest(APIDeleteTestCaseMixin):
         response = self.client.get(self.api_path())
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
-    def _test_delete_with_invalid_cart_pk(self):
+    def _test_delete_with_invalid_cart_id(self):
         response = self.send_request(
             reverse(
                 "carts:items",
-                kwargs={"cart_pk": 7, "pk": self.cart_item.id},
+                kwargs={"cart_id": 7, "pk": self.cart_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_400_BAD_REQUEST)
