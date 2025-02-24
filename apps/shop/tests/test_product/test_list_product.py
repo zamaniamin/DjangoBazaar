@@ -27,7 +27,7 @@ class ListProductsTest(APIGetTestCaseMixin, ProductAssertMixin):
         cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def api_path(self) -> str:
-        return reverse("product-list")
+        return reverse("products:product-list")
 
     def validate_response_body(self, response, count: int = 0):
         super().validate_response_body(response)
@@ -92,7 +92,7 @@ class ListProductsTest(APIGetTestCaseMixin, ProductAssertMixin):
 
 class ListNoProductsTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("product-list")
+        return reverse("products:product-list")
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)
@@ -122,7 +122,7 @@ class ListDraftProductsTest(APITestCase):
         and asserts that the response status code is HTTP 200 OK, and the number of products in the response is 0.
         """
         ProductFactory.customize(status=Product.STATUS_DRAFT)
-        response = self.client.get(reverse("product-list"))
+        response = self.client.get(reverse("products:product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(expected["count"], 0)

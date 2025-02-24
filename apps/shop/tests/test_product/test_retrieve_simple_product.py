@@ -22,7 +22,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def api_path(self) -> str:
-        return reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        return reverse("products:product-detail", kwargs={"pk": self.simple_product.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -48,7 +48,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
 
         for product in [self.active_product, self.archived_product, self.draft_product]:
             response = self.send_request(
-                reverse("product-detail", kwargs={"pk": product.id})
+                reverse("products:product-detail", kwargs={"pk": product.id})
             )
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertHTTPStatusCode(response)
@@ -66,7 +66,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         self.authorization_as_anonymous_user()
         for product in [self.active_product, self.archived_product, self.draft_product]:
             response = self.send_request(
-                reverse("product-detail", kwargs={"pk": product.id})
+                reverse("products:product-detail", kwargs={"pk": product.id})
             )
             if product.status in [Product.STATUS_ACTIVE, Product.STATUS_ARCHIVED]:
                 self.assertHTTPStatusCode(response)
@@ -85,5 +85,7 @@ class RetrieveSimpleProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         self.validate_response_body(response)
 
     def test_retrieve_404(self):
-        response = self.send_request(reverse("product-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("products:product-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

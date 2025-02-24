@@ -11,7 +11,7 @@ class DestroyProductTest(APIDeleteTestCaseMixin, ProductAssertMixin):
         self.product = ProductFactory.customize()
 
     def api_path(self) -> str:
-        return reverse("product-detail", kwargs={"pk": self.product.id})
+        return reverse("products:product-detail", kwargs={"pk": self.product.id})
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()

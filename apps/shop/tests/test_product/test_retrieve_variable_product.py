@@ -17,7 +17,9 @@ class RetrieveVariableProductTest(APIGetTestCaseMixin, ProductAssertMixin):
         )
 
     def api_path(self) -> str:
-        return reverse("product-detail", kwargs={"pk": self.variable_product.id})
+        return reverse(
+            "products:product-detail", kwargs={"pk": self.variable_product.id}
+        )
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response)

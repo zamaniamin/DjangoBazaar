@@ -33,7 +33,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
         ) = ProductFactory.customize(get_payload=True, has_attributes=True)
 
     def api_path(self) -> str:
-        return reverse("product-detail", kwargs={"pk": self.simple_product.id})
+        return reverse("products:product-detail", kwargs={"pk": self.simple_product.id})
 
     def validate_response_body(
         self,
@@ -91,7 +91,7 @@ class UpdateSimpleProductTest(APIUpdateTestCaseMixin, ProductAssertMixin):
 
     def test_update_nonexistent_product(self):
         response = self.send_request(
-            self.new_payload, reverse("product-detail", kwargs={"pk": 999})
+            self.new_payload, reverse("products:product-detail", kwargs={"pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 

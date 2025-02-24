@@ -20,7 +20,7 @@ class CreateProductTest(APIPostTestCaseMixin, ProductAssertMixin):
         cls.attribute_items = cls.attribute.items.all()
 
     def api_path(self) -> str:
-        return reverse("product-list")
+        return reverse("products:product-list")
 
     def validate_response_body(
         self,

@@ -27,7 +27,9 @@ class FilterProductTest(ProductAssertMixin):
         cls.draft_product = ProductFactory.customize(status=Product.STATUS_DRAFT)
 
     def test_filter_active_product(self):
-        response = self.client.get(reverse("product-list"), {"status": "active"})
+        response = self.client.get(
+            reverse("products:product-list"), {"status": "active"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = response.json()
         self.assertEqual(len(expected), 4)
