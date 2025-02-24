@@ -19,7 +19,7 @@ class RetrieveImageTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "products:image",
-            kwargs={"product_pk": self.product.id, "pk": self.media_id},
+            kwargs={"product_id": self.product.id, "pk": self.media_id},
         )
 
     def validate_response_body(self, response, payload: dict = None):
@@ -39,7 +39,7 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
         cls.product = ProductFactory.customize(has_image=True)
 
     def api_path(self) -> str:
-        return reverse("products:images", kwargs={"product_pk": self.product.id})
+        return reverse("products:images", kwargs={"product_id": self.product.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -80,7 +80,7 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
         # TODO fix this test
         active_product = ProductFactory.customize(has_image=True)
         response = self.send_request(
-            reverse("products:images", kwargs={"product_pk": active_product.id}),
+            reverse("products:images", kwargs={"product_id": active_product.id}),
         )
 
         # expected

@@ -13,26 +13,26 @@ from apps.shop.services.product.product_service import ProductService
     create=extend_schema(
         tags=["Product Image"],
         summary="Create multi product image",
-        parameters=[OpenApiParameter("product_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("product_id", str, OpenApiParameter.PATH)],
     ),
     retrieve=extend_schema(
         tags=["Product Image"],
         summary="Get a single product image",
         parameters=[
-            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("product_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
     list=extend_schema(
         tags=["Product Image"],
         summary="Get all product images",
-        parameters=[OpenApiParameter("product_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("product_id", str, OpenApiParameter.PATH)],
     ),
     update=extend_schema(
         tags=["Product Image"],
         summary="Modify an existing product image",
         parameters=[
-            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("product_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -40,7 +40,7 @@ from apps.shop.services.product.product_service import ProductService
         tags=["Product Image"],
         summary="Partial update an existing product image",
         parameters=[
-            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("product_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -48,7 +48,7 @@ from apps.shop.services.product.product_service import ProductService
         tags=["Product Image"],
         summary="Remove an existing Product Image",
         parameters=[
-            OpenApiParameter("product_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("product_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -64,8 +64,8 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
-        product_pk = self.kwargs.get("product_pk")
-        return ProductImage.objects.filter(product_id=product_pk)
+        product_id = self.kwargs.get("product_id")
+        return ProductImage.objects.filter(product_id=product_id)
 
     def create(self, request, *args, **kwargs):
         """Upload images for a specific product."""
@@ -79,6 +79,6 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        product_id = self.kwargs.get("product_pk")
+        product_id = self.kwargs.get("product_id")
         images_data = serializer.validated_data
         return ProductService.upload_product_images(product_id, **images_data)

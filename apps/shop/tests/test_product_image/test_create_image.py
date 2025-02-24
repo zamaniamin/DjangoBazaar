@@ -24,7 +24,7 @@ class ProductImageUploadTest(APIPostTestCaseMixin, APIAssertMixin):
         self.active_product = ProductFactory()
 
     def api_path(self) -> str:
-        return reverse("products:images", kwargs={"product_pk": self.active_product.id})
+        return reverse("products:images", kwargs={"product_id": self.active_product.id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

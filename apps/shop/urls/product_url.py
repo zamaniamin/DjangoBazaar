@@ -14,12 +14,12 @@ router.register(r"", ProductViewSet, basename="product")
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "<int:product_pk>/images/",
+        "<int:product_id>/images/",
         ProductImageViewSet.as_view({"get": "list", "post": "create"}),
         name="images",
     ),
     path(
-        "<int:product_pk>/images/<int:pk>/",
+        "<int:product_id>/images/<int:pk>/",
         ProductImageViewSet.as_view(
             {
                 "get": "retrieve",
