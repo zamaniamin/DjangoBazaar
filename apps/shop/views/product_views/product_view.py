@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, serializers
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -78,31 +78,24 @@ class ProductViewSet(viewsets.ModelViewSet):
         return ProductService.create_product(**product_data)
 
     def update(self, request, *args, **kwargs):
-        # validate
         partial = kwargs.pop("partial", False)
-        product = self.get_object()
-        serializer = self.get_serializer(product, data=request.data, partial=partial)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        payload = serializer.validated_data
-
-        # update product
-        try:
-            product = ProductService.update_product(product, **payload)
-        except ValidationError as e:
-            if e.code == "max_options_exceeded":
-                return Response(
-                    {"detail": e.messages[0]},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            return Response(
-                {"detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # return the serialized response
+        product = self.perform_update(serializer)
         return Response(
             serializer.to_representation(product), status=status.HTTP_200_OK
         )
+
+    def perform_update(self, serializer):
+        product_data = serializer.validated_data
+        try:
+            product = ProductService.update_product(self.get_object(), **product_data)
+        except ValidationError as e:
+            if e.code == "max_options_exceeded":
+                raise serializers.ValidationError({"detail": e.messages[0]})
+            raise serializers.ValidationError({"detail": str(e)})
+        return product
 
     # ----------------
     # --- variants ---
