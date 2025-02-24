@@ -7,7 +7,7 @@ from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 class ListCategoryTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("category-list")
+        return reverse("categories:category-list")
 
     def validate_response_body(
         self, response, payload: dict = None, results_len: int = 0
@@ -69,7 +69,7 @@ class RetrieveCategoryTest(APIGetTestCaseMixin):
         cls.category = CategoryFactory()
 
     def api_path(self) -> str:
-        return reverse("category-detail", kwargs={"pk": self.category.id})
+        return reverse("categories:category-detail", kwargs={"pk": self.category.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -100,5 +100,7 @@ class RetrieveCategoryTest(APIGetTestCaseMixin):
         self.validate_response_body(response)
 
     def test_retrieve_404(self):
-        response = self.send_request(reverse("category-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("categories:category-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

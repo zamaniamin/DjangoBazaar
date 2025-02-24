@@ -15,7 +15,7 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
         self.category = CategoryFactory()
 
     def api_path(self) -> str:
-        return reverse("category-detail", kwargs={"pk": self.category.id})
+        return reverse("categories:category-detail", kwargs={"pk": self.category.id})
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -27,12 +27,14 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
         response = self.send_request()
         self.assertHTTPStatusCode(response)
         response = self.client.get(
-            reverse("category-detail", kwargs={"pk": self.category.id})
+            reverse("categories:category-detail", kwargs={"pk": self.category.id})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_if_category_not_exist(self):
-        response = self.send_request(reverse("category-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("categories:category-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_parent(self):
@@ -49,7 +51,7 @@ class DestroyCategoryTest(APIDeleteTestCaseMixin):
 
         # request
         response = self.send_request(
-            reverse("category-detail", kwargs={"pk": parent.id})
+            reverse("categories:category-detail", kwargs={"pk": parent.id})
         )
         self.assertHTTPStatusCode(response, status.HTTP_204_NO_CONTENT)
 

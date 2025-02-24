@@ -7,7 +7,7 @@ from apps.shop.demo.factory.category.category_factory import CategoryFactory
 
 class CreateCategoryTest(APIPostTestCaseMixin, APIAssertMixin):
     def api_path(self) -> str:
-        return reverse("category-list")
+        return reverse("categories:category-list")
 
     def validate_response_body(self, response, payload, parent_category=None):
         super().validate_response_body(response, payload)

@@ -15,7 +15,7 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
         cls.simple_cat_2 = CategoryFactory()
 
     def api_path(self) -> str:
-        return reverse("category-detail", kwargs={"pk": self.category.id})
+        return reverse("categories:category-detail", kwargs={"pk": self.category.id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)
@@ -77,6 +77,6 @@ class UpdateCategoryTest(APIUpdateTestCaseMixin):
     def test_update_if_category_not_exist(self):
         payload = {"name": "new category"}
         response = self.send_request(
-            payload, reverse("category-detail", kwargs={"pk": 999})
+            payload, reverse("categories:category-detail", kwargs={"pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
