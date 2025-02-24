@@ -62,18 +62,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         return ProductService.get_product_queryset(self.request)
 
     def create(self, request, *args, **kwargs):
-        # Validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        payload = serializer.validated_data
-
-        # Create product
-        product = ProductService.create_product(**payload)
-
-        # Return the serialized response
+        product = self.perform_create(serializer)
+        serializer = self.serializer_class(product)
+        headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.to_representation(product), status=status.HTTP_201_CREATED
+            serializer.to_representation(product),
+            status=status.HTTP_201_CREATED,
+            headers=headers,
         )
+
+    def perform_create(self, serializer):
+        product_data = serializer.validated_data
+        return ProductService.create_product(**product_data)
 
     def update(self, request, *args, **kwargs):
         # validate
