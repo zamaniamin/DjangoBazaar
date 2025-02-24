@@ -7,7 +7,7 @@ from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 class DestroyCartTest(APIDeleteTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("cart-detail", kwargs={"pk": self.cart_id})
+        return reverse("carts:cart-detail", kwargs={"pk": self.cart_id})
 
     def setUp(self):
         self.cart_id, self.cart_item = CartFactory.add_one_item(get_item=True)
@@ -33,14 +33,14 @@ class DestroyCartTest(APIDeleteTestCaseMixin):
         # test cart items are removed
         response = self.client.get(
             reverse(
-                "cart-items-detail",
+                "carts:item",
                 kwargs={"cart_pk": self.cart_id, "pk": self.cart_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_invalid_pk(self):
-        response = self.client.delete(reverse("cart-detail", kwargs={"pk": 7}))
+        response = self.client.delete(reverse("carts:cart-detail", kwargs={"pk": 7}))
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_multi_items(self):
@@ -56,7 +56,7 @@ class DestroyCartTest(APIDeleteTestCaseMixin):
         for item in self.cart_items:
             response = self.client.get(
                 reverse(
-                    "cart-items-detail",
+                    "carts:item",
                     kwargs={"cart_pk": self.cart_id, "pk": item.id},
                 )
             )

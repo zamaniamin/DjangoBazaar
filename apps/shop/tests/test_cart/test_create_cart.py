@@ -8,7 +8,7 @@ from apps.core.tests.mixin import APIPostTestCaseMixin
 
 class CreateCartTest(APIPostTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("cart-list")
+        return reverse("carts:cart-list")
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

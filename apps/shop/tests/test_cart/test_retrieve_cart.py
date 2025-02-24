@@ -9,7 +9,7 @@ from apps.shop.demo.factory.cart.cart_factory import CartFactory
 
 class ListCartTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("cart-list")
+        return reverse("carts:cart-list")
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -40,7 +40,7 @@ class ListCartTest(APIGetTestCaseMixin):
 
         # test list two carts
         CartFactory.create_cart()
-        response = self.send_request(reverse("cart-list"))
+        response = self.send_request()
         self.assertHTTPStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 2)
@@ -50,7 +50,7 @@ class ListCartTest(APIGetTestCaseMixin):
 
     def test_list_with_items(self):
         CartFactory.add_multiple_items()
-        response = self.send_request(reverse("cart-list"))
+        response = self.send_request()
         self.assertHTTPStatusCode(response)
         expected = response.json()
         self.assertEqual(len(expected), 1)
@@ -80,7 +80,7 @@ class RetrieveCartTest(APIGetTestCaseMixin):
         cls.cart_id = CartFactory.add_multiple_items()
 
     def api_path(self) -> str:
-        return reverse("cart-detail", kwargs={"pk": self.cart_id})
+        return reverse("carts:cart-detail", kwargs={"pk": self.cart_id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -110,16 +110,20 @@ class RetrieveCartTest(APIGetTestCaseMixin):
 
     def test_retrieve_with_one_item(self):
         cart_id = CartFactory.add_one_item()
-        response = self.send_request(reverse("cart-detail", kwargs={"pk": cart_id}))
+        response = self.send_request(
+            reverse("carts:cart-detail", kwargs={"pk": cart_id})
+        )
         self.validate_response_body(response)
 
     def test_retrieve_with_multi_items(self):
         cart_id = CartFactory.add_multiple_items()
-        response = self.send_request(reverse("cart-detail", kwargs={"pk": cart_id}))
+        response = self.send_request(
+            reverse("carts:cart-detail", kwargs={"pk": cart_id})
+        )
         self.validate_response_body(response)
 
     def test_retrieve_with_invalid_pk(self):
-        response = self.send_request(reverse("cart-detail", kwargs={"pk": "11"}))
+        response = self.send_request(reverse("carts:cart-detail", kwargs={"pk": "11"}))
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
-        response = self.send_request(reverse("cart-detail", kwargs={"pk": 11}))
+        response = self.send_request(reverse("carts:cart-detail", kwargs={"pk": 11}))
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
