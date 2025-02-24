@@ -21,6 +21,7 @@ class CartVariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariant
+        # todo add product_name
         fields = ["id", "product_id", "price", "stock", "option1", "option2", "option3"]
 
 
@@ -53,6 +54,8 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
 class AddCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
+        # todo rename `variant` to `variant_id`
+        # todo i think `ID` not should be in fields!fields
         fields = ["id", "variant", "quantity"]
 
     def validate(self, data):
@@ -104,6 +107,8 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_image(cart_item) -> str | None:
+        # todo fix: first check variant image, if not exist then get product main image.
+        # todo fix: shoe domain name in src.
         first_media = cart_item.variant.product.media.first()
         return first_media.src.url if first_media else None
 

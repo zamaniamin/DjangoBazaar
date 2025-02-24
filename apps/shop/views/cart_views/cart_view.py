@@ -86,7 +86,7 @@ class CartItemViewSet(ModelViewSet):
         except IntegrityError:
             return Response(
                 {"detail": "This variant already exist in the cart."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_400_BAD_REQUEST,  # todo change status code to 409
             )
 
         # return response
