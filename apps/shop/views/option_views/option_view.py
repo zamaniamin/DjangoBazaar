@@ -89,7 +89,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # validate data
-        option_id = kwargs["option_pk"]
+        option_id = self.kwargs.get("option_pk")
         serializer = self.get_serializer(
             data=request.data, context={"option_pk": option_id}
         )
