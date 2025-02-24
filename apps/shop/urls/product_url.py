@@ -5,8 +5,12 @@ from apps.shop.views.product_views.image_view import ProductImageViewSet
 from apps.shop.views.product_views.product_view import ProductViewSet
 
 app_name = "products"
+
+# Configure and register the viewset with the router.
 router = DefaultRouter()
-router.register("products", ProductViewSet, basename="product")
+router.register(r"", ProductViewSet, basename="product")
+
+# Organize URL patterns, including the router endpoints and additional image endpoints.
 urlpatterns = [
     path("", include(router.urls)),
     path(
