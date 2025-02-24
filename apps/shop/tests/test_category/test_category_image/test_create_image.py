@@ -18,7 +18,7 @@ class CategoryImageUploadTest(APIPostTestCaseMixin, ImageTestCaseMixin, APIAsser
         self.category = CategoryFactory()
 
     def api_path(self) -> str:
-        return reverse("categories:images", kwargs={"category_pk": self.category.id})
+        return reverse("categories:images", kwargs={"category_id": self.category.id})
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

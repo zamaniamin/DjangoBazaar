@@ -16,7 +16,7 @@ router.register(r"", CategoryViewSet, basename="category")
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "<int:category_pk>/images/",
+        "<int:category_id>/images/",
         CategoryImageViewSet.as_view({"get": "list", "post": "create"}),
         name="images",
     ),

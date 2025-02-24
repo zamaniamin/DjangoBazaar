@@ -82,26 +82,26 @@ class CategoryViewSet(viewsets.ModelViewSet):
     create=extend_schema(
         tags=["Category Image"],
         summary="Upload an image",
-        parameters=[OpenApiParameter("category_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("category_id", str, OpenApiParameter.PATH)],
     ),
     retrieve=extend_schema(
         tags=["Category Image"],
         summary="Get an image",
         parameters=[
-            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("category_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
     list=extend_schema(
         tags=["Category Image"],
         summary="List images",
-        parameters=[OpenApiParameter("category_pk", str, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("category_id", str, OpenApiParameter.PATH)],
     ),
     update=extend_schema(
         tags=["Category Image"],
         summary="Modify an existing image",
         parameters=[
-            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("category_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -109,7 +109,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         tags=["Category Image"],
         summary="Remove an existing image",
         parameters=[
-            OpenApiParameter("category_pk", str, OpenApiParameter.PATH),
+            OpenApiParameter("category_id", str, OpenApiParameter.PATH),
             OpenApiParameter("id", str, OpenApiParameter.PATH),
         ],
     ),
@@ -126,11 +126,11 @@ class CategoryImageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CategoryImage.objects.filter(
-            category_id=self.kwargs["category_pk"]
+            category_id=self.kwargs["category_id"]
         ).all()
 
     def perform_create(self, serializer):
-        category_id = self.kwargs["category_pk"]
+        category_id = self.kwargs["category_id"]
         category = Category.objects.get(id=category_id)
 
         # Check if an image already exists for this category
@@ -141,6 +141,6 @@ class CategoryImageViewSet(viewsets.ModelViewSet):
         serializer.save(category=category)
 
     def perform_update(self, serializer):
-        category_id = self.kwargs["category_pk"]
+        category_id = self.kwargs["category_id"]
         category = Category.objects.get(id=category_id)
         serializer.save(category=category)
