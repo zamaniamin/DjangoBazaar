@@ -18,7 +18,7 @@ class RetrieveImageTest(APIGetTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "product-images-detail",
+            "products:image",
             kwargs={"product_pk": self.product.id, "pk": self.media_id},
         )
 
@@ -39,7 +39,7 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
         cls.product = ProductFactory.customize(has_image=True)
 
     def api_path(self) -> str:
-        return reverse("product-images-list", kwargs={"product_pk": self.product.id})
+        return reverse("products:images", kwargs={"product_pk": self.product.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -78,9 +78,9 @@ class ListImageTest(APIGetTestCaseMixin, APIAssertMixin):
 
     def _test_retrieve_with_multi_images(self):
         # TODO fix this test
-        active_product = ProductFactory.create_product(has_images=True)
+        active_product = ProductFactory.customize(has_image=True)
         response = self.send_request(
-            reverse("product-images-list", kwargs={"product_pk": active_product.id}),
+            reverse("products:images", kwargs={"product_pk": active_product.id}),
         )
 
         # expected
