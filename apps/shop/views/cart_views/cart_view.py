@@ -1,8 +1,6 @@
-import uuid
-
 from django.db import IntegrityError
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
-from rest_framework import status, serializers
+from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -56,7 +54,7 @@ class CartItemViewSet(ModelViewSet):
     http_method_names = ["post", "get", "patch", "delete"]
 
     def get_queryset(self):
-        cart_pk = self.kwargs["cart_pk"]
+        cart_pk = self.kwargs.get("cart_pk")
         return CartItem.objects.select_related("variant").filter(cart_id=cart_pk).all()
 
     def get_serializer_class(self):
@@ -68,7 +66,7 @@ class CartItemViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # validate data
-        cart_id = kwargs["cart_pk"]
+        cart_id = self.kwargs.get("cart_pk")
         serializer = self.get_serializer(
             data=request.data, context={"cart_pk": cart_id}
         )
@@ -92,31 +90,6 @@ class CartItemViewSet(ModelViewSet):
         # return response
         response_serializer = CartItemSerializer(cart_item)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-    def retrieve(self, request, *args, **kwargs):
-        self.check_cart_pk(self.kwargs["cart_pk"])
-        return super().retrieve(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        self.check_cart_pk(self.kwargs["cart_pk"])
-        return super().list(request, *args, **kwargs)
-
-    def partial_update(self, request, *args, **kwargs):
-        self.check_cart_pk(self.kwargs["cart_pk"])
-        return super().partial_update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        self.check_cart_pk(self.kwargs["cart_pk"])
-        return super().destroy(request, *args, **kwargs)
-
-    @staticmethod
-    def check_cart_pk(cart_pk):
-        try:
-            uuid.UUID(cart_pk, version=4)
-        except ValueError:
-            raise serializers.ValidationError(
-                {"cart_pk": "Invalid cart_pk. It must be a valid UUID4."}
-            )
 
 
 @extend_schema_view(

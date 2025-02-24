@@ -1,5 +1,3 @@
-import uuid
-
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
@@ -62,14 +60,6 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         cart_id = self.context.get("cart_pk")
         variant = data["variant"]
         quantity = data["quantity"]
-
-        # validate cart id
-        try:
-            uuid.UUID(cart_id, version=4)
-        except ValueError:
-            raise serializers.ValidationError(
-                "Invalid cart_pk. It must be a valid UUID4."
-            )
 
         # validate quantity
         if not quantity:
