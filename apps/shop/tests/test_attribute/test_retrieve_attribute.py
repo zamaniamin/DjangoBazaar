@@ -7,7 +7,7 @@ from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 class ListAttributeTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
-        return reverse("attribute-list")
+        return reverse("attributes:attribute-list")
 
     def validate_response_body(
         self, response, payload: dict = None, results_len: int = 0
@@ -64,7 +64,7 @@ class RetrieveAttributeTest(APIGetTestCaseMixin, APIAssertMixin):
         cls.attribute = AttributeFactory()
 
     def api_path(self) -> str:
-        return reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+        return reverse("attributes:attribute-detail", kwargs={"pk": self.attribute.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -91,5 +91,7 @@ class RetrieveAttributeTest(APIGetTestCaseMixin, APIAssertMixin):
         self.validate_response_body(response)
 
     def test_retrieve_if_attribute_not_exist(self):
-        response = self.send_request(reverse("attribute-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("attributes:attribute-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

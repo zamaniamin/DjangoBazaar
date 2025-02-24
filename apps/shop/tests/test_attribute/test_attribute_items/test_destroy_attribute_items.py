@@ -16,7 +16,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "attribute-items-detail",
+            "attributes:item",
             kwargs={
                 "attribute_pk": self.attribute.id,
                 "pk": self.attribute_item.id,
@@ -36,7 +36,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
         # check that attribute item was deleted
         response = self.client.get(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -48,7 +48,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
     def test_delete_if_attribute_not_exist(self):
         response = self.send_request(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
             )
         )
@@ -57,7 +57,7 @@ class DestroyAttributeItemTest(APIDeleteTestCaseMixin):
     def test_delete_if_item_not_exist(self):
         response = self.send_request(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )

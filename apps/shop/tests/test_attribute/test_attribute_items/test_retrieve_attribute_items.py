@@ -16,7 +16,7 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "attribute-items-list",
+            "attributes:items",
             kwargs={"attribute_pk": self.attribute.id},
         )
 
@@ -46,14 +46,14 @@ class ListAttributeItemsTest(APIGetTestCaseMixin):
 
     def test_list_if_attribute_not_exist(self):
         response = self.send_request(
-            reverse("attribute-items-list", kwargs={"attribute_pk": 999})
+            reverse("attributes:items", kwargs={"attribute_pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_attribute_dont_have_item(self):
         attribute = AttributeFactory()
         response = self.send_request(
-            reverse("attribute-items-list", kwargs={"attribute_pk": attribute.id})
+            reverse("attributes:items", kwargs={"attribute_pk": attribute.id})
         )
         self.validate_response_body(response)
 
@@ -69,7 +69,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "attribute-items-detail",
+            "attributes:item",
             kwargs={
                 "attribute_pk": self.attribute.id,
                 "pk": self.attribute_item.id,
@@ -99,7 +99,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
     def test_retrieve_if_attribute_not_exist(self):
         response = self.send_request(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": 999, "pk": self.attribute_item.id},
             )
         )
@@ -108,7 +108,7 @@ class RetrieveAttributeItemsTest(APIGetTestCaseMixin):
     def test_retrieve_if_item_not_exist(self):
         response = self.send_request(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )

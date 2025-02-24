@@ -22,7 +22,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "attribute-items-detail",
+            "attributes:item",
             kwargs={"attribute_pk": self.attribute.id, "pk": self.attribute_item.id},
         )
 
@@ -45,7 +45,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
     def test_update_if_item_not_exist(self):
         response = self.send_request(
             path=reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": self.attribute.id, "pk": 999},
             )
         )
@@ -54,7 +54,7 @@ class UpdateAttributeItemTest(APIUpdateTestCaseMixin):
     def test_update_if_attribute_not_exist(self):
         response = self.send_request(
             path=reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={"attribute_pk": 99999, "pk": self.attribute_item.id},
             )
         )

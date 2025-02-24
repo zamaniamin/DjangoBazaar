@@ -15,7 +15,7 @@ class DestroyAttributeTest(APIDeleteTestCaseMixin):
         cls.attribute_item = cls.attribute.items.first()
 
     def api_path(self) -> str:
-        return reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+        return reverse("attributes:attribute-detail", kwargs={"pk": self.attribute.id})
 
     def test_access_permission_by_regular_user(self):
         self.check_access_permission_by_regular_user()
@@ -29,14 +29,14 @@ class DestroyAttributeTest(APIDeleteTestCaseMixin):
 
         # assert attribute is removed
         response = self.client.get(
-            reverse("attribute-detail", kwargs={"pk": self.attribute.id})
+            reverse("attributes:attribute-detail", kwargs={"pk": self.attribute.id})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
         # assert attribute items are removed
         response = self.client.get(
             reverse(
-                "attribute-items-detail",
+                "attributes:item",
                 kwargs={
                     "attribute_pk": self.attribute.id,
                     "pk": self.attribute_item.id,
@@ -46,5 +46,7 @@ class DestroyAttributeTest(APIDeleteTestCaseMixin):
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_delete_if_attribute_not_exist(self):
-        response = self.send_request(reverse("attribute-detail", kwargs={"pk": 999}))
+        response = self.send_request(
+            reverse("attributes:attribute-detail", kwargs={"pk": 999})
+        )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

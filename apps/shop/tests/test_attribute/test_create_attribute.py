@@ -7,7 +7,7 @@ from apps.shop.demo.factory.attribute.attribute_factory import AttributeFactory
 
 class CreateAttributeTest(APIPostTestCaseMixin, APIAssertMixin):
     def api_path(self) -> str:
-        return reverse("attribute-list")
+        return reverse("attributes:attribute-list")
 
     def validate_response_body(self, response, payload):
         super().validate_response_body(response, payload)

@@ -13,7 +13,7 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin, APIAssertMixin):
 
     def api_path(self) -> str:
         return reverse(
-            "attribute-detail",
+            "attributes:attribute-detail",
             kwargs={"pk": self.attribute.id},
         )
 
@@ -47,6 +47,6 @@ class UpdateAttributeTest(APIUpdateTestCaseMixin, APIAssertMixin):
 
     def test_update_if_attribute_not_exist(self):
         response = self.send_request(
-            path=reverse("attribute-detail", kwargs={"pk": 999})
+            path=reverse("attributes:attribute-detail", kwargs={"pk": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
