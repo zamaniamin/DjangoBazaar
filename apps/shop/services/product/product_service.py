@@ -16,6 +16,15 @@ class ProductService(
     ProductAttributeMixin,
     ProductImageMixin,
 ):
+    """
+    Handles operations related to product management including creating, updating,
+    and managing product attributes, options, variants, and images.
+
+    This class serves as a service layer to handle complex logic for handling
+    products in the system. It interacts with the underlying repositories and
+    mixins to ensure that products are correctly created or updated along with
+    their associated data like variants, attributes, options, and images.
+    """
 
     @classmethod
     def create_product(cls, **data) -> Product:

@@ -13,6 +13,20 @@ from apps.shop.models.product import (
 
 
 class ProductRepository:
+    """
+    Repository class to manage Product-related database queries.
+
+    This class provides optimized static and class-level methods for retrieving product
+    data from the database. It uses query optimizations such as annotations, select_related,
+    and prefetch_related to reduce the number of database queries and improve performance.
+    It ensures efficient fetching of products along with their associated options, variants,
+    media, and attributes. Additionally, it has methods to group item IDs by option and to
+    retrieve detailed product data for a specific product.
+
+    Attributes:
+        None
+    """
+
     @staticmethod
     def get_product_queryset(request):
         # Annotate each product with minimum price, maximum price, and total stock from its variants.
