@@ -1,13 +1,16 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema_view, extend_schema
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from apps.shop.models.attribute import Attribute, AttributeItem
 from apps.shop.paginations import DefaultPagination
-from apps.shop.serializers import attribute_serializers
+from apps.shop.serializers.attribute_serializers import (
+    AttributeSerializer,
+    AttributeItemSerializer,
+)
 
 
 @extend_schema_view(
@@ -20,7 +23,7 @@ from apps.shop.serializers import attribute_serializers
 class AttributeViewSet(viewsets.ModelViewSet):
     # TODO write test for check attributes is order by created-at
     queryset = Attribute.objects.all().order_by("-created_at")
-    serializer_class = attribute_serializers.AttributeSerializer
+    serializer_class = AttributeSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
     # TODO add test for pagination
@@ -52,7 +55,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(tags=["Attribute Item"], summary="Deletes an attribute item"),
 )
 class AttributeItemViewSet(viewsets.ModelViewSet):
-    serializer_class = attribute_serializers.AttributeItemSerializer
+    serializer_class = AttributeItemSerializer
     permission_classes = [IsAdminUser]
     http_method_names = ["post", "get", "put", "delete"]
 
@@ -73,33 +76,25 @@ class AttributeItemViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def create(self, request, *args, **kwargs):
-        # validate data
-        attribute_id = kwargs["attribute_id"]
-        serializer = self.get_serializer(
-            data=request.data, context={"attribute_id": attribute_id}
-        )
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        attribute_item = self.perform_create(serializer)
+        serializer = self.serializer_class(attribute_item)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
-        # check attribute is exist or not
-        # TODO can I remove this line?
+    def perform_create(self, serializer):
+        attribute_id = self.kwargs.get("attribute_id")
+        item_name = serializer.validated_data.get("item_name")
         get_object_or_404(Attribute, pk=attribute_id)
-
-        # get validated data
-        payload = serializer.validated_data
-        name = payload["item_name"]
-
         try:
-            attribute_item = AttributeItem.objects.create(
-                attribute_id=attribute_id, item_name=name
+            item = AttributeItem.objects.create(
+                attribute_id=attribute_id, item_name=item_name
             )
         except IntegrityError:
-            return Response(
-                {"detail": "This attribute item already exist in items."},
-                status=status.HTTP_400_BAD_REQUEST,
+            raise serializers.ValidationError(
+                {"detail": "This attribute item already exists."}
             )
-
-        # return response
-        response_serializer = attribute_serializers.AttributeItemSerializer(
-            attribute_item
-        )
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return item
