@@ -64,20 +64,21 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         return self.ACTION_PERMISSIONS.get(self.action, super().get_permissions())
 
     def get_queryset(self):
-        product_pk = self.kwargs["product_pk"]
-        return ProductImage.objects.filter(product_id=product_pk).all()
+        product_pk = self.kwargs.get("product_pk")
+        return ProductImage.objects.filter(product_id=product_pk)
 
     def create(self, request, *args, **kwargs):
         """Upload images for a specific product."""
-
-        # validate
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        images = self.perform_create(serializer)
+        serializer = self.serializer_class(images, many=True)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    def perform_create(self, serializer):
+        product_id = self.kwargs.get("product_pk")
         images_data = serializer.validated_data
-
-        # save images
-        product_id = self.kwargs["product_pk"]
-        images = ProductService.upload_product_images(product_id, **images_data)
-
-        serializer = ProductImageSerializer(images, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return ProductService.upload_product_images(product_id, **images_data)
