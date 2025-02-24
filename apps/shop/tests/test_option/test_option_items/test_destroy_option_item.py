@@ -15,7 +15,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "options:item",
-            kwargs={"option_pk": self.option.id, "pk": self.option_item.id},
+            kwargs={"option_id": self.option.id, "pk": self.option_item.id},
         )
 
     def test_access_permission_by_regular_user(self):
@@ -32,11 +32,11 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
         response = self.client.get(self.api_path())
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_with_invalid_option_pk(self):
+    def test_delete_with_invalid_option_id(self):
         response = self.send_request(
             reverse(
                 "options:item",
-                kwargs={"option_pk": 999, "pk": self.option_item.id},
+                kwargs={"option_id": 999, "pk": self.option_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -45,7 +45,7 @@ class DestroyOptionItemsTest(APIDeleteTestCaseMixin):
         response = self.send_request(
             reverse(
                 "options:item",
-                kwargs={"option_pk": self.option.id, "pk": 999},
+                kwargs={"option_id": self.option.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

@@ -79,7 +79,7 @@ class OptionItemViewSet(viewsets.ModelViewSet):
     }
 
     def get_queryset(self):
-        option_id = self.kwargs.get("option_pk")
+        option_id = self.kwargs.get("option_id")
         get_object_or_404(Option, pk=option_id)
         # TODO write test for check option items is order by created-at
         return OptionItem.objects.filter(option_id=option_id).order_by("-created_at")
@@ -89,9 +89,9 @@ class OptionItemViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # validate data
-        option_id = self.kwargs.get("option_pk")
+        option_id = self.kwargs.get("option_id")
         serializer = self.get_serializer(
-            data=request.data, context={"option_pk": option_id}
+            data=request.data, context={"option_id": option_id}
         )
         serializer.is_valid(raise_exception=True)
 

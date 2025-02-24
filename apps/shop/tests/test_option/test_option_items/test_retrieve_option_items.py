@@ -13,7 +13,7 @@ class ListOptionItemsTest(APIGetTestCaseMixin):
         cls.option_items = OptionFactory.add_option_item_list(cls.option.id)
 
     def api_path(self) -> str:
-        return reverse("options:items", kwargs={"option_pk": self.option.id})
+        return reverse("options:items", kwargs={"option_id": self.option.id})
 
     def validate_response_body(self, response, payload: dict = None):
         super().validate_response_body(response, payload)
@@ -37,16 +37,16 @@ class ListOptionItemsTest(APIGetTestCaseMixin):
         response = self.send_request()
         self.validate_response_body(response)
 
-    def test_list_with_invalid_option_pk(self):
+    def test_list_with_invalid_option_id(self):
         response = self.send_request(
-            reverse("options:items", kwargs={"option_pk": 999})
+            reverse("options:items", kwargs={"option_id": 999})
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
     def test_list_if_option_dont_have_item(self):
         option = OptionFactory.create_option("material")
         response = self.send_request(
-            reverse("options:items", kwargs={"option_pk": option.id})
+            reverse("options:items", kwargs={"option_id": option.id})
         )
 
         # expected
@@ -65,7 +65,7 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "options:item",
-            kwargs={"option_pk": self.option.id, "pk": self.option_item.id},
+            kwargs={"option_id": self.option.id, "pk": self.option_item.id},
         )
 
     def validate_response_body(self, response, payload: dict = None):
@@ -85,7 +85,7 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse(
                 "options:item",
-                kwargs={"option_pk": 999, "pk": self.option_item.id},
+                kwargs={"option_id": 999, "pk": self.option_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
@@ -94,7 +94,7 @@ class RetrieveOptionItemTest(APIGetTestCaseMixin):
         response = self.send_request(
             reverse(
                 "options:item",
-                kwargs={"option_pk": self.option.id, "pk": 999},
+                kwargs={"option_id": self.option.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

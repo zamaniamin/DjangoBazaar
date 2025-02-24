@@ -15,7 +15,7 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
     def api_path(self) -> str:
         return reverse(
             "options:item",
-            kwargs={"option_pk": self.option.id, "pk": self.item.id},
+            kwargs={"option_id": self.option.id, "pk": self.item.id},
         )
 
     def validate_response_body(self, response, payload):
@@ -44,16 +44,16 @@ class UpdateOptionItemTest(APIUpdateTestCaseMixin):
         response = self.send_request(
             path=reverse(
                 "options:item",
-                kwargs={"option_pk": self.option.id, "pk": 999},
+                kwargs={"option_id": self.option.id, "pk": 999},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)
 
-    def test_update_with_invalid_option_pk(self):
+    def test_update_with_invalid_option_id(self):
         response = self.send_request(
             path=reverse(
                 "options:item",
-                kwargs={"option_pk": 99999, "pk": self.item.id},
+                kwargs={"option_id": 99999, "pk": self.item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

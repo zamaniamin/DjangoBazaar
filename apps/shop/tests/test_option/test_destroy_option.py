@@ -33,7 +33,7 @@ class DestroyOptionTest(APIDeleteTestCaseMixin):
         response = self.client.get(
             reverse(
                 "options:item",
-                kwargs={"option_pk": self.option.id, "pk": self.option_item.id},
+                kwargs={"option_id": self.option.id, "pk": self.option_item.id},
             )
         )
         self.assertHTTPStatusCode(response, status.HTTP_404_NOT_FOUND)

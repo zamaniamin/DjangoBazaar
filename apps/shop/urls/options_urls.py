@@ -11,12 +11,12 @@ router.register(r"", OptionViewSet, basename="option")
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "<int:option_pk>/items/",
+        "<int:option_id>/items/",
         OptionItemViewSet.as_view({"get": "list", "post": "create"}),
         name="items",
     ),
     path(
-        "<int:option_pk>/items/<int:pk>/",
+        "<int:option_id>/items/<int:pk>/",
         OptionItemViewSet.as_view(
             {
                 "get": "retrieve",
