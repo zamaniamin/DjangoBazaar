@@ -291,7 +291,28 @@ if ENABLE_DEBUG_TOOLBAR:
 # --- Django Testing ---
 # ----------------------
 
-# faster hashing algorithm, reduce tests time.
-PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.MD5PasswordHasher",
-]
+if 'test' in sys.argv:
+    # 1. Switch to a Faster Password Hasher Algorithm in Tests
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    ]
+
+    # 2. Use an In-Memory or Faster Test Database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
+
+    # 3. Disable Migrations During Testing
+    class DisableMigrations:
+        def __contains__(self, item):
+            return True
+
+        def __getitem__(self, item):
+            return None
+
+
+    MIGRATION_MODULES = DisableMigrations()
