@@ -54,7 +54,6 @@ ALLOWED_HOSTS = env.ALLOWED_HOSTS
 # ------------------------------
 
 INSTALLED_APPS = [
-    # "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -65,6 +64,7 @@ INSTALLED_APPS = [
     # External Packages
     "django_filters",
     "rest_framework",
+    "rest_framework_simplejwt",
     "drf_spectacular",
     "corsheaders",
     # Made by me
@@ -181,15 +181,7 @@ SITE_ID = 1
 # --- Email ---
 # -------------
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = env.EMAIL_HOST
-    EMAIL_USE_SSL = env.EMAIL_USE_SSL
-    EMAIL_PORT = env.EMAIL_PORT
-    EMAIL_HOST_USER = env.EMAIL_HOST_USER
-    EMAIL_HOST_PASSWORD = env.EMAIL_HOST_PASSWORD
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # ----------------------
 # --- REST FRAMEWORK ---
@@ -291,20 +283,19 @@ if ENABLE_DEBUG_TOOLBAR:
 # --- Django Testing ---
 # ----------------------
 
-if 'test' in sys.argv:
+if "test" in sys.argv:
     # 1. Switch to a Faster Password Hasher Algorithm in Tests
     PASSWORD_HASHERS = [
-        'django.contrib.auth.hashers.MD5PasswordHasher',
+        "django.contrib.auth.hashers.MD5PasswordHasher",
     ]
 
     # 2. Use an In-Memory or Faster Test Database
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
         }
     }
-
 
     # 3. Disable Migrations During Testing
     class DisableMigrations:
@@ -314,5 +305,52 @@ if 'test' in sys.argv:
         def __getitem__(self, item):
             return None
 
-
     MIGRATION_MODULES = DisableMigrations()
+
+# ------------------
+# --- PRODUCTION ---
+# ------------------
+
+if not DEBUG:
+    INSTALLED_APPS.insert(0, "daphne")
+
+    # -------------
+    # --- Email ---
+    # -------------
+
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env.EMAIL_HOST
+    EMAIL_USE_SSL = env.EMAIL_USE_SSL
+    EMAIL_PORT = env.EMAIL_PORT
+    EMAIL_HOST_USER = env.EMAIL_HOST_USER
+    EMAIL_HOST_PASSWORD = env.EMAIL_HOST_PASSWORD
+
+    # --------------------
+    # --- Static Files ---
+    # --------------------
+
+    # WhiteNoise allows your web app to serve its own static files
+    MIDDLEWARE.insert(0, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    # This will allow WhiteNoise to serve compressed static files (CSS, JS, etc.)
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+    # --------------
+    # --- Sentry ---
+    # --------------
+
+    # sentry_sdk.init(
+    #     dsn="https://8f71997feff539fa9e5ab2503f32a8eb@o4508834653798400.ingest.us.sentry.io/4508834732703744",
+    #     # Add data like request headers and IP for users,
+    #     # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    #     send_default_pii=True,
+    #     # Set traces_sample_rate to 1.0 to capture 100%
+    #     # of transactions for tracing.
+    #     traces_sample_rate=1.0,
+    #     _experiments={
+    #         # Set continuous_profiling_auto_start to True
+    #         # to automatically start the profiler on when
+    #         # possible.
+    #         "continuous_profiling_auto_start": True,
+    #     },
+    # )
