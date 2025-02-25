@@ -105,6 +105,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
+AUTH_USER_MODEL = "core.User"
 
 # ----------------
 # --- Database ---
@@ -168,8 +169,6 @@ STATIC_ROOT = env.STATIC_ROOT
 # --------------------------------------
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-AUTH_USER_MODEL = "core.User"
 
 # ----------------------
 # --- Site Framework ---
