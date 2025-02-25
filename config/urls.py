@@ -27,7 +27,7 @@ from apps.core.views.user_views.user_view import UserViewSet
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("auth/", include("apps.core.urls")),
+    path("auth/", include("apps.core.urls.accounts_urls")),
     path("shop/", include("apps.shop.urls.shop_url")),
     # need to generate swagger-ui
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
